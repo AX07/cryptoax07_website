@@ -4,20 +4,24 @@ import type { Category, AiResponse } from '../types';
 let ai: GoogleGenAI | null = null;
 let chat: Chat | null = null;
 
-const getAi = () => {
+const getAi = (): GoogleGenAI => {
   if (!ai) {
-    if (!process.env.API_KEY) {
-      console.error("API_KEY environment variable not set!");
-      return null;
+    // Per instructions, assume process.env.API_KEY is available.
+    // The try/catch in askAi will handle potential initialization errors.
+    // Use optional chaining to prevent ReferenceError if 'process' is not defined in the browser.
+    const apiKey = (process as any)?.env?.API_KEY;
+    if (!apiKey) {
+        // This will be caught by the try/catch in askAi
+        throw new Error("API_KEY is not configured in the environment.");
     }
-    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    ai = new GoogleGenAI({ apiKey });
   }
   return ai;
 };
 
-const getChat = () => {
+const getChat = (): Chat => {
+    // This will throw if getAi() fails, which is intended.
     const aiInstance = getAi();
-    if (!aiInstance) return null;
 
     if (!chat) {
         chat = aiInstance.chats.create({
@@ -52,32 +56,37 @@ const getChat = () => {
 
 
 export const askAi = async (message: string, simulations: Category[]): Promise<AiResponse> => {
-  const chatInstance = getChat();
-  if (!chatInstance) {
-    return { type: 'answer', text: "The AI assistant is currently unavailable. Please ensure the API key is configured." };
-  }
-
-  const simContext = simulations.flatMap(cat => 
-    cat.simulations.map(sim => ({
-      id: sim.id,
-      title: sim.title,
-      description: sim.description
-    }))
-  );
-
-  const prompt = `
-    USER_QUESTION: "${message}"
-    ---
-    AVAILABLE_SIMULATIONS_CONTEXT: ${JSON.stringify(simContext)}
-  `;
-
   try {
+    const chatInstance = getChat();
+    
+    const simContext = simulations.flatMap(cat => 
+      cat.simulations.map(sim => ({
+        id: sim.id,
+        title: sim.title,
+        description: sim.description
+      }))
+    );
+
+    const prompt = `
+      USER_QUESTION: "${message}"
+      ---
+      AVAILABLE_SIMULATIONS_CONTEXT: ${JSON.stringify(simContext)}
+    `;
+    
     const response = await chatInstance.sendMessage({ message: prompt });
     const jsonString = response.text.trim();
+     // A simple check to see if the response is likely JSON
+    if (!jsonString.startsWith('{') && !jsonString.startsWith('[')) {
+        console.error("Gemini API returned non-JSON response:", jsonString);
+        return { type: 'answer', text: "I received an unexpected response. Could you please rephrase your question?" };
+    }
     const parsedResponse: AiResponse = JSON.parse(jsonString);
     return parsedResponse;
   } catch (error) {
-    console.error("Error communicating with or parsing response from Gemini API:", error);
+    console.error("Error with Gemini API:", error);
+    if (error instanceof Error && error.message.includes("API_KEY")) {
+        return { type: 'answer', text: "The AI assistant is currently unavailable. Please ensure the API key is configured." };
+    }
     return { type: 'answer', text: "Sorry, I had trouble processing that request. Please try rephrasing your question." };
   }
 };

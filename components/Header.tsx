@@ -1,18 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, type UserProgress } from '../types';
-import { ShieldCheckIcon, StarIcon, MenuIcon, XMarkIcon } from './icons/Icons';
+import { View, type UserProgress, Page } from '../types';
+import { ShieldCheckIcon, StarIcon, MenuIcon } from './icons/Icons';
 import Button from './ui/Button';
 
 interface HeaderProps {
   userProgress: UserProgress;
   onNavigate: (view: View) => void;
+  onNavigatePage: (page: Page) => void;
   onStartLearning: () => void;
   onOpenBookingModal: () => void;
+  onToggleSidebar: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ userProgress, onNavigate, onStartLearning, onOpenBookingModal }) => {
+const Header: React.FC<HeaderProps> = ({ userProgress, onNavigate, onNavigatePage, onStartLearning, onOpenBookingModal, onToggleSidebar }) => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,11 +26,11 @@ const Header: React.FC<HeaderProps> = ({ userProgress, onNavigate, onStartLearni
   }, []);
 
   return (
-    <header className="bg-brand-surface/80 backdrop-blur-sm sticky top-0 z-50 border-b border-gray-700/50 transition-all duration-300">
-      <div className={`container mx-auto px-4 flex justify-between items-center transition-all duration-300 relative ${isScrolled ? 'py-1' : 'py-3'}`}>
+    <header className="bg-brand-surface/80 backdrop-blur-sm sticky top-0 z-30 border-b border-gray-700/50 transition-all duration-300">
+      <div className={`container mx-auto px-4 flex justify-between items-center transition-all duration-300 ${isScrolled ? 'py-1' : 'py-3'}`}>
         <a 
           href="#"
-          onClick={(e) => { e.preventDefault(); onNavigate(View.Dashboard); }}
+          onClick={(e) => { e.preventDefault(); onNavigatePage('intro'); }}
           className="flex items-center"
         >
           <img 
@@ -69,37 +70,32 @@ const Header: React.FC<HeaderProps> = ({ userProgress, onNavigate, onStartLearni
             </button>
           </div>
 
-          {/* Menu Button */}
-          <div className="relative">
-            <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 rounded-md text-white hover:bg-brand-surface">
-              {isMenuOpen ? <XMarkIcon className="h-7 w-7" /> : <MenuIcon className="h-7 w-7" />}
+          {/* Mobile Right-Side Content (Progress Icons & Menu) */}
+          <div className="flex md:hidden items-center gap-2">
+            <button 
+              onClick={() => onNavigate(View.Progress)}
+              className="p-2 rounded-lg hover:bg-brand-surface/50 transition-colors" 
+              title="View Your Progress"
+            >
+              <StarIcon className="h-6 w-6 text-yellow-400" />
+            </button>
+            <button 
+              onClick={() => onNavigate(View.Progress)}
+              className="p-2 rounded-lg hover:bg-brand-surface/50 transition-colors"
+              title="View Your Progress"
+            >
+              <ShieldCheckIcon className="h-6 w-6 text-brand-secondary" />
+            </button>
+            <button 
+              onClick={onToggleSidebar} 
+              className="p-2 rounded-md text-white hover:bg-brand-surface"
+              aria-label="Toggle navigation sidebar"
+            >
+                <MenuIcon className="h-7 w-7" />
             </button>
           </div>
         </div>
       </div>
-      
-      {/* Menu Dropdown */}
-      {isMenuOpen && (
-        <div className="md:absolute md:top-full md:right-0 md:container md:mx-auto md:px-4 md:flex md:justify-end">
-          <div className="animate-fade-in bg-brand-surface/95 backdrop-blur-sm border-t md:border border-gray-700/50 md:mt-2 md:w-64 md:rounded-lg shadow-lg">
-              <nav className="container mx-auto px-4 py-4 flex flex-col items-center md:items-start md:p-4 gap-4">
-                  <button onClick={() => { onNavigate(View.Dashboard); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Home</button>
-                  <button onClick={() => { onNavigate(View.About); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">About</button>
-                  <button onClick={() => { onNavigate(View.Resources); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Resources</button>
-                  <button onClick={() => { onStartLearning(); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Start Learning</button>
-                  <button onClick={() => { onOpenBookingModal(); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Book a Call</button>
-                  <div className="flex md:flex-col md:items-start gap-6 md:gap-4 mt-2 border-t border-gray-700 w-full pt-4">
-                    <button onClick={() => { onNavigate(View.Progress); setIsMenuOpen(false); }} className="flex items-center gap-2">
-                      <StarIcon className="h-6 w-6 text-yellow-400" /> <span className="font-semibold text-white">{userProgress.xp} XP</span>
-                    </button>
-                    <button onClick={() => { onNavigate(View.Progress); setIsMenuOpen(false); }} className="flex items-center gap-2">
-                      <ShieldCheckIcon className="h-6 w-6 text-brand-secondary" /> <span className="font-semibold text-white">{userProgress.badges.length}</span>
-                    </button>
-                  </div>
-              </nav>
-          </div>
-        </div>
-      )}
     </header>
   );
 };

@@ -3,7 +3,7 @@ import { askAi } from '../services/geminiService';
 import { CATEGORIES } from '../constants';
 import type { AiResponse } from '../types';
 import GeneratedExample from './GeneratedExample';
-import { ChatBubbleLeftRightIcon, PaperAirplaneIcon, XMarkIcon } from './icons/Icons';
+import { ChatBubbleBottomCenterTextIcon, PaperAirplaneIcon, XMarkIcon } from './icons/Icons';
 import Button from './ui/Button';
 
 interface Message {
@@ -99,7 +99,7 @@ const AiChatbot: React.FC<AiChatbotProps> = ({ onSelectSimulation }) => {
         className="fixed bottom-6 right-6 bg-brand-primary text-white p-4 rounded-full shadow-lg hover:bg-sky-400 transition-transform duration-200 hover:scale-110 z-[100]"
         aria-label="Open AI Chatbot"
       >
-        <ChatBubbleLeftRightIcon className="h-8 w-8 text-brand-bg" />
+        <ChatBubbleBottomCenterTextIcon className="h-8 w-8 text-brand-bg" />
       </button>
 
       {isOpen && (

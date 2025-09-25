@@ -10,6 +10,8 @@ import Button from './components/ui/Button';
 import IntroPage from './components/IntroPage';
 import AboutPage from './components/AboutPage';
 import ResourcesPage from './components/ResourcesPage';
+import Footer from './components/Footer';
+import Sidebar from './components/Sidebar';
 import { CATEGORIES, LEARNING_PATH } from './constants';
 import { XMarkIcon } from './components/icons/Icons';
 
@@ -53,6 +55,15 @@ const App: React.FC = () => {
   const [learningPathStep, setLearningPathStep] = useState<number>(0);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem('sidebarCollapsed') === 'true';
+    } catch (e) {
+      return false;
+    }
+  });
+
 
   const [userProgress, setUserProgress] = useState<UserProgress>(() => {
     try {
@@ -98,7 +109,7 @@ const App: React.FC = () => {
 
   const handleNavigatePage = (targetPage: Page) => {
     setPage(targetPage);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
 
@@ -122,6 +133,18 @@ const App: React.FC = () => {
             setView(View.Dashboard);
         }
     }, 1500);
+  }, []);
+  
+  const toggleSidebarCollapse = useCallback(() => {
+    setIsSidebarCollapsed(prev => {
+        const newState = !prev;
+        try {
+          localStorage.setItem('sidebarCollapsed', String(newState));
+        } catch (e) {
+          console.error("Could not save sidebar state to localStorage", e);
+        }
+        return newState;
+    });
   }, []);
 
   const startOrResumeLearningPath = () => {
@@ -276,7 +299,7 @@ const App: React.FC = () => {
             <div className="animate-fade-in">
                 <div className="mb-6 md:mb-8">
                     <button onClick={handleBack} className="text-brand-primary hover:underline text-sm mb-4">
-                        &larr; Exit Learning Path
+                        &larr; Back to Dashboard
                     </button>
                     <div className="bg-brand-surface p-4 rounded-xl border border-gray-700/50">
                       <div className="flex justify-between items-center mb-2">
@@ -307,6 +330,11 @@ const App: React.FC = () => {
   };
 
   const renderPage = () => {
+      let currentSimId: string | null = null;
+      if (page === 'app' && view === View.Simulation && learningPathStep < LEARNING_PATH.length) {
+          currentSimId = LEARNING_PATH[learningPathStep];
+      }
+      
       switch(page) {
         case 'intro':
             return <IntroPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />;
@@ -317,20 +345,37 @@ const App: React.FC = () => {
         case 'app':
         default:
             return (
-                <div className="min-h-screen bg-brand-bg flex flex-col">
-                <Header 
-                    userProgress={userProgress} 
-                    onNavigate={handleNavigate}
-                    onStartLearning={startOrResumeLearningPath}
-                    onOpenBookingModal={openBookingModal}
-                />
-                <main className="flex-grow container mx-auto px-4 py-8">
-                    {renderContent()}
-                </main>
-                <footer className="text-center py-4 text-brand-text-secondary text-sm">
-                    created by <a href="https://www.cryptoax07.com" target="_blank" rel="noopener noreferrer" className="text-brand-primary hover:underline">cryptoax07.com</a>
-                </footer>
-                <AiChatbot onSelectSimulation={handleSelectSimulationById} />
+                <div className="min-h-screen bg-brand-bg flex">
+                    <div className={`flex-1 flex flex-col transition-all duration-300 w-full md:w-auto ${isSidebarCollapsed ? 'md:mr-20' : 'md:mr-72'}`}>
+                        <Header 
+                            userProgress={userProgress} 
+                            onNavigate={handleNavigate}
+                            onNavigatePage={handleNavigatePage}
+                            onStartLearning={startOrResumeLearningPath}
+                            onOpenBookingModal={openBookingModal}
+                            onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
+                        />
+                        <main className="flex-grow container mx-auto px-4 py-8">
+                            {renderContent()}
+                        </main>
+                        <Footer 
+                            onStart={startOrResumeLearningPath}
+                            onNavigatePage={handleNavigatePage}
+                            onOpenBookingModal={openBookingModal}
+                        />
+                    </div>
+                    <Sidebar
+                        userProgress={userProgress}
+                        onSelectSimulation={handleSelectSimulationById}
+                        onNavigate={handleNavigate}
+                        onNavigatePage={handleNavigatePage}
+                        currentSimId={currentSimId}
+                        isOpen={isSidebarOpen}
+                        onClose={() => setIsSidebarOpen(false)}
+                        isCollapsed={isSidebarCollapsed}
+                        onToggleCollapse={toggleSidebarCollapse}
+                    />
+                    <AiChatbot onSelectSimulation={handleSelectSimulationById} />
                 </div>
             );
       }
@@ -360,7 +405,7 @@ const App: React.FC = () => {
               <XMarkIcon className="h-6 w-6" />
             </button>
             <iframe
-              src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0167PaK4gkglb-8diXPCzvZM2sz4ZqKNiCernRxnmLAjpnjvllox8tT5hFTKojodg2nkjA4DPj?gv=true"
+              src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0167PaK4gkglb-8diXPCzvZM2sz4ZqKNiCernRxnmLAjpnjvllox8tT5hFTKojodg2nkjA4DPj?gv=true&bgcolor=%23ffffff"
               width="100%"
               height="100%"
               frameBorder="0"

@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Button from './ui/Button';
 import Card from './ui/Card';
-import { MenuIcon, XMarkIcon, PhoneIcon, CheckCircleIcon, TwitterIcon, YouTubeIcon, DiscordIcon, InstagramIcon, LinkedInIcon, TelegramIcon, WhatsappIcon, NewspaperIcon, Squares2X2Icon } from './icons/Icons';
+import { MenuIcon, XMarkIcon, PhoneIcon, CheckCircleIcon, NewspaperIcon, Squares2X2Icon } from './icons/Icons';
 import { Page } from '../types';
 import { RESOURCES_DATA, ResourceItem } from '../constants/resourcesData';
+import Footer from './Footer';
 
 interface ResourcesPageProps {
   onStart: () => void;
@@ -70,16 +71,6 @@ const ResourcesPage: React.FC<ResourcesPageProps> = ({ onStart, onNavigatePage, 
     const scrollToSection = (id: string) => {
         sectionRefs.current[id]?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
-
-    const socialLinks = [
-      { href: "https://x.com/Ax07Crypto", label: "X/Twitter", Icon: TwitterIcon },
-      { href: "https://www.youtube.com/@CryptoAX07", label: "YouTube", Icon: YouTubeIcon },
-      { href: "https://linktr.ee/ax07", label: "Discord", Icon: DiscordIcon },
-      { href: "https://www.instagram.com/cryptoax07/", label: "Instagram", Icon: InstagramIcon },
-      { href: "https://www.linkedin.com/company/cryptoax07", label: "LinkedIn", Icon: LinkedInIcon },
-      { href: "https://t.me/CryptoAx07", label: "Telegram", Icon: TelegramIcon },
-      { href: "https://wa.me/qr/VW746BCARY44C1", label: "Whatsapp", Icon: WhatsappIcon },
-    ];
     
     const pageStyle = {
       backgroundImage: `linear-gradient(rgba(16, 20, 31, 0.95), rgba(16, 20, 31, 0.95)), url('https://static.wixstatic.com/media/4a78c1_f5dc609ad50b43bf9d0d51fe81e09497~mv2.png/v1/fill/w_1156,h_420,al_c,q_90,usm_0.66_1.00_0.01,enc_avif,quality_auto/4a78c1_f5dc609ad50b43bf9d0d51fe81e09497~mv2.png')`,
@@ -147,11 +138,37 @@ const ResourcesPage: React.FC<ResourcesPageProps> = ({ onStart, onNavigatePage, 
                     <section key={id} id={id} ref={el => { sectionRefs.current[id] = el }} className="py-16 container mx-auto px-4">
                         <h2 className="text-3xl font-bold text-white text-center mb-8">{headline}</h2>
                         {id === 'blog' ? (
-                             <p className="text-center text-brand-text-secondary">Blog coming soon! Stay tuned for articles and guides.</p>
+                            <div className="max-w-3xl mx-auto">
+                                <a href="https://www.cryptoax07.com/blog" target="_blank" rel="noopener noreferrer" className="block group">
+                                    <Card className="p-0 overflow-hidden bg-brand-surface hover:border-brand-primary transition-all duration-300 card-glow-blue-hover">
+                                        <div className="md:flex">
+                                            <div className="md:flex-shrink-0">
+                                                <img className="h-48 w-full object-cover md:h-full md:w-64 transition-transform duration-300 group-hover:scale-105" src="https://images.unsplash.com/photo-1585241936939-be4099591252?q=80&w=800&auto=format&fit=crop" alt="Person reading crypto articles on a tablet" />
+                                            </div>
+                                            <div className="p-8 text-left flex flex-col justify-center">
+                                                <h3 className="text-2xl font-bold text-white mb-2">Explore Our Blog</h3>
+                                                <p className="text-brand-text-secondary mb-4">Dive deeper into crypto topics with our latest articles, insights, and tutorials on the official CryptoAX07 blog.</p>
+                                                <div className="mt-auto">
+                                                    <span className="font-semibold text-brand-primary group-hover:underline">
+                                                        Read Articles &rarr;
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                </a>
+                            </div>
                         ) : id === 'tracker' ? (
                             <div className="text-center">
                                 <p className="text-center text-brand-text-secondary mb-4">Stay on top of your crypto and fiat finances with our simple tracker tool.</p>
-                                <Button onClick={() => onNavigatePage('app')}>Launch Tracker</Button>
+                                <a
+                                  href="https://fintrack-ai-ruddy.vercel.app/#/dashboard"
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-block font-bold py-2 px-6 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-surface bg-brand-primary hover:bg-sky-400 text-brand-bg focus:ring-brand-primary btn-glow-blue"
+                                >
+                                  Launch Tracker
+                                </a>
                             </div>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
@@ -179,29 +196,11 @@ const ResourcesPage: React.FC<ResourcesPageProps> = ({ onStart, onNavigatePage, 
             </main>
 
             {/* Footer */}
-            <footer className="py-12 bg-brand-surface border-t border-gray-700/50">
-                <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div className="flex flex-col md:flex-row items-center md:items-start gap-8 lg:gap-16">
-                        <div className="flex flex-col items-center md:items-start">
-                            <p className="font-semibold text-white mb-4">Follow Us</p>
-                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-5">
-                                {socialLinks.map(({ href, label, Icon }) => ( <a key={label} href={href} target="_blank" rel="noopener noreferrer" className="text-brand-text-secondary hover:text-brand-primary transition-colors" aria-label={`Follow us on ${label}`}><Icon className="h-6 w-6" /></a> ))}
-                            </div>
-                        </div>
-                        <div className="flex flex-col items-center md:items-start">
-                             <p className="font-semibold text-white mb-4">Navigation</p>
-                             <nav className="flex flex-col items-center md:items-start gap-2 text-brand-text-secondary">
-                                <button onClick={() => onNavigatePage('intro')} className="hover:text-brand-primary transition-colors text-left">Home</button>
-                                <button onClick={() => onNavigatePage('about')} className="hover:text-brand-primary transition-colors text-left">About</button>
-                                <button onClick={() => onNavigatePage('resources')} className="hover:text-brand-primary transition-colors text-left">Resources</button>
-                                <button onClick={onStart} className="hover:text-brand-primary transition-colors text-left">Start Learning</button>
-                                <button onClick={onOpenBookingModal} className="hover:text-brand-primary transition-colors">Book a Call</button>
-                            </nav>
-                        </div>
-                    </div>
-                    <a href="https://www.cryptoax07.com" target="_blank" rel="noopener noreferrer" className="inline-block"><img src="https://static.wixstatic.com/media/4a78c1_0ce55f39403f46ccbe0ef5e7f6c799f3~mv2.png/v1/fill/w_958,h_360,al_c,lg_1,q_85,enc_avif,quality_auto/4a78c1_0ce55f39403f46ccbe0ef5e7f6c799f3~mv2.png" alt="CryptoAX07 Logo" className="h-28 w-auto" /></a>
-                </div>
-            </footer>
+            <Footer 
+                onStart={onStart}
+                onNavigatePage={onNavigatePage}
+                onOpenBookingModal={onOpenBookingModal}
+            />
         </div>
     );
 };
