@@ -393,13 +393,13 @@ const App: React.FC = () => {
           aria-labelledby="booking-modal-title"
         >
           <div 
-            className="bg-brand-surface rounded-2xl shadow-2xl border border-gray-700/50 w-[95vw] max-w-4xl h-[90vh] relative animate-pop-in" 
+            className="bg-slate-100 rounded-2xl shadow-2xl border border-gray-300 w-[95vw] max-w-4xl h-[90vh] relative animate-pop-in" 
             onClick={e => e.stopPropagation()}
           >
             <h2 id="booking-modal-title" className="sr-only">Book an Appointment</h2>
             <button 
               onClick={closeBookingModal} 
-              className="absolute top-3 right-3 text-brand-text-secondary hover:text-white z-10 p-1 rounded-full bg-brand-surface/50 hover:bg-gray-700"
+              className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 z-10 p-1 rounded-full bg-white/50 hover:bg-gray-200 transition-colors"
               aria-label="Close booking modal"
             >
               <XMarkIcon className="h-6 w-6" />

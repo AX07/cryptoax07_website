@@ -1,4 +1,4 @@
-import { BanknotesIcon, CreditCardIcon, PuzzlePieceIcon, CurrencyDollarIcon, CubeIcon, NewspaperIcon, Squares2X2Icon, type IconProps } from '../components/icons/Icons';
+import { BanknotesIcon, CreditCardIcon, PuzzlePieceIcon, CurrencyDollarIcon, CubeIcon, NewspaperIcon, Squares2X2Icon, type IconProps, VideoCameraIcon } from '../components/icons/Icons';
 
 export interface ResourceItem {
   name: string;
@@ -78,6 +78,38 @@ export const RESOURCES_DATA: ResourceCategory[] = [
             { name: 'Solana', logoUrl: 'https://cdn.simpleicons.org/solana/9945FF', description: 'A high-performance blockchain known for its fast transaction speeds and low fees.', link: 'https://solana.com/' },
             { name: 'Base', logoUrl: 'https://imgs.search.brave.com/7auI0oW9U6yPCC957oqSM34jgbbStDWZMc8wM-iTixI/rs:fit:500:0:1:0/g:ce/aHR0cHM6Ly9hbHRj/b2luc2JveC5jb20v/d3AtY29udGVudC91/cGxvYWRzLzIwMjMv/MDIvYmFzZS1sb2dv/LWluLWJsdWUtMzAw/eDMwMC53ZWJw', description: 'A Layer 2 scaling solution for Ethereum, incubated by Coinbase for faster, cheaper transactions.', link: 'https://www.base.org/' },
             { name: 'BNB Chain', logoUrl: 'https://cdn.simpleicons.org/binance/FCD535', description: 'A blockchain ecosystem developed by Binance, offering high-speed and low-cost dApps.', link: 'https://www.bnbchain.org/' },
+        ],
+    },
+    {
+        id: 'video-tutorials',
+        title: 'Video Tutorials',
+        headline: 'Learn from Top Crypto YouTubers',
+        Icon: VideoCameraIcon,
+        items: [
+            { 
+                name: 'Whiteboard Crypto', 
+                logoUrl: 'https://yt3.googleusercontent.com/ytc/AIdro_msaY2j3m2y2gL9-5ESe232A2gQh_528cbYkGkPZA=s176-c-k-c0x00ffffff-no-rj', 
+                description: 'Explains complex crypto topics with simple animated videos and whiteboard explainers.', 
+                link: 'https://www.youtube.com/@WhiteboardCrypto' 
+            },
+            { 
+                name: 'Ivan on Tech', 
+                logoUrl: 'https://yt3.googleusercontent.com/ytc/AIdro_n-DR-f62wPL2k8-8aCMi-pE-0-a4d3D-tYyQ_Q=s176-c-k-c0x00ffffff-no-rj', 
+                description: 'Covers daily crypto news, interviews, and deep dives into blockchain programming.', 
+                link: 'https://www.youtube.com/@IvanOnTech' 
+            },
+            { 
+                name: 'Bob Loukas', 
+                logoUrl: 'https://yt3.googleusercontent.com/ytc/AIdro_lU7xW7wI2wV9e2k-R-M-i1h9d-e7s_f-q8Q=s176-c-k-c0x00ffffff-no-rj', 
+                description: 'Known for his work on Bitcoin\'s 4-year cycle and long-term market analysis.', 
+                link: 'https://www.youtube.com/@BobLoukas' 
+            },
+            { 
+                name: 'Big Cheds', 
+                logoUrl: 'https://yt3.googleusercontent.com/ytc/AIdro_k3p4c2HwV9w_jT2f_g1z1bHj_Y9h7tJg6o8Q=s176-c-k-c0x00ffffff-no-rj', 
+                description: 'Focuses on technical analysis and trading strategies. Good for learning charting.', 
+                link: 'https://www.youtube.com/@BigCheds' 
+            }
         ],
     },
      {

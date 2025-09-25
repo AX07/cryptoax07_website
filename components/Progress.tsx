@@ -3,6 +3,7 @@ import type { UserProgress } from '../types';
 import Card from './ui/Card';
 import { CATEGORIES } from '../constants';
 import { ShieldCheckIcon } from './icons/Icons';
+import ContributionCalendar from './ui/ContributionCalendar';
 
 interface ProgressProps {
   userProgress: UserProgress;
@@ -28,6 +29,10 @@ const Progress: React.FC<ProgressProps> = ({ userProgress, onBack }) => {
         <p className="text-sm font-semibold text-yellow-400 uppercase">Total Experience</p>
         <p className="text-6xl font-bold text-white">{userProgress.xp} <span className="text-4xl text-yellow-400">XP</span></p>
       </Card>
+
+      <div className="mb-8">
+        <ContributionCalendar completedSimulations={userProgress.completedSimulations} />
+      </div>
 
       {/* Badges Section */}
       <div className="mb-8">

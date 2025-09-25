@@ -59,7 +59,7 @@ const Footer: React.FC<FooterProps> = ({ onStart, onNavigatePage, onOpenBookingM
           </a>
           <div className="max-w-md">
               <p className="text-brand-text-secondary mb-4 text-sm">
-              Join a seasoned expert with over seven years of experience in the cryptocurrency and blockchain space and learn how take advantage of this technology that is revolutionizing the world.
+              Join seasoned experts with over seven years of experience in the cryptocurrency and blockchain space and learn how take advantage of this technology that is revolutionizing the world.
               </p>
               <p className="text-xs text-gray-500">
               None of the content can be considered financial advice, it is intended for educational purposes only.

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Button from './ui/Button';
 import Card from './ui/Card';
-import { MenuIcon, XMarkIcon, CreditCardIcon, VideoCameraIcon, ChatBubbleBottomCenterTextIcon, PhoneIcon, CheckCircleIcon } from './icons/Icons';
+import { MenuIcon, XMarkIcon, CreditCardIcon, VideoCameraIcon, ChatBubbleBottomCenterTextIcon, PhoneIcon, CheckCircleIcon, BanknotesIcon, ShieldCheckIcon, LightBulbIcon } from './icons/Icons';
 import { Page } from '../types';
 import Footer from './Footer';
 
@@ -66,11 +66,26 @@ const coaches = [
 const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBookingModal }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const teamRef = useRef<HTMLDivElement>(null);
     
     const [heroRef, heroIsVisible] = useScrollAnimation<HTMLElement>();
     const [teamSectionRef, teamSectionIsVisible] = useScrollAnimation<HTMLElement>();
+    
+    const [coachCard1Ref, coachCard1IsVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.2 });
+    const [coachCard2Ref, coachCard2IsVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.2 });
+    const [coachCard3Ref, coachCard3IsVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.2 });
+    const [coachCard4Ref, coachCard4IsVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.2 });
+    const coachRefs = [coachCard1Ref, coachCard2Ref, coachCard3Ref, coachCard4Ref];
+    
+    const [whySectionRef, whySectionIsVisible] = useScrollAnimation<HTMLElement>();
+    const [whyPoint1Ref, whyPoint1IsVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.4 });
+    const [whyPoint2Ref, whyPoint2IsVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.4 });
+    const [whyPoint3Ref, whyPoint3IsVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.4 });
+
     const [howItWorksRef, howItWorksIsVisible] = useScrollAnimation<HTMLElement>();
+    const [howCard1Ref, howCard1IsVisible] = useScrollAnimation<HTMLDivElement>();
+    const [howCard2Ref, howCard2IsVisible] = useScrollAnimation<HTMLDivElement>();
+    const [howCard3Ref, howCard3IsVisible] = useScrollAnimation<HTMLDivElement>();
+
     const [finalCtaRef, finalCtaIsVisible] = useScrollAnimation<HTMLElement>();
 
 
@@ -127,44 +142,100 @@ const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBo
 
             <main>
                 {/* Hero Section */}
-                <section ref={heroRef} className={`py-16 md:py-24 text-center transition-opacity duration-700 ${heroIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
+                <section ref={heroRef} className={`py-20 md:py-32 text-center transition-all duration-700 ${heroIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
                     <div className="container mx-auto px-4">
-                        <h1 className="text-4xl md:text-6xl font-bold text-white max-w-4xl mx-auto leading-tight">Meet Your Crypto Coaches</h1>
-                        <p className="mt-4 text-lg text-brand-text-secondary max-w-3xl mx-auto">
+                        <h1 className={`text-4xl md:text-6xl font-bold text-white max-w-4xl mx-auto leading-tight transition-all duration-700 delay-200 ${heroIsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`}>
+                             Learn from Experts Who Live and Breathe Crypto
+                        </h1>
+                        <p className={`mt-6 text-lg text-brand-text-secondary max-w-3xl mx-auto transition-all duration-700 delay-300 ${heroIsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`}>
                             Our team combines years of technical expertise, hands-on experience, and a passion for education to guide you through the world of cryptocurrency safely and confidently.
                         </p>
+                        <div className={`mt-8 transition-all duration-700 delay-500 ${heroIsVisible ? 'animate-pop-in' : 'opacity-0'}`}>
+                            <Button onClick={() => document.getElementById('team-section')?.scrollIntoView({ behavior: 'smooth' })} className="text-lg py-3 px-8">
+                                Meet the Team
+                            </Button>
+                        </div>
                     </div>
                 </section>
 
                 {/* Team Section */}
-                <section ref={teamSectionRef} id="team-section" className={`py-16 md:py-24 bg-brand-surface transition-opacity duration-1000 ${teamSectionIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
+                <section ref={teamSectionRef} id="team-section" className={`py-16 md:py-24 bg-brand-surface`}>
                     <div className="container mx-auto px-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        <h2 className={`text-3xl md:text-5xl font-bold text-white text-center mb-12 transition-all duration-700 ${teamSectionIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
+                           Meet Your Crypto Coaches
+                        </h2>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                             {coaches.map((coach, index) => (
-                                <Card key={index} className="p-6 text-center bg-brand-bg/50 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
-                                    <img src={coach.imageUrl} alt={`Photo of ${coach.name}`} className="h-32 w-32 rounded-full object-cover mx-auto mb-4 border-4 border-brand-surface"/>
-                                    <h3 className="text-xl font-bold text-white mb-2">{coach.name}</h3>
-                                    <p className="text-sm text-brand-text-secondary">{coach.bio}</p>
-                                </Card>
+                                <div key={index} ref={coachRefs[index]} className={`transition-all duration-500 ${coachRefs[index] && coachRefs[index][1] ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`} style={{transitionDelay: `${index * 100}ms`}}>
+                                    <Card className="p-0 text-center bg-brand-bg/50 group overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/10 hover:-translate-y-2">
+                                        <div className="relative">
+                                            <img src={coach.imageUrl} alt={`Photo of ${coach.name}`} className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"/>
+                                            <div className="absolute inset-0 bg-gradient-to-t from-brand-bg via-brand-bg/70 to-transparent"></div>
+                                            <h3 className="absolute bottom-4 left-4 text-2xl font-bold text-white">{coach.name}</h3>
+                                        </div>
+                                        <div className="p-6 flex-grow">
+                                            <p className="text-sm text-brand-text-secondary text-left">{coach.bio}</p>
+                                        </div>
+                                    </Card>
+                                </div>
                             ))}
                         </div>
                     </div>
                 </section>
                 
+                {/* Why We Do It Section */}
+                <section ref={whySectionRef} className={`py-16 md:py-24 transition-opacity duration-1000 ${whySectionIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
+                    <div className="container mx-auto px-4 text-center">
+                        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Why We Do It</h2>
+                        <p className="max-w-3xl mx-auto text-lg text-brand-text-secondary mb-12">
+                            CryptoAX07.com was created with a simple mission: to make crypto accessible, safe, and practical for everyone. We believe blockchain technology is as transformative as the internet—and learning how to use it should not feel overwhelming.
+                        </p>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                            <div ref={whyPoint1Ref} className={`transition-all duration-700 ${whyPoint1IsVisible ? 'animate-slide-in-left' : 'opacity-0 -translate-x-8'}`}>
+                                <Card className="p-8 h-full bg-brand-surface/50">
+                                    <BanknotesIcon className="h-10 w-10 text-brand-secondary mx-auto mb-4" />
+                                    <h3 className="text-xl font-bold text-white mb-2">Promote Financial Freedom</h3>
+                                    <p className="text-brand-text-secondary">We do it because traditional banking is changing, and crypto gives people control over their own financial future.</p>
+                                </Card>
+                            </div>
+                             <div ref={whyPoint2Ref} className={`transition-all duration-700 delay-200 ${whyPoint2IsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`}>
+                                <Card className="p-8 h-full bg-brand-surface/50">
+                                    <ShieldCheckIcon className="h-10 w-10 text-brand-secondary mx-auto mb-4" />
+                                    <h3 className="text-xl font-bold text-white mb-2">Remove Fear & Barriers</h3>
+                                    <p className="text-brand-text-secondary">We do it because beginners often get stuck at their first wallet or exchange account—and we want to remove that fear.</p>
+                                </Card>
+                            </div>
+                             <div ref={whyPoint3Ref} className={`transition-all duration-700 ${whyPoint3IsVisible ? 'animate-slide-in-right' : 'opacity-0 translate-x-8'}`}>
+                                 <Card className="p-8 h-full bg-brand-surface/50">
+                                    <LightBulbIcon className="h-10 w-10 text-brand-secondary mx-auto mb-4" />
+                                    <h3 className="text-xl font-bold text-white mb-2">Empower Through Understanding</h3>
+                                    <p className="text-brand-text-secondary">We do it because tailored education ensures you don’t just follow instructions, but truly understand how to manage and grow your digital assets.</p>
+                                </Card>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
                 {/* How Coaching Works */}
-                <section ref={howItWorksRef} className={`py-16 md:py-24 transition-opacity duration-1000 ${howItWorksIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
+                <section ref={howItWorksRef} className={`py-16 md:py-24 bg-brand-surface transition-opacity duration-1000 ${howItWorksIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
                      <div className="container mx-auto px-4 text-center">
                         <h2 className="text-3xl md:text-4xl font-bold text-white mb-12">How Coaching Works</h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                            <Card className="p-8 bg-brand-surface"><CreditCardIcon className="h-10 w-10 text-brand-primary mx-auto mb-4"/> <h3 className="text-xl font-bold text-white mb-2">Payment in Crypto</h3><p className="text-sm text-brand-text-secondary">All sessions are paid securely in cryptocurrency. We’ll guide you through the process if it’s your first time, making sure payments are simple and stress-free.</p></Card>
-                            <Card className="p-8 bg-brand-surface"><VideoCameraIcon className="h-10 w-10 text-brand-primary mx-auto mb-4"/> <h3 className="text-xl font-bold text-white mb-2">Session Recordings</h3><p className="text-sm text-brand-text-secondary">Every session is recorded so you can revisit the lessons anytime, ensuring you never miss a detail.</p></Card>
-                            <Card className="p-8 bg-brand-surface"><ChatBubbleBottomCenterTextIcon className="h-10 w-10 text-brand-primary mx-auto mb-4"/> <h3 className="text-xl font-bold text-white mb-2">Ongoing Support</h3><p className="text-sm text-brand-text-secondary">Our tailored coaching means you don’t have to “get it all right the first time.” If you’re not confident after a session, you’ll have continued access to your coach for questions and guidance.</p></Card>
+                            <div ref={howCard1Ref} className={`transition-all duration-500 ${howCard1IsVisible ? 'animate-pop-in' : 'opacity-0'}`}>
+                                <Card className="p-8 h-full bg-brand-bg/50 transition-all duration-300 hover:border-brand-primary border border-transparent hover:shadow-lg hover:shadow-brand-primary/20"><CreditCardIcon className="h-10 w-10 text-brand-primary mx-auto mb-4"/> <h3 className="text-xl font-bold text-white mb-2">Payment in Crypto</h3><p className="text-sm text-brand-text-secondary">All sessions are paid securely in cryptocurrency. We’ll guide you through the process if it’s your first time, making sure payments are simple and stress-free.</p></Card>
+                            </div>
+                            <div ref={howCard2Ref} className={`transition-all duration-500 delay-200 ${howCard2IsVisible ? 'animate-pop-in' : 'opacity-0'}`}>
+                                <Card className="p-8 h-full bg-brand-bg/50 transition-all duration-300 hover:border-brand-primary border border-transparent hover:shadow-lg hover:shadow-brand-primary/20"><VideoCameraIcon className="h-10 w-10 text-brand-primary mx-auto mb-4"/> <h3 className="text-xl font-bold text-white mb-2">Session Recordings</h3><p className="text-sm text-brand-text-secondary">Every session is recorded so you can revisit the lessons anytime, ensuring you never miss a detail.</p></Card>
+                            </div>
+                             <div ref={howCard3Ref} className={`transition-all duration-500 delay-400 ${howCard3IsVisible ? 'animate-pop-in' : 'opacity-0'}`}>
+                                <Card className="p-8 h-full bg-brand-bg/50 transition-all duration-300 hover:border-brand-primary border border-transparent hover:shadow-lg hover:shadow-brand-primary/20"><ChatBubbleBottomCenterTextIcon className="h-10 w-10 text-brand-primary mx-auto mb-4"/> <h3 className="text-xl font-bold text-white mb-2">Ongoing Support</h3><p className="text-sm text-brand-text-secondary">Our tailored coaching means you don’t have to “get it all right the first time.” If you’re not confident after a session, you’ll have continued access to your coach for questions and guidance.</p></Card>
+                            </div>
                         </div>
                     </div>
                 </section>
                 
                 {/* Final CTA */}
-                <section ref={finalCtaRef} className={`py-16 md:py-24 bg-brand-surface/50 transition-opacity duration-1000 ${finalCtaIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
+                <section ref={finalCtaRef} className={`py-16 md:py-24 transition-opacity duration-1000 ${finalCtaIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
                     <div className="container mx-auto px-4 text-center">
                         <h2 className="text-3xl md:text-4xl font-bold text-white">Your Crypto Journey Starts Here</h2>
                         <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
