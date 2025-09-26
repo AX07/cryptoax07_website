@@ -75,6 +75,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBo
     const [coachCard3Ref, coachCard3IsVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.2 });
     const [coachCard4Ref, coachCard4IsVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.2 });
     const coachRefs = [coachCard1Ref, coachCard2Ref, coachCard3Ref, coachCard4Ref];
+    const coachVisibility = [coachCard1IsVisible, coachCard2IsVisible, coachCard3IsVisible, coachCard4IsVisible];
     
     const [whySectionRef, whySectionIsVisible] = useScrollAnimation<HTMLElement>();
     const [whyPoint1Ref, whyPoint1IsVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.4 });
@@ -166,16 +167,15 @@ const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBo
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                             {coaches.map((coach, index) => (
-                                <div key={index} ref={coachRefs[index]} className={`transition-all duration-500 ${coachRefs[index] && coachRefs[index][1] ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`} style={{transitionDelay: `${index * 100}ms`}}>
-                                    <Card className="p-0 text-center bg-brand-bg/50 group overflow-hidden h-full flex flex-col transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/10 hover:-translate-y-2">
-                                        <div className="relative">
-                                            <img src={coach.imageUrl} alt={`Photo of ${coach.name}`} className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"/>
-                                            <div className="absolute inset-0 bg-gradient-to-t from-brand-bg via-brand-bg/70 to-transparent"></div>
-                                            <h3 className="absolute bottom-4 left-4 text-2xl font-bold text-white">{coach.name}</h3>
-                                        </div>
-                                        <div className="p-6 flex-grow">
-                                            <p className="text-sm text-brand-text-secondary text-left">{coach.bio}</p>
-                                        </div>
+                                <div key={index} ref={coachRefs[index]} className={`transition-all duration-500 ${coachVisibility[index] ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`} style={{transitionDelay: `${index * 100}ms`}}>
+                                    <Card className="p-6 text-center bg-brand-bg/50 h-full flex flex-col items-center transition-all duration-300 hover:shadow-2xl hover:shadow-brand-primary/10 hover:-translate-y-2 group">
+                                        <img 
+                                            src={coach.imageUrl} 
+                                            alt={`Photo of ${coach.name}`} 
+                                            className="w-32 h-32 object-cover rounded-full mb-4 border-4 border-brand-surface shadow-lg transition-transform duration-300 group-hover:scale-105 group-hover:border-brand-primary/50"
+                                        />
+                                        <h3 className="text-xl font-bold text-white mb-2">{coach.name}</h3>
+                                        <p className="text-sm text-brand-text-secondary text-center flex-grow">{coach.bio}</p>
                                     </Card>
                                 </div>
                             ))}
