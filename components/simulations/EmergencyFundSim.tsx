@@ -3,38 +3,40 @@ import Card from '../ui/Card';
 import Button from '../ui/Button';
 import Quiz from '../ui/Quiz';
 import type { QuizQuestion } from '../../types';
-
-const quizQuestions: QuizQuestion[] = [
-    {
-        question: "What is the primary purpose of an emergency fund?",
-        options: [
-            { text: "To invest in high-risk crypto assets.", isCorrect: false },
-            { text: "To cover unexpected expenses without going into debt.", isCorrect: true },
-        ],
-        explanation: "An emergency fund is a safety net for life's unexpected events, like a job loss or medical emergency, ensuring you don't have to sell investments or take on high-interest debt."
-    },
-    {
-        question: "Why are stablecoins often used for building a crypto-based emergency fund?",
-        options: [
-            { text: "Because their value is designed to be volatile for high returns.", isCorrect: false },
-            { text: "Because they are pegged to a stable asset like the US Dollar, minimizing price risk.", isCorrect: true },
-        ],
-        explanation: "Stablecoins aim to maintain a stable value, which is crucial for an emergency fund that needs to be reliable and not subject to market swings."
-    },
-    {
-        question: "What is an advantage of holding your emergency fund in a DeFi lending protocol compared to a traditional bank?",
-        options: [
-            { text: "Potentially higher interest rates (APY).", isCorrect: true },
-            { text: "It is insured by the government.", isCorrect: false },
-        ],
-        explanation: "DeFi protocols can often offer higher yields than traditional savings accounts. However, it's important to understand the associated risks, as they are not government-insured."
-    }
-];
+import { useLanguage } from '../../hooks/useLanguage';
 
 const EmergencyFundSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+    const { t } = useLanguage();
     const [monthlyExpenses, setMonthlyExpenses] = useState(2000);
     const [showQuiz, setShowQuiz] = useState(false);
     
+    const quizQuestions: QuizQuestion[] = [
+        {
+            question: "What is the primary purpose of an emergency fund?",
+            options: [
+                { text: "To invest in high-risk crypto assets.", isCorrect: false },
+                { text: "To cover unexpected expenses without going into debt.", isCorrect: true },
+            ],
+            explanation: "An emergency fund is a safety net for life's unexpected events, like a job loss or medical emergency, ensuring you don't have to sell investments or take on high-interest debt."
+        },
+        {
+            question: "Why are stablecoins often used for building a crypto-based emergency fund?",
+            options: [
+                { text: "Because their value is designed to be volatile for high returns.", isCorrect: false },
+                { text: "Because they are pegged to a stable asset like the US Dollar, minimizing price risk.", isCorrect: true },
+            ],
+            explanation: "Stablecoins aim to maintain a stable value, which is crucial for an emergency fund that needs to be reliable and not subject to market swings."
+        },
+        {
+            question: "What is an advantage of holding your emergency fund in a DeFi lending protocol compared to a traditional bank?",
+            options: [
+                { text: "Potentially higher interest rates (APY).", isCorrect: true },
+                { text: "It is insured by the government.", isCorrect: false },
+            ],
+            explanation: "DeFi protocols can often offer higher yields than traditional savings accounts. However, it's important to understand the associated risks, as they are not government-insured."
+        }
+    ];
+
     const targetFund = monthlyExpenses * 6;
     const traditionalApy = 0.5;
     const defiApy = 5.0;
@@ -44,17 +46,17 @@ const EmergencyFundSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) 
 
     return (
         <Card className="max-w-4xl mx-auto p-6 md:p-8">
-            <h2 className="text-3xl font-bold text-center mb-2 text-white">Building a Crypto Emergency Fund</h2>
+            <h2 className="text-3xl font-bold text-center mb-2 text-white">{t('simulations.emergencyFund.title')}</h2>
             <p className="text-brand-text-secondary text-center mb-8 max-w-2xl mx-auto">
-                An emergency fund is your financial safety net. A common rule of thumb is to save 3-6 months' worth of living expenses. In crypto, you can build this fund using stablecoins and even earn a competitive yield on it.
+                {t('simulations.emergencyFund.description')}
             </p>
 
             <div className="grid lg:grid-cols-2 gap-8 items-center">
                 {/* Calculator */}
                 <Card className="p-6 bg-brand-bg/50">
-                    <h3 className="text-xl font-semibold text-white mb-4">Calculate Your Goal</h3>
+                    <h3 className="text-xl font-semibold text-white mb-4">{t('simulations.emergencyFund.calculatorTitle')}</h3>
                     <div className="mb-4">
-                        <label className="block font-semibold mb-2">Your Monthly Expenses:</label>
+                        <label className="block font-semibold mb-2">{t('simulations.emergencyFund.monthlyExpenses')}</label>
                         <div className="flex items-center">
                             <span className="text-2xl mr-2">$</span>
                             <input
@@ -66,25 +68,25 @@ const EmergencyFundSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) 
                         </div>
                     </div>
                     <div className="text-center bg-brand-surface p-4 rounded-lg">
-                        <p className="text-brand-text-secondary">Your 6-Month Emergency Fund Goal:</p>
+                        <p className="text-brand-text-secondary">{t('simulations.emergencyFund.goal')}</p>
                         <p className="text-4xl font-bold text-brand-primary">${targetFund.toLocaleString()}</p>
                     </div>
                 </Card>
 
                 {/* Comparison */}
                 <Card className="p-6 bg-brand-bg/50">
-                    <h3 className="text-xl font-semibold text-white mb-4">Put Your Fund to Work</h3>
-                    <p className="text-sm text-brand-text-secondary mb-4">By depositing your stablecoin fund into a DeFi lending protocol, you can earn interest.</p>
+                    <h3 className="text-xl font-semibold text-white mb-4">{t('simulations.emergencyFund.comparisonTitle')}</h3>
+                    <p className="text-sm text-brand-text-secondary mb-4">{t('simulations.emergencyFund.comparisonDesc')}</p>
                     <div className="space-y-4">
                         <div className="p-3 bg-brand-surface rounded-lg">
-                            <p className="font-bold text-white">Traditional Savings Account</p>
-                            <p className="text-sm text-brand-text-secondary">APY: {traditionalApy}%</p>
-                            <p className="text-lg font-bold text-red-400">Annual Earnings: ${traditionalEarnings.toFixed(2)}</p>
+                            <p className="font-bold text-white">{t('simulations.emergencyFund.traditionalBank')}</p>
+                            <p className="text-sm text-brand-text-secondary">{t('simulations.emergencyFund.apy')} {traditionalApy}%</p>
+                            <p className="text-lg font-bold text-red-400">{t('simulations.emergencyFund.annualEarnings')}: ${traditionalEarnings.toFixed(2)}</p>
                         </div>
                         <div className="p-3 bg-brand-surface rounded-lg border-2 border-brand-secondary">
-                            <p className="font-bold text-white">DeFi Lending Protocol (with pUSD)</p>
-                            <p className="text-sm text-brand-text-secondary">APY: {defiApy}%</p>
-                            <p className="text-lg font-bold text-brand-secondary">Annual Earnings: ${defiEarnings.toFixed(2)}</p>
+                            <p className="font-bold text-white">{t('simulations.emergencyFund.defiProtocol')}</p>
+                            <p className="text-sm text-brand-text-secondary">{t('simulations.emergencyFund.apy')} {defiApy}%</p>
+                            <p className="text-lg font-bold text-brand-secondary">{t('simulations.emergencyFund.annualEarnings')}: ${defiEarnings.toFixed(2)}</p>
                         </div>
                     </div>
                 </Card>
@@ -93,7 +95,7 @@ const EmergencyFundSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) 
             {!showQuiz && (
                 <div className="text-center mt-8 border-t border-gray-700 pt-6">
                     <Button onClick={() => setShowQuiz(true)} variant="secondary">
-                        I understand, take the quiz
+                        {t('simulations.emergencyFund.quizButton')}
                     </Button>
                 </div>
             )}

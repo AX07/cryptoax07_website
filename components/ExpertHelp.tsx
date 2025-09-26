@@ -1,12 +1,14 @@
-
 import React from 'react';
 import Card from './ui/Card';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface ExpertHelpProps {
   onBack: () => void;
 }
 
 const ExpertHelp: React.FC<ExpertHelpProps> = ({ onBack }) => {
+  const { t } = useLanguage();
+
   return (
     <div className="animate-fade-in max-w-4xl mx-auto">
       <div className="flex items-center mb-8">
@@ -14,30 +16,30 @@ const ExpertHelp: React.FC<ExpertHelpProps> = ({ onBack }) => {
           <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" /></svg>
         </button>
         <div>
-          <h2 className="text-3xl md:text-4xl font-bold text-white">Expert Crypto Guidance</h2>
-          <p className="text-brand-text-secondary">Navigate the world of crypto with confidence. Our experts are here to help.</p>
+          <h2 className="text-3xl md:text-4xl font-bold text-white">{t('expertHelp.title')}</h2>
+          <p className="text-brand-text-secondary">{t('expertHelp.subtitle')}</p>
         </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
         <Card className="p-6 text-center">
-            <h3 className="text-xl font-bold text-brand-primary mb-2">1-on-1 Coaching</h3>
-            <p className="text-brand-text-secondary">Personalized sessions to guide you through any crypto topic, from wallet setup to advanced DeFi strategies.</p>
+            <h3 className="text-xl font-bold text-brand-primary mb-2">{t('expertHelp.coachingTitle')}</h3>
+            <p className="text-brand-text-secondary">{t('expertHelp.coachingDesc')}</p>
         </Card>
         <Card className="p-6 text-center">
-            <h3 className="text-xl font-bold text-brand-primary mb-2">Portfolio Review</h3>
-            <p className="text-brand-text-secondary">Get a professional analysis of your crypto holdings and strategies for diversification and risk management.</p>
+            <h3 className="text-xl font-bold text-brand-primary mb-2">{t('expertHelp.portfolioTitle')}</h3>
+            <p className="text-brand-text-secondary">{t('expertHelp.portfolioDesc')}</p>
         </Card>
         <Card className="p-6 text-center">
-            <h3 className="text-xl font-bold text-brand-primary mb-2">Security Audit</h3>
-            <p className="text-brand-text-secondary">Our experts will review your security practices to ensure your digital assets are protected from threats.</p>
+            <h3 className="text-xl font-bold text-brand-primary mb-2">{t('expertHelp.securityTitle')}</h3>
+            <p className="text-brand-text-secondary">{t('expertHelp.securityDesc')}</p>
         </Card>
       </div>
       
       <Card className="p-8 text-center">
-        <h3 className="text-2xl font-bold text-white mb-4">Ready for the Next Step?</h3>
+        <h3 className="text-2xl font-bold text-white mb-4">{t('expertHelp.ctaTitle')}</h3>
         <p className="text-brand-text-secondary mb-6 max-w-md mx-auto">
-          Book a free discovery call to discuss your learning goals and see how our tailored coaching can help you succeed.
+          {t('expertHelp.ctaDesc')}
         </p>
         <a 
           href="https://www.cryptoax07.com/challenges" 
@@ -45,7 +47,7 @@ const ExpertHelp: React.FC<ExpertHelpProps> = ({ onBack }) => {
           rel="noopener noreferrer"
           className="inline-block bg-brand-secondary hover:bg-green-400 text-brand-bg font-bold py-3 px-8 rounded-lg transition-colors duration-200 text-lg"
         >
-          Get Tailored Education
+          {t('expertHelp.ctaButton')}
         </a>
       </Card>
     </div>

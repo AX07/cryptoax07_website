@@ -4,6 +4,7 @@ import Card from './ui/Card';
 import { BookOpenIcon, ChartBarSquareIcon, CheckCircleIcon, CpuChipIcon, CubeIcon, DevicePhoneMobileIcon, MenuIcon, PhoneIcon, PuzzlePieceIcon, RocketLaunchIcon, ShieldCheckIcon, StarIcon, XCircleIcon, XMarkIcon } from './icons/Icons';
 import { Page } from '../types';
 import Footer from './Footer';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface IntroPageProps {
   onStart: () => void;
@@ -349,6 +350,7 @@ const DcaCalculatorEmbed: React.FC = () => {
 const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBookingModal }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { language, toggleLanguage, t } = useLanguage();
 
     useEffect(() => {
       const handleScroll = () => {
@@ -404,9 +406,9 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
           <div className="flex items-center gap-4">
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-4">
-              <Button onClick={onOpenBookingModal} className="transition-transform duration-200 hover:scale-105 btn-glow-blue btn-blue-darken">Book a Call</Button>
+              <Button onClick={onOpenBookingModal} className="transition-transform duration-200 hover:scale-105 btn-glow-blue btn-blue-darken">{t('bookACall')}</Button>
               <button onClick={onStart} className="font-bold py-2 px-4 rounded-lg transition-all duration-200 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">
-                  Start Learning
+                  {t('startLearning')}
               </button>
             </div>
             {/* Menu Button */}
@@ -422,11 +424,29 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
            <div className="md:absolute md:top-full md:right-0 md:container md:mx-auto md:px-4 md:flex md:justify-end">
               <div className="animate-fade-in bg-brand-surface/95 backdrop-blur-sm border-t md:border border-gray-700/50 md:mt-2 md:w-64 md:rounded-lg shadow-lg">
                   <nav className="container mx-auto px-4 py-4 flex flex-col items-center md:items-start md:p-4 gap-4">
-                      <button onClick={() => { onNavigatePage('intro'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Home</button>
-                      <button onClick={() => { onNavigatePage('about'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">About</button>
-                      <button onClick={() => { onNavigatePage('resources'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Resources</button>
-                      <button onClick={() => { onStart(); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Start Learning</button>
-                      <button onClick={() => { onOpenBookingModal(); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Book a Call</button>
+                      <button onClick={() => { onNavigatePage('intro'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('home')}</button>
+                      <button onClick={() => { onNavigatePage('about'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('about')}</button>
+                      <button onClick={() => { onNavigatePage('resources'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('resources')}</button>
+                      <button onClick={() => { onStart(); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('startLearning')}</button>
+                      <button onClick={() => { onOpenBookingModal(); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('bookACall')}</button>
+                      <div className="w-full pt-4 border-t border-gray-700/50 mt-2">
+                          <div className="flex items-center gap-1 p-1 rounded-lg bg-brand-bg justify-center max-w-[120px] mx-auto md:mx-0" role="group" aria-label="Language selection">
+                              <button
+                                  className={`flex-1 text-center px-3 py-1 text-sm font-bold rounded-md transition-colors ${language === 'en' ? 'bg-brand-primary text-brand-bg' : 'text-brand-text-secondary hover:bg-brand-surface'}`}
+                                  onClick={() => { if (language !== 'en') toggleLanguage(); }}
+                                  aria-pressed={language === 'en'}
+                              >
+                                  EN
+                              </button>
+                              <button
+                                  className={`flex-1 text-center px-3 py-1 text-sm font-bold rounded-md transition-colors ${language === 'es' ? 'bg-brand-primary text-brand-bg' : 'text-brand-text-secondary hover:bg-brand-surface'}`}
+                                  onClick={() => { if (language !== 'es') toggleLanguage(); }}
+                                  aria-pressed={language === 'es'}
+                              >
+                                  ES
+                              </button>
+                          </div>
+                      </div>
                   </nav>
               </div>
             </div>
@@ -437,15 +457,15 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
         {/* Hero Section */}
         <section className="py-16 md:py-24 text-center">
           <div className="container mx-auto px-4">
-            <h1 className="text-4xl md:text-6xl font-bold text-white max-w-4xl mx-auto leading-tight">Tailored Crypto Education with an Expert by Your Side</h1>
+            <h1 className="text-4xl md:text-6xl font-bold text-white max-w-4xl mx-auto leading-tight">{t('introPage.heroTitle')}</h1>
             <p className="mt-4 text-lg text-brand-text-secondary max-w-2xl mx-auto">
-              We are determined to get you over the fear of using crypto and show you how it benefits you. Learn safely with interactive simulations and one-on-one coaching.
+              {t('introPage.heroSubtitle')}
             </p>
             <div ref={videoRef} className={`mt-12 max-w-4xl mx-auto transition-all duration-700 ${videoIsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`}>
               <div className="aspect-video rounded-xl shadow-lg overflow-hidden">
                 <iframe
                   className="w-full h-full"
-                  src="https://www.youtube.com/embed/kEpWnSzNAlY?autoplay=1&mute=1&loop=1&playlist=kEpWnSzNAlY&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1"
+                  src="https://www.youtube.com/embed/kEpWnSzNAlY?playlist=kEpWnSzNAlY&autoplay=1&mute=1&loop=1&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3"
                   title="CryptoAX07 Logo Reveal"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -456,11 +476,11 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
             <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
               <Button onClick={onOpenBookingModal} className="text-lg py-3 px-8 flex items-center gap-2 transition-transform duration-200 hover:scale-105 btn-glow-blue btn-blue-darken">
                   <PhoneIcon className="h-6 w-6"/>
-                  Book a Call with a Coach
+                  {t('introPage.bookCallCoach')}
               </Button>
               <button onClick={onStart} className="font-bold py-3 px-8 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-surface disabled:opacity-50 disabled:cursor-not-allowed text-lg flex items-center gap-2 bg-transparent border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">
                 <CheckCircleIcon className="h-6 w-6"/>
-                Start Learning with the App
+                {t('introPage.startApp')}
               </button>
             </div>
           </div>
@@ -469,27 +489,27 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
         {/* The Future of Banking Section */}
         <section ref={futureBankRef} className={`py-16 md:py-24 transition-opacity duration-1000 ${futureBankIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
             <div className="container mx-auto px-4 text-center">
-                <h2 className="text-3xl md:text-5xl font-bold text-white max-w-3xl mx-auto"><span className="text-gradient-orange animate-gradient-shift">“The Future of Banking Made Simple”</span></h2>
+                <h2 className="text-3xl md:text-5xl font-bold text-white max-w-3xl mx-auto"><span className="text-gradient-orange animate-gradient-shift">{t('introPage.futureBanking')}</span></h2>
                 <p className="mt-6 text-lg text-brand-text-secondary max-w-3xl mx-auto">
-                    Cryptocurrency is shaping the future of finance — from Bitcoin as digital gold to decentralized tools that replace traditional banks. But for many, it feels too complex to begin. thats where we step in. Whether you want to explore crypto through interactive simulations or prefer direct one-on-one guidance, we make your crypto journey seamless and stress-free.
+                    {t('introPage.futureBankingDesc')}
                 </p>
 
                 <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-                    <div ref={pain1Ref} className={`transition-all duration-500 ${pain1IsVisible ? 'animate-fade-in' : 'opacity-0'}`}><Card className="p-6 text-left flex items-start gap-4 bg-brand-surface hover:animate-shake"><XCircleIcon className="h-6 w-6 text-red-400 flex-shrink-0 mt-1"/><span>“I don’t understand how to set up a wallet safely.”</span></Card></div>
-                    <div ref={pain2Ref} className={`transition-all duration-500 ${pain2IsVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{transitionDelay: '150ms'}}><Card className="p-6 text-left flex items-start gap-4 bg-brand-surface hover:animate-shake"><XCircleIcon className="h-6 w-6 text-red-400 flex-shrink-0 mt-1"/><span>“It feels too risky to move my money into crypto.”</span></Card></div>
-                    <div ref={pain3Ref} className={`transition-all duration-500 ${pain3IsVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{transitionDelay: '300ms'}}><Card className="p-6 text-left flex items-start gap-4 bg-brand-surface hover:animate-shake"><XCircleIcon className="h-6 w-6 text-red-400 flex-shrink-0 mt-1"/><span>“I want to use crypto, but I don’t have the time to figure it all out myself.”</span></Card></div>
+                    <div ref={pain1Ref} className={`transition-all duration-500 ${pain1IsVisible ? 'animate-fade-in' : 'opacity-0'}`}><Card className="p-6 text-left flex items-start gap-4 bg-brand-surface hover:animate-shake"><XCircleIcon className="h-6 w-6 text-red-400 flex-shrink-0 mt-1"/><span>{t('introPage.painPoint1')}</span></Card></div>
+                    <div ref={pain2Ref} className={`transition-all duration-500 ${pain2IsVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{transitionDelay: '150ms'}}><Card className="p-6 text-left flex items-start gap-4 bg-brand-surface hover:animate-shake"><XCircleIcon className="h-6 w-6 text-red-400 flex-shrink-0 mt-1"/><span>{t('introPage.painPoint2')}</span></Card></div>
+                    <div ref={pain3Ref} className={`transition-all duration-500 ${pain3IsVisible ? 'animate-fade-in' : 'opacity-0'}`} style={{transitionDelay: '300ms'}}><Card className="p-6 text-left flex items-start gap-4 bg-brand-surface hover:animate-shake"><XCircleIcon className="h-6 w-6 text-red-400 flex-shrink-0 mt-1"/><span>{t('introPage.painPoint3')}</span></Card></div>
                 </div>
 
                 <div className="mt-12 max-w-3xl mx-auto text-left">
                     <p className="text-lg text-brand-text-secondary">
-                        👉 With tailored education and 1-to-1 guidance, we cover every aspect of your crypto journey:
+                        👉 {t('introPage.whatWeCover')}
                     </p>
                     <ul className="mt-6 space-y-4">
-                        <li className="flex items-start gap-3 group"><CheckCircleIcon className="h-6 w-6 text-gray-500 flex-shrink-0 mt-1 transition-all duration-300 group-hover:text-brand-secondary group-hover:scale-125" /><div><strong className="text-white">Personal Coaching:</strong> Step-by-step guidance through your crypto journey.</div></li>
-                        <li className="flex items-start gap-3 group"><CheckCircleIcon className="h-6 w-6 text-gray-500 flex-shrink-0 mt-1 transition-all duration-300 group-hover:text-brand-secondary group-hover:scale-125" /><div><strong className="text-white">Exchange Onboarding:</strong> Assistance with KYC and setting up accounts on major exchanges.</div></li>
-                        <li className="flex items-start gap-3 group"><CheckCircleIcon className="h-6 w-6 text-gray-500 flex-shrink-0 mt-1 transition-all duration-300 group-hover:text-brand-secondary group-hover:scale-125" /><div><strong className="text-white">Wallet Setup & Security:</strong> Help with secure wallet setup and seed phrase management.</div></li>
-                        <li className="flex items-start gap-3 group"><CheckCircleIcon className="h-6 w-6 text-gray-500 flex-shrink-0 mt-1 transition-all duration-300 group-hover:text-brand-secondary group-hover:scale-125" /><div><strong className="text-white">Financial Education:</strong> Insights on managing and growing your crypto investments.</div></li>
-                        <li className="flex items-start gap-3 group"><CheckCircleIcon className="h-6 w-6 text-gray-500 flex-shrink-0 mt-1 transition-all duration-300 group-hover:text-brand-secondary group-hover:scale-125" /><div><strong className="text-white">Decentralized Finance (DeFi):</strong> Explore top decentralized applications suited to your needs.</div></li>
+                        <li className="flex items-start gap-3 group"><CheckCircleIcon className="h-6 w-6 text-gray-500 flex-shrink-0 mt-1 transition-all duration-300 group-hover:text-brand-secondary group-hover:scale-125" /><div><strong className="text-white">{t('introPage.coverPoint1')}</strong> {t('introPage.coverPoint1Desc')}</div></li>
+                        <li className="flex items-start gap-3 group"><CheckCircleIcon className="h-6 w-6 text-gray-500 flex-shrink-0 mt-1 transition-all duration-300 group-hover:text-brand-secondary group-hover:scale-125" /><div><strong className="text-white">{t('introPage.coverPoint2')}</strong> {t('introPage.coverPoint2Desc')}</div></li>
+                        <li className="flex items-start gap-3 group"><CheckCircleIcon className="h-6 w-6 text-gray-500 flex-shrink-0 mt-1 transition-all duration-300 group-hover:text-brand-secondary group-hover:scale-125" /><div><strong className="text-white">{t('introPage.coverPoint3')}</strong> {t('introPage.coverPoint3Desc')}</div></li>
+                        <li className="flex items-start gap-3 group"><CheckCircleIcon className="h-6 w-6 text-gray-500 flex-shrink-0 mt-1 transition-all duration-300 group-hover:text-brand-secondary group-hover:scale-125" /><div><strong className="text-white">{t('introPage.coverPoint4')}</strong> {t('introPage.coverPoint4Desc')}</div></li>
+                        <li className="flex items-start gap-3 group"><CheckCircleIcon className="h-6 w-6 text-gray-500 flex-shrink-0 mt-1 transition-all duration-300 group-hover:text-brand-secondary group-hover:scale-125" /><div><strong className="text-white">{t('introPage.coverPoint5')}</strong> {t('introPage.coverPoint5Desc')}</div></li>
                     </ul>
                 </div>
                 
@@ -510,14 +530,14 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
         <section ref={howItWorksRef} className="py-16 md:py-24 bg-brand-surface">
             <div className="container mx-auto px-4">
                 <div className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl font-bold text-white">Learn by Doing — with Guidance at Every Step</h2>
+                    <h2 className="text-3xl md:text-4xl font-bold text-white">{t('introPage.howItWorksTitle')}</h2>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
                     {/* Text & Cards Column */}
                     <div className="grid grid-cols-1 gap-6">
-                        <div ref={how1Ref} className={`transition-all duration-500 ${how1IsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`}><Card className="p-6 bg-brand-bg/50 h-full transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg flex items-center gap-6"><DevicePhoneMobileIcon className="h-12 w-12 text-brand-primary flex-shrink-0" /><div className="text-left"><h3 className="text-xl font-bold text-white mb-1">Use the App</h3><p className="text-brand-text-secondary">Interactive crypto lessons with real-world examples and simulations.</p></div></Card></div>
-                        <div ref={how2Ref} className={`transition-all duration-500 ${how2IsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`} style={{transitionDelay: '150ms'}}><Card className="p-6 bg-brand-bg/50 h-full transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg flex items-center gap-6"><BookOpenIcon className="h-12 w-12 text-brand-primary flex-shrink-0" /><div className="text-left"><h3 className="text-xl font-bold text-white mb-1">Learn with a Coach</h3><p className="text-brand-text-secondary">Book calls if you get stuck or want personalized advice.</p></div></Card></div>
-                        <div ref={how3Ref} className={`transition-all duration-500 ${how3IsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`} style={{transitionDelay: '300ms'}}><Card className="p-6 bg-brand-bg/50 h-full transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg flex items-center gap-6"><RocketLaunchIcon className="h-12 w-12 text-brand-primary flex-shrink-0" /><div className="text-left"><h3 className="text-xl font-bold text-white mb-1">Reach Your Goals</h3><p className="text-brand-text-secondary">From buying your first Bitcoin to exploring DeFi safely.</p></div></Card></div>
+                        <div ref={how1Ref} className={`transition-all duration-500 ${how1IsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`}><Card className="p-6 bg-brand-bg/50 h-full transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg flex items-center gap-6"><DevicePhoneMobileIcon className="h-12 w-12 text-brand-primary flex-shrink-0" /><div className="text-left"><h3 className="text-xl font-bold text-white mb-1">{t('introPage.useTheApp')}</h3><p className="text-brand-text-secondary">{t('introPage.useTheAppDesc')}</p></div></Card></div>
+                        <div ref={how2Ref} className={`transition-all duration-500 ${how2IsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`} style={{transitionDelay: '150ms'}}><Card className="p-6 bg-brand-bg/50 h-full transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg flex items-center gap-6"><BookOpenIcon className="h-12 w-12 text-brand-primary flex-shrink-0" /><div className="text-left"><h3 className="text-xl font-bold text-white mb-1">{t('introPage.learnWithCoach')}</h3><p className="text-brand-text-secondary">{t('introPage.learnWithCoachDesc')}</p></div></Card></div>
+                        <div ref={how3Ref} className={`transition-all duration-500 ${how3IsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`} style={{transitionDelay: '300ms'}}><Card className="p-6 bg-brand-bg/50 h-full transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg flex items-center gap-6"><RocketLaunchIcon className="h-12 w-12 text-brand-primary flex-shrink-0" /><div className="text-left"><h3 className="text-xl font-bold text-white mb-1">{t('introPage.reachGoals')}</h3><p className="text-brand-text-secondary">{t('introPage.reachGoalsDesc')}</p></div></Card></div>
                     </div>
                     {/* Image Column */}
                     <div ref={howImgRef} className={`transition-all duration-700 ${howImgIsVisible ? 'animate-slide-in-right' : 'opacity-0 translate-x-8'}`}>
@@ -534,33 +554,33 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
         {/* Value Proposition */}
         <section ref={whyLearnRef} className={`py-16 md:py-24 transition-opacity duration-1000 ${whyLearnIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
             <div className="container mx-auto px-4">
-                <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">Why Learn with Us?</h2>
+                <h2 className="text-3xl md:text-4xl font-bold text-white text-center mb-12">{t('introPage.whyLearnTitle')}</h2>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
                     <Card className="p-8">
                         <ul className="space-y-4">
-                            <li className="flex items-start gap-3 group"><BookOpenIcon className="h-6 w-6 text-brand-secondary flex-shrink-0 mt-1 transition-transform group-hover:scale-110" /><div><h4 className="font-semibold text-white">Filter the Noise</h4><p className="text-brand-text-secondary">The crypto space is full of noise. We filter it for you, providing clear, concise, and relevant information.</p></div></li>
-                            <li className="flex items-start gap-3 group"><ShieldCheckIcon className="h-6 w-6 text-brand-secondary flex-shrink-0 mt-1 transition-transform group-hover:scale-110" /><div><h4 className="font-semibold text-white">Overcome Security Fears</h4><p className="text-brand-text-secondary">Worried about scams and hacks? We teach you best practices to keep your digital assets safe and secure.</p></div></li>
-                            <li className="flex items-start gap-3 group"><CpuChipIcon className="h-6 w-6 text-brand-secondary flex-shrink-0 mt-1 transition-transform group-hover:rotate-12" /><div><h4 className="font-semibold text-white">Simplify Complex Topics</h4><p className="text-brand-text-secondary">Blockchain, DeFi, NFTs... can be overwhelming. We break down complex topics into easy-to-understand concepts.</p></div></li>
-                            <li className="flex items-start gap-3 group"><ChartBarSquareIcon className="h-6 w-6 text-brand-secondary flex-shrink-0 mt-1 transition-transform group-hover:scale-110" /><div><h4 className="font-semibold text-white">Effective Portfolio Tracking</h4><p className="text-brand-text-secondary">Learn how to monitor your assets effectively, understand your performance, and keep your portfolio organized.</p></div></li>
+                            <li className="flex items-start gap-3 group"><BookOpenIcon className="h-6 w-6 text-brand-secondary flex-shrink-0 mt-1 transition-transform group-hover:scale-110" /><div><h4 className="font-semibold text-white">{t('introPage.why1')}</h4><p className="text-brand-text-secondary">{t('introPage.why1Desc')}</p></div></li>
+                            <li className="flex items-start gap-3 group"><ShieldCheckIcon className="h-6 w-6 text-brand-secondary flex-shrink-0 mt-1 transition-transform group-hover:scale-110" /><div><h4 className="font-semibold text-white">{t('introPage.why2')}</h4><p className="text-brand-text-secondary">{t('introPage.why2Desc')}</p></div></li>
+                            <li className="flex items-start gap-3 group"><CpuChipIcon className="h-6 w-6 text-brand-secondary flex-shrink-0 mt-1 transition-transform group-hover:rotate-12" /><div><h4 className="font-semibold text-white">{t('introPage.why3')}</h4><p className="text-brand-text-secondary">{t('introPage.why3Desc')}</p></div></li>
+                            <li className="flex items-start gap-3 group"><ChartBarSquareIcon className="h-6 w-6 text-brand-secondary flex-shrink-0 mt-1 transition-transform group-hover:scale-110" /><div><h4 className="font-semibold text-white">{t('introPage.why4')}</h4><p className="text-brand-text-secondary">{t('introPage.why4Desc')}</p></div></li>
                         </ul>
                     </Card>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <Card className="p-6 bg-brand-secondary/10 border-brand-secondary/50">
-                            <h3 className="text-xl font-bold text-white mb-4">What We Do</h3>
+                            <h3 className="text-xl font-bold text-white mb-4">{t('introPage.whatWeDo')}</h3>
                             <ul className="space-y-3 text-sm">
-                                <li className="flex items-start gap-2"><CheckCircleIcon className="h-5 w-5 text-brand-secondary mt-0.5 flex-shrink-0" />Provide comprehensive financial education on cryptocurrencies and DeFi.</li>
-                                <li className="flex items-start gap-2"><CheckCircleIcon className="h-5 w-5 text-brand-secondary mt-0.5 flex-shrink-0" />Guide you through the processes of buying, selling, and trading digital assets.</li>
-                                <li className="flex items-start gap-2"><CheckCircleIcon className="h-5 w-5 text-brand-secondary mt-0.5 flex-shrink-0" />Introduce you to various DeFi tools and platforms for you to explore.</li>
-                                <li className="flex items-start gap-2"><CheckCircleIcon className="h-5 w-5 text-brand-secondary mt-0.5 flex-shrink-0" />Focus on security and risk management.</li>
+                                <li className="flex items-start gap-2"><CheckCircleIcon className="h-5 w-5 text-brand-secondary mt-0.5 flex-shrink-0" />{t('introPage.do1')}</li>
+                                <li className="flex items-start gap-2"><CheckCircleIcon className="h-5 w-5 text-brand-secondary mt-0.5 flex-shrink-0" />{t('introPage.do2')}</li>
+                                <li className="flex items-start gap-2"><CheckCircleIcon className="h-5 w-5 text-brand-secondary mt-0.5 flex-shrink-0" />{t('introPage.do3')}</li>
+                                <li className="flex items-start gap-2"><CheckCircleIcon className="h-5 w-5 text-brand-secondary mt-0.5 flex-shrink-0" />{t('introPage.do4')}</li>
                             </ul>
                         </Card>
                         <Card className="p-6 bg-red-500/10 border-red-500/50">
-                            <h3 className="text-xl font-bold text-white mb-4">What We Don't Do</h3>
+                            <h3 className="text-xl font-bold text-white mb-4">{t('introPage.whatWeDont')}</h3>
                             <ul className="space-y-3 text-sm">
-                                <li className="flex items-start gap-2"><XCircleIcon className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />Offer any form of financial advice or investment recommendations.</li>
-                                <li className="flex items-start gap-2"><XCircleIcon className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />Recommend specific cryptocurrencies or financial products. Your decisions are your own.</li>
-                                <li className="flex items-start gap-2"><XCircleIcon className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />Manage or handle your funds. You are always in full control of your assets.</li>
-                                <li className="flex items-start gap-2"><XCircleIcon className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />Guarantee profits or returns on any investment.</li>
+                                <li className="flex items-start gap-2"><XCircleIcon className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />{t('introPage.dont1')}</li>
+                                <li className="flex items-start gap-2"><XCircleIcon className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />{t('introPage.dont2')}</li>
+                                <li className="flex items-start gap-2"><XCircleIcon className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />{t('introPage.dont3')}</li>
+                                <li className="flex items-start gap-2"><XCircleIcon className="h-5 w-5 text-red-400 mt-0.5 flex-shrink-0" />{t('introPage.dont4')}</li>
                             </ul>
                         </Card>
                     </div>
@@ -571,35 +591,35 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
         {/* Testimonials */}
         <section ref={testimonialsRef} className={`py-16 md:py-24 bg-brand-surface transition-opacity duration-1000 ${testimonialsIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
           <div className="container mx-auto px-4 text-center">
-            <h2 className="text-3xl md:text-4xl font-bold text-white text-gradient-orange animate-gradient-shift">What Our Students Say</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-white text-gradient-orange animate-gradient-shift">{t('introPage.testimonialsTitle')}</h2>
             <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
               <Card className="p-8 text-left bg-brand-bg/50 transition-transform duration-300 hover:-translate-y-2">
-                <p className="text-brand-text mb-4 italic">“I finally set up my first wallet safely. The app made it simple and the coach answered all my questions!”</p>
+                <p className="text-brand-text mb-4 italic">{t('introPage.testimonial1')}</p>
                 <div className="flex items-center gap-4 group">
                   <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop" alt="Anna R." className="h-12 w-12 rounded-full object-cover transition-transform duration-300 group-hover:scale-110" />
                   <div>
-                    <p className="font-bold text-white">Anna R.</p>
-                    <p className="text-sm text-brand-text-secondary">Beginner Investor</p>
+                    <p className="font-bold text-white">{t('introPage.testimonial1Name')}</p>
+                    <p className="text-sm text-brand-text-secondary">{t('introPage.testimonial1Role')}</p>
                   </div>
                 </div>
               </Card>
               <Card className="p-8 text-left bg-brand-bg/50 transition-transform duration-300 hover:-translate-y-2">
-                <p className="text-brand-text mb-4 italic">“The one-on-one calls gave me the confidence to try DeFi on my own. I understand the risks and how to manage them now.”</p>
+                <p className="text-brand-text mb-4 italic">{t('introPage.testimonial2')}</p>
                 <div className="flex items-center gap-4 group">
                   <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" alt="James T." className="h-12 w-12 rounded-full object-cover transition-transform duration-300 group-hover:scale-110" />
                   <div>
-                    <p className="font-bold text-white">James T.</p>
-                    <p className="text-sm text-brand-text-secondary">Tech Professional</p>
+                    <p className="font-bold text-white">{t('introPage.testimonial2Name')}</p>
+                    <p className="text-sm text-brand-text-secondary">{t('introPage.testimonial2Role')}</p>
                   </div>
                 </div>
               </Card>
                <Card className="p-8 text-left bg-brand-bg/50 transition-transform duration-300 hover:-translate-y-2">
-                <p className="text-brand-text mb-4 italic">“Worth every penny. I avoided costly mistakes thanks to the security lessons and personalized strategy sessions.”</p>
+                <p className="text-brand-text mb-4 italic">{t('introPage.testimonial3')}</p>
                 <div className="flex items-center gap-4 group">
                   <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&auto=format&fit=crop" alt="Maria S." className="h-12 w-12 rounded-full object-cover transition-transform duration-300 group-hover:scale-110" />
                   <div>
-                    <p className="font-bold text-white">Maria S.</p>
-                    <p className="text-sm text-brand-text-secondary">Small Business Owner</p>
+                    <p className="font-bold text-white">{t('introPage.testimonial3Name')}</p>
+                    <p className="text-sm text-brand-text-secondary">{t('introPage.testimonial3Role')}</p>
                   </div>
                 </div>
               </Card>
@@ -610,25 +630,25 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
         {/* Pricing Section */}
         <section ref={pricingRef} className={`py-16 md:py-24 transition-opacity duration-1000 ${pricingIsVisible ? 'opacity-100' : 'opacity-0'}`}>
             <div className="container mx-auto px-4 text-center">
-                <h2 className="text-3xl md:text-4xl font-bold text-white">Choose the Right Plan for You</h2>
+                <h2 className="text-3xl md:text-4xl font-bold text-white">{t('introPage.pricingTitle')}</h2>
                 <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 items-start">
                     <div ref={price1Ref} className={`relative transition-all duration-500 cursor-pointer ${price1IsVisible ? 'animate-pop-in' : 'opacity-0'}`} onClick={onOpenBookingModal}>
                         <div className="absolute top-2 -right-4 bg-brand-primary text-brand-bg px-4 py-1 text-sm font-bold rounded-full transform rotate-12 shadow-lg z-10 animate-subtle-bounce">
-                           First Session Free
+                           {t('introPage.pricing1Tag')}
                         </div>
                         <Card className="p-6 text-center h-full transition-all duration-300 scale-105 animate-pulse-glow-blue border-2 border-brand-primary">
-                            <h3 className="text-xl font-bold text-white">Single Session</h3>
-                            <p className="text-4xl font-bold my-4">$80</p>
+                            <h3 className="text-xl font-bold text-white">{t('introPage.pricing1Title')}</h3>
+                            <p className="text-4xl font-bold my-4">{t('introPage.pricing1Price')}</p>
                             <ul className="space-y-2 text-sm text-brand-text-secondary">
-                                <li>Specific problem-solving</li>
-                                <li>1 live call with an expert</li>
-                                <li>No ongoing support</li>
+                                <li>{t('introPage.pricing1Feat1')}</li>
+                                <li>{t('introPage.pricing1Feat2')}</li>
+                                <li>{t('introPage.pricing1Feat3')}</li>
                             </ul>
                         </Card>
                     </div>
-                    <div ref={price2Ref} className={`transition-all duration-500 cursor-pointer ${price2IsVisible ? 'animate-pop-in' : 'opacity-0'}`} style={{transitionDelay: '150ms'}} onClick={onOpenBookingModal}><Card className="p-6 text-center h-full transition-all duration-300 hover:scale-105 card-glow-blue-hover"><h3 className="text-xl font-bold text-white">1 Month</h3><p className="text-4xl font-bold my-4">$100<span className="text-base font-normal">/mo</span></p><ul className="space-y-2 text-sm text-brand-text-secondary"><li>Continuous help for 30 days</li><li>24/7 assistance</li><li>1 live session per week</li></ul></Card></div>
-                    <div ref={price3Ref} className={`transition-all duration-500 cursor-pointer ${price3IsVisible ? 'animate-pop-in' : 'opacity-0'}`} style={{transitionDelay: '300ms'}} onClick={onOpenBookingModal}><Card className="p-6 text-center h-full transition-all duration-300 hover:scale-105 card-glow-blue-hover"><h3 className="text-xl font-bold text-white">6 Months</h3><p className="text-4xl font-bold my-4">$500</p><p className="text-sm font-semibold text-brand-text-secondary -mt-4 mb-4">≈ $83/month</p><ul className="space-y-2 text-sm text-brand-text-secondary"><li>Continuous help for 6 months</li><li>24/7 assistance</li><li>1 live session per week</li></ul></Card></div>
-                    <div ref={price4Ref} className={`transition-all duration-500 cursor-pointer ${price4IsVisible ? 'animate-pop-in' : 'opacity-0'}`} style={{transitionDelay: '450ms'}} onClick={onOpenBookingModal}><Card className="p-6 text-center border-2 border-brand-orange relative transition-all duration-300 hover:scale-105 card-glow-orange-hover"><div className="absolute top-0 right-4 -mt-4 bg-brand-orange text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1"><StarIcon className="h-4 w-4"/>Best Value</div><h3 className="text-xl font-bold text-white">1 Year</h3><p className="text-4xl font-bold my-4 text-brand-orange">$800</p><p className="text-sm font-semibold text-brand-text-secondary -mt-4 mb-4">≈ $67/month</p><ul className="space-y-2 text-sm text-brand-text-secondary"><li>Continuous help for 12 months</li><li>24/7 assistance</li><li>1 live session per week</li></ul></Card></div>
+                    <div ref={price2Ref} className={`transition-all duration-500 cursor-pointer ${price2IsVisible ? 'animate-pop-in' : 'opacity-0'}`} style={{transitionDelay: '150ms'}} onClick={onOpenBookingModal}><Card className="p-6 text-center h-full transition-all duration-300 hover:scale-105 card-glow-blue-hover"><h3 className="text-xl font-bold text-white">{t('introPage.pricing2Title')}</h3><p className="text-4xl font-bold my-4">{t('introPage.pricing2Price').split('/')[0]}<span className="text-base font-normal">/{t('introPage.pricing2Price').split('/')[1]}</span></p><ul className="space-y-2 text-sm text-brand-text-secondary"><li>{t('introPage.pricing2Feat1')}</li><li>{t('introPage.pricing2Feat2')}</li><li>{t('introPage.pricing2Feat3')}</li></ul></Card></div>
+                    <div ref={price3Ref} className={`transition-all duration-500 cursor-pointer ${price3IsVisible ? 'animate-pop-in' : 'opacity-0'}`} style={{transitionDelay: '300ms'}} onClick={onOpenBookingModal}><Card className="p-6 text-center h-full transition-all duration-300 hover:scale-105 card-glow-blue-hover"><h3 className="text-xl font-bold text-white">{t('introPage.pricing3Title')}</h3><p className="text-4xl font-bold my-4">{t('introPage.pricing3Price')}</p><p className="text-sm font-semibold text-brand-text-secondary -mt-4 mb-4">{t('introPage.pricing3Sub')}</p><ul className="space-y-2 text-sm text-brand-text-secondary"><li>{t('introPage.pricing3Feat1')}</li><li>{t('introPage.pricing3Feat2')}</li><li>{t('introPage.pricing3Feat3')}</li></ul></Card></div>
+                    <div ref={price4Ref} className={`transition-all duration-500 cursor-pointer ${price4IsVisible ? 'animate-pop-in' : 'opacity-0'}`} style={{transitionDelay: '450ms'}} onClick={onOpenBookingModal}><Card className="p-6 text-center border-2 border-brand-orange relative transition-all duration-300 hover:scale-105 card-glow-orange-hover"><div className="absolute top-0 right-4 -mt-4 bg-brand-orange text-white px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1"><StarIcon className="h-4 w-4"/>{t('introPage.pricing4Tag')}</div><h3 className="text-xl font-bold text-white">{t('introPage.pricing4Title')}</h3><p className="text-4xl font-bold my-4 text-brand-orange">{t('introPage.pricing4Price')}</p><p className="text-sm font-semibold text-brand-text-secondary -mt-4 mb-4">{t('introPage.pricing4Sub')}</p><ul className="space-y-2 text-sm text-brand-text-secondary"><li>{t('introPage.pricing4Feat1')}</li><li>{t('introPage.pricing4Feat2')}</li><li>{t('introPage.pricing4Feat3')}</li></ul></Card></div>
                 </div>
             </div>
         </section>
@@ -653,15 +673,15 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
                   }}
                 >
                 </div>
-                <h2 className="text-3xl md:text-4xl font-bold text-white">Start Your Crypto Journey <span className="inline-block animate-pulse-slow">Today</span></h2>
+                <h2 className="text-3xl md:text-4xl font-bold text-white">{t('introPage.finalCtaTitle')}</h2>
                 <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
                     <Button onClick={onOpenBookingModal} className="text-lg py-3 px-8 flex items-center gap-2 transition-transform duration-200 hover:scale-105 btn-glow-blue btn-blue-darken">
                         <PhoneIcon className="h-6 w-6"/>
-                        Book a Call with a Coach
+                        {t('introPage.bookCallCoach')}
                     </Button>
                     <button onClick={onStart} className="font-bold py-3 px-8 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-surface disabled:opacity-50 disabled:cursor-not-allowed text-lg flex items-center gap-2 bg-transparent border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">
                         <CheckCircleIcon className="h-6 w-6"/>
-                        Start Learning with the App
+                        {t('introPage.startApp')}
                     </button>
                 </div>
             </div>

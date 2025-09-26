@@ -1,14 +1,20 @@
 import React, { useMemo } from 'react';
 import type { CompletedSimulation } from '../../types';
 import Card from './Card';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface ContributionCalendarProps {
   completedSimulations: CompletedSimulation[];
 }
 
-const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTH_NAMES_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const MONTH_NAMES_ES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
-const ContributionCalendar: React.FC<ContributionCalendarProps> = ({ completedSimulations }) => {
+// FIX: Changed to a named export.
+export const ContributionCalendar: React.FC<ContributionCalendarProps> = ({ completedSimulations }) => {
+  const { language, t } = useLanguage();
+  const MONTH_NAMES = language === 'es' ? MONTH_NAMES_ES : MONTH_NAMES_EN;
+
   const contributionsByDate = useMemo(() => {
     const map = new Map<string, number>();
     completedSimulations.forEach(sim => {
@@ -56,7 +62,7 @@ const ContributionCalendar: React.FC<ContributionCalendarProps> = ({ completedSi
     }
     
     return { days: dayCells, monthLabels };
-  }, [contributionsByDate]);
+  }, [contributionsByDate, MONTH_NAMES]);
 
   const getColor = (count: number) => {
     if (count <= 0) return 'bg-gray-700/50 hover:border-gray-600';
@@ -64,49 +70,50 @@ const ContributionCalendar: React.FC<ContributionCalendarProps> = ({ completedSi
     if (count === 2) return 'bg-brand-primary hover:border-sky-300';
     return 'bg-brand-orange hover:border-orange-300';
   };
+  
+  const getTooltipText = (day: { date: Date | null, count: number }) => {
+    if (!day.date) return '';
+    const dateString = day.date.toLocaleDateString(language);
+    const lessonText = day.count === 1 ? 'lección' : 'lecciones';
+    if (language === 'es') {
+      return `${day.count} ${lessonText} el ${dateString}`;
+    }
+    return `${day.count} lesson${day.count !== 1 ? 's' : ''} on ${dateString}`;
+  }
+
 
   return (
     <Card className="p-4 md:p-6">
-      <h3 className="text-xl font-bold text-white mb-4">Learning Activity</h3>
+      <h3 className="text-xl font-bold text-white mb-4">{t('progressPage.learningActivity')}</h3>
       <div className="overflow-x-auto">
         <div className="inline-block">
             <div className="grid grid-flow-col grid-rows-1 gap-x-[22px] text-xs text-brand-text-secondary mb-1">
                 {monthLabels.map(({ month, startColumn }) => (
-                    <div key={month} className="col-start-1" style={{ gridColumnStart: startColumn }}>{month}</div>
+                    <div key={month} style={{ gridColumnStart: startColumn }}>{month}</div>
                 ))}
             </div>
-            <div className="flex gap-3">
-                 <div className="grid grid-rows-7 gap-y-1.5 text-xs text-brand-text-secondary mt-[-2px] pr-2">
-                    <span className="h-4"></span> {/* Spacer for top row */}
-                    <span className="h-4">Mon</span>
-                    <span className="h-4"></span>
-                    <span className="h-4">Wed</span>
-                    <span className="h-4"></span>
-                    <span className="h-4">Fri</span>
-                    <span className="h-4"></span>
-                 </div>
-                <div className="grid grid-flow-col grid-rows-7 gap-1.5">
+            <div className="grid grid-flow-col grid-rows-7 gap-1">
                 {days.map((day, index) => (
                     <div
-                    key={day.date ? day.date.toISOString() : `empty-${index}`}
-                    className={`w-4 h-4 rounded-sm border border-transparent transition-all duration-200 ${day.date ? getColor(day.count) : 'bg-transparent'}`}
-                    title={day.date ? `${day.count} lesson${day.count !== 1 ? 's' : ''} on ${day.date.toLocaleDateString()}` : ''}
+                        key={index}
+                        className={`w-4 h-4 rounded-sm border border-transparent transition-all duration-200 ${day.date ? getColor(day.count) : 'bg-transparent'}`}
+                        title={getTooltipText(day)}
                     />
                 ))}
-                </div>
             </div>
         </div>
       </div>
-      <div className="flex justify-end items-center gap-2 mt-4 text-xs text-brand-text-secondary">
-        <span>Less</span>
+      <div className="flex justify-end items-center gap-4 mt-4 text-xs text-brand-text-secondary">
+        <span>{t('progressPage.less')}</span>
         <div className="w-3 h-3 rounded-sm bg-gray-700/50"></div>
         <div className="w-3 h-3 rounded-sm bg-sky-800"></div>
         <div className="w-3 h-3 rounded-sm bg-brand-primary"></div>
         <div className="w-3 h-3 rounded-sm bg-brand-orange"></div>
-        <span>More</span>
+        <span>{t('progressPage.more')}</span>
       </div>
+       <p className="text-xs text-brand-text-secondary mt-2">
+            * {t('progressPage.lessonsOn')} {new Date().toLocaleDateString(language, { year: 'numeric' })}
+       </p>
     </Card>
   );
 };
-
-export default ContributionCalendar;

@@ -34,11 +34,11 @@ export const LEARNING_PATH: string[] = [
   'coin-market-explorer',
 ];
 
-export const CATEGORIES: Category[] = [
+export const GET_CATEGORIES = (t: (key: string) => string): Category[] => [
   {
     id: 'wallets',
-    title: 'Wallets',
-    description: 'Learn how to securely store and manage your digital assets.',
+    title: t('categories.wallets.title'),
+    description: t('categories.wallets.description'),
     icon: CreditCardIcon,
     simulations: [
       {
@@ -68,8 +68,8 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 'blockchains',
-    title: 'Blockchains',
-    description: 'Understand the fundamental technology behind cryptocurrencies.',
+    title: t('categories.blockchains.title'),
+    description: t('categories.blockchains.description'),
     icon: CubeIcon,
     simulations: [
        {
@@ -97,8 +97,8 @@ export const CATEGORIES: Category[] = [
   },
    {
     id: 'nfts',
-    title: 'NFTs',
-    description: 'Explore Non-Fungible Tokens, from digital art to their evolving use cases.',
+    title: t('categories.nfts.title'),
+    description: t('categories.nfts.description'),
     icon: PhotoIcon,
     simulations: [
         {
@@ -112,8 +112,8 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 'fiat-inflation',
-    title: 'Fiat & Inflation',
-    description: 'Visualize the impact of inflation on traditional currency.',
+    title: t('categories.fiatInflation.title'),
+    description: t('categories.fiatInflation.description'),
     icon: ScaleIcon,
     simulations: [
       {
@@ -134,8 +134,8 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 'banks-exchanges',
-    title: 'Banks & Exchanges',
-    description: 'Navigate the platforms where crypto meets traditional finance.',
+    title: t('categories.banksExchanges.title'),
+    description: t('categories.banksExchanges.description'),
     icon: BanknotesIcon,
     simulations: [
       {
@@ -174,8 +174,8 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 'dapps',
-    title: 'DApps & DeFi',
-    description: 'Explore decentralized applications and financial tools.',
+    title: t('categories.dapps.title'),
+    description: t('categories.dapps.description'),
     icon: PuzzlePieceIcon,
     simulations: [
       {
@@ -227,8 +227,8 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 'crypto-finance',
-    title: 'Crypto Finance',
-    description: 'Learn financial management principles using crypto-native tools.',
+    title: t('categories.cryptoFinance.title'),
+    description: t('categories.cryptoFinance.description'),
     icon: CalculatorIcon,
     simulations: [
       {
@@ -267,8 +267,8 @@ export const CATEGORIES: Category[] = [
   },
   {
     id: 'tools',
-    title: 'Tools',
-    description: 'Discover essential tools for navigating the crypto ecosystem.',
+    title: t('categories.tools.title'),
+    description: t('categories.tools.description'),
     icon: CurrencyDollarIcon,
     simulations: [
       {

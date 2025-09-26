@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
 import { CheckCircleIcon } from '../icons/Icons';
+import { useLanguage } from '../../hooks/useLanguage';
 
 const CryptoWithdrawSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+  const { t } = useLanguage();
   const [step, setStep] = useState(1);
   const [selfCustodyBalance, setSelfCustodyBalance] = useState({ btc: 1.0 });
   const [exchangeBalance, setExchangeBalance] = useState({ btc: 0, usd: 0 });
@@ -53,19 +55,19 @@ const CryptoWithdrawSim: React.FC<{ onComplete: () => void }> = ({ onComplete })
       case 1:
         return (
           <div className="animate-fade-in">
-            <h3 className="text-xl font-semibold mb-4 text-center text-brand-primary">Step 1: Deposit From Self-Custody Wallet</h3>
-            <p className="text-brand-text-secondary mb-6 text-center">It's safest to keep your crypto in your own wallet. To sell it on an exchange, you first need to deposit it there.</p>
+            <h3 className="text-xl font-semibold mb-4 text-center text-brand-primary">{t('simulations.cryptoWithdraw.step1Title')}</h3>
+            <p className="text-brand-text-secondary mb-6 text-center">{t('simulations.cryptoWithdraw.step1Desc')}</p>
             <Card className="p-6 bg-brand-bg/50">
               <div className="flex justify-between mb-4">
-                <span>Self-Custody Balance:</span>
+                <span>{t('simulations.cryptoWithdraw.selfCustodyBalance')}</span>
                 <span className="font-mono font-bold text-white">{selfCustodyBalance.btc.toFixed(4)} BTC</span>
               </div>
               <div className="mb-4">
-                <label className="block text-sm mb-1">Exchange Deposit Address:</label>
+                <label className="block text-sm mb-1">{t('simulations.cryptoWithdraw.exchangeDepositAddress')}</label>
                 <p className="font-mono text-sm bg-brand-bg p-2 rounded break-all">{exchangeDepositAddress}</p>
               </div>
               <div className="mb-4">
-                <label className="block text-sm mb-1">Amount of BTC to deposit:</label>
+                <label className="block text-sm mb-1">{t('simulations.cryptoWithdraw.amountToDeposit')}</label>
                 <input
                   type="number"
                   value={depositAmount}
@@ -74,7 +76,7 @@ const CryptoWithdrawSim: React.FC<{ onComplete: () => void }> = ({ onComplete })
                   className="w-full bg-brand-bg border border-gray-600 rounded-lg p-2"
                 />
               </div>
-              <Button onClick={handleDeposit} disabled={depositAmount <= 0 || depositAmount > selfCustodyBalance.btc} className="w-full">Deposit to Exchange</Button>
+              <Button onClick={handleDeposit} disabled={depositAmount <= 0 || depositAmount > selfCustodyBalance.btc} className="w-full">{t('simulations.cryptoWithdraw.depositToExchange')}</Button>
             </Card>
           </div>
         );
@@ -82,21 +84,21 @@ const CryptoWithdrawSim: React.FC<{ onComplete: () => void }> = ({ onComplete })
          return (
           <div className="text-center animate-fade-in">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mx-auto mb-4"></div>
-            <p className="text-lg text-white font-semibold">Confirming Deposit on Blockchain...</p>
+            <p className="text-lg text-white font-semibold">{t('simulations.cryptoWithdraw.processingDeposit')}</p>
           </div>
         );
       case 3:
         return (
           <div className="animate-fade-in">
-            <h3 className="text-xl font-semibold mb-4 text-center text-brand-primary">Step 2: Sell Crypto for Fiat</h3>
-            <p className="text-brand-text-secondary mb-6 text-center">Your deposit is confirmed. Now, sell your crypto for a fiat currency (like USD) on the exchange.</p>
+            <h3 className="text-xl font-semibold mb-4 text-center text-brand-primary">{t('simulations.cryptoWithdraw.step2Title')}</h3>
+            <p className="text-brand-text-secondary mb-6 text-center">{t('simulations.cryptoWithdraw.step2Desc')}</p>
             <Card className="p-6 bg-brand-bg/50">
               <div className="flex justify-between mb-4">
-                <span>Your BTC Balance:</span>
+                <span>{t('simulations.cryptoWithdraw.yourBtcBalance')}</span>
                 <span className="font-mono font-bold text-white">{exchangeBalance.btc.toFixed(4)} BTC</span>
               </div>
               <div className="mb-4">
-                <label className="block text-sm mb-1">Amount of BTC to sell:</label>
+                <label className="block text-sm mb-1">{t('simulations.cryptoWithdraw.amountToSell')}</label>
                 <input
                   type="number"
                   value={sellAmount}
@@ -106,9 +108,9 @@ const CryptoWithdrawSim: React.FC<{ onComplete: () => void }> = ({ onComplete })
                 />
               </div>
               <p className="text-center text-lg font-semibold text-brand-primary mb-4">
-                You will receive: ${(sellAmount * btcPrice).toLocaleString()}
+                {t('simulations.cryptoWithdraw.youWillReceive')} ${(sellAmount * btcPrice).toLocaleString()}
               </p>
-              <Button onClick={handleSell} disabled={sellAmount <= 0 || sellAmount > exchangeBalance.btc} className="w-full">Sell BTC</Button>
+              <Button onClick={handleSell} disabled={sellAmount <= 0 || sellAmount > exchangeBalance.btc} className="w-full">{t('simulations.cryptoWithdraw.sellBtc')}</Button>
             </Card>
           </div>
         );
@@ -116,22 +118,22 @@ const CryptoWithdrawSim: React.FC<{ onComplete: () => void }> = ({ onComplete })
         return (
           <div className="text-center animate-fade-in">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mx-auto mb-4"></div>
-            <p className="text-lg text-white font-semibold">Executing Sell Order...</p>
+            <p className="text-lg text-white font-semibold">{t('simulations.cryptoWithdraw.processingSell')}</p>
           </div>
         );
       case 5:
         return (
           <div className="animate-fade-in">
-            <h3 className="text-xl font-semibold mb-4 text-center text-brand-primary">Step 3: Withdraw Fiat to Bank</h3>
-            <p className="text-brand-text-secondary mb-6 text-center">Now that you have USD, you can withdraw it to your personal bank account.</p>
+            <h3 className="text-xl font-semibold mb-4 text-center text-brand-primary">{t('simulations.cryptoWithdraw.step3Title')}</h3>
+            <p className="text-brand-text-secondary mb-6 text-center">{t('simulations.cryptoWithdraw.step3Desc')}</p>
             <Card className="p-6 bg-brand-bg/50">
-              <h4 className="font-bold text-white mb-2">Withdrawal Details</h4>
+              <h4 className="font-bold text-white mb-2">{t('simulations.cryptoWithdraw.withdrawalDetails')}</h4>
               <div className="flex justify-between mb-4">
-                <span>Amount to Withdraw:</span>
+                <span>{t('simulations.cryptoWithdraw.amountToWithdraw')}</span>
                 <span className="font-mono font-bold text-white">${exchangeBalance.usd.toLocaleString()}</span>
               </div>
               <div className="mb-4">
-                <label className="block text-sm mb-1">Your Bank IBAN:</label>
+                <label className="block text-sm mb-1">{t('simulations.cryptoWithdraw.yourBankIban')}</label>
                 <input
                   type="text"
                   value={userIban}
@@ -140,7 +142,7 @@ const CryptoWithdrawSim: React.FC<{ onComplete: () => void }> = ({ onComplete })
                   className="w-full bg-brand-bg border border-gray-600 rounded-lg p-2 font-mono"
                 />
               </div>
-              <Button onClick={handleWithdraw} disabled={!userIban} className="w-full">Confirm Withdrawal</Button>
+              <Button onClick={handleWithdraw} disabled={!userIban} className="w-full">{t('simulations.cryptoWithdraw.confirmWithdrawal')}</Button>
             </Card>
           </div>
         );
@@ -148,16 +150,16 @@ const CryptoWithdrawSim: React.FC<{ onComplete: () => void }> = ({ onComplete })
         return (
           <div className="text-center animate-fade-in">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mx-auto mb-4"></div>
-            <p className="text-lg text-white font-semibold">Sending Funds to Your Bank...</p>
+            <p className="text-lg text-white font-semibold">{t('simulations.cryptoWithdraw.processingWithdrawal')}</p>
           </div>
         );
       case 7:
         return (
           <div className="text-center animate-fade-in">
             <CheckCircleIcon className="h-16 w-16 text-brand-secondary mx-auto mb-4" />
-            <h3 className="text-2xl font-bold text-brand-secondary mb-2">Withdrawal Complete!</h3>
-            <p className="text-brand-text-secondary mb-6">The funds have been sent to your bank account. You successfully moved crypto from self-custody to your bank account.</p>
-            <Button onClick={onComplete} variant="secondary">Finish Lesson</Button>
+            <h3 className="text-2xl font-bold text-brand-secondary mb-2">{t('simulations.cryptoWithdraw.successTitle')}</h3>
+            <p className="text-brand-text-secondary mb-6">{t('simulations.cryptoWithdraw.successDesc')}</p>
+            <Button onClick={onComplete} variant="secondary">{t('finishLesson')}</Button>
           </div>
         );
       default:
@@ -167,9 +169,9 @@ const CryptoWithdrawSim: React.FC<{ onComplete: () => void }> = ({ onComplete })
 
   return (
     <Card className="max-w-2xl mx-auto p-6 md:p-8">
-      <h2 className="text-3xl font-bold text-center mb-2 text-white">Withdrawing Crypto to Fiat</h2>
+      <h2 className="text-3xl font-bold text-center mb-2 text-white">{t('simulations.cryptoWithdraw.title')}</h2>
       <p className="text-brand-text-secondary text-center mb-8 max-w-xl mx-auto">
-        Learn how to convert your crypto back into traditional currency and withdraw it securely to your bank account, starting from your self-custody wallet.
+        {t('simulations.cryptoWithdraw.description')}
       </p>
       {renderContent()}
     </Card>

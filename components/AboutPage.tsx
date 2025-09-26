@@ -4,6 +4,7 @@ import Card from './ui/Card';
 import { MenuIcon, XMarkIcon, CreditCardIcon, VideoCameraIcon, ChatBubbleBottomCenterTextIcon, PhoneIcon, CheckCircleIcon, BanknotesIcon, ShieldCheckIcon, LightBulbIcon } from './icons/Icons';
 import { Page } from '../types';
 import Footer from './Footer';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface AboutPageProps {
   onStart: () => void;
@@ -66,6 +67,7 @@ const coaches = [
 const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBookingModal }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const { language, toggleLanguage, t } = useLanguage();
     
     const [heroRef, heroIsVisible] = useScrollAnimation<HTMLElement>();
     const [teamSectionRef, teamSectionIsVisible] = useScrollAnimation<HTMLElement>();
@@ -116,8 +118,8 @@ const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBo
                     </a>
                     <div className="flex items-center gap-4">
                          <div className="hidden md:flex items-center gap-4">
-                            <Button onClick={onOpenBookingModal} className="transition-transform duration-200 hover:scale-105 btn-glow-blue btn-blue-darken">Book a Call</Button>
-                            <button onClick={onStart} className="font-bold py-2 px-4 rounded-lg transition-all duration-200 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">Start Learning</button>
+                            <Button onClick={onOpenBookingModal} className="transition-transform duration-200 hover:scale-105 btn-glow-blue btn-blue-darken">{t('bookACall')}</Button>
+                            <button onClick={onStart} className="font-bold py-2 px-4 rounded-lg transition-all duration-200 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">{t('startLearning')}</button>
                          </div>
                         <div className="relative">
                             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 rounded-md text-white hover:bg-brand-surface">
@@ -130,11 +132,29 @@ const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBo
                     <div className="md:absolute md:top-full md:right-0 md:container md:mx-auto md:px-4 md:flex md:justify-end">
                         <div className="animate-fade-in bg-brand-surface/95 backdrop-blur-sm border-t md:border border-gray-700/50 md:mt-2 md:w-64 md:rounded-lg shadow-lg">
                             <nav className="container mx-auto px-4 py-4 flex flex-col items-center md:items-start md:p-4 gap-4">
-                                <button onClick={() => { onNavigatePage('intro'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Home</button>
-                                <button onClick={() => { onNavigatePage('about'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">About</button>
-                                <button onClick={() => { onNavigatePage('resources'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Resources</button>
-                                <button onClick={() => { onStart(); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Start Learning</button>
-                                <button onClick={() => { onOpenBookingModal(); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Book a Call</button>
+                                <button onClick={() => { onNavigatePage('intro'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('home')}</button>
+                                <button onClick={() => { onNavigatePage('about'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('about')}</button>
+                                <button onClick={() => { onNavigatePage('resources'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('resources')}</button>
+                                <button onClick={() => { onStart(); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('startLearning')}</button>
+                                <button onClick={() => { onOpenBookingModal(); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('bookACall')}</button>
+                                <div className="w-full pt-4 border-t border-gray-700/50 mt-2">
+                                    <div className="flex items-center gap-1 p-1 rounded-lg bg-brand-bg justify-center max-w-[120px] mx-auto md:mx-0" role="group" aria-label="Language selection">
+                                        <button
+                                            className={`flex-1 text-center px-3 py-1 text-sm font-bold rounded-md transition-colors ${language === 'en' ? 'bg-brand-primary text-brand-bg' : 'text-brand-text-secondary hover:bg-brand-surface'}`}
+                                            onClick={() => { if (language !== 'en') toggleLanguage(); }}
+                                            aria-pressed={language === 'en'}
+                                        >
+                                            EN
+                                        </button>
+                                        <button
+                                            className={`flex-1 text-center px-3 py-1 text-sm font-bold rounded-md transition-colors ${language === 'es' ? 'bg-brand-primary text-brand-bg' : 'text-brand-text-secondary hover:bg-brand-surface'}`}
+                                            onClick={() => { if (language !== 'es') toggleLanguage(); }}
+                                            aria-pressed={language === 'es'}
+                                        >
+                                            ES
+                                        </button>
+                                    </div>
+                                </div>
                             </nav>
                         </div>
                     </div>
@@ -146,14 +166,14 @@ const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBo
                 <section ref={heroRef} className={`py-20 md:py-32 text-center transition-all duration-700 ${heroIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
                     <div className="container mx-auto px-4">
                         <h1 className={`text-4xl md:text-6xl font-bold text-white max-w-4xl mx-auto leading-tight transition-all duration-700 delay-200 ${heroIsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`}>
-                             Learn from Experts Who Live and Breathe Crypto
+                             {t('aboutPage.heroTitle')}
                         </h1>
                         <p className={`mt-6 text-lg text-brand-text-secondary max-w-3xl mx-auto transition-all duration-700 delay-300 ${heroIsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`}>
-                            Our team combines years of technical expertise, hands-on experience, and a passion for education to guide you through the world of cryptocurrency safely and confidently.
+                            {t('aboutPage.heroSubtitle')}
                         </p>
                         <div className={`mt-8 transition-all duration-700 delay-500 ${heroIsVisible ? 'animate-pop-in' : 'opacity-0'}`}>
                             <Button onClick={() => document.getElementById('team-section')?.scrollIntoView({ behavior: 'smooth' })} className="text-lg py-3 px-8">
-                                Meet the Team
+                                {t('aboutPage.meetTheTeam')}
                             </Button>
                         </div>
                     </div>
@@ -163,7 +183,7 @@ const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBo
                 <section ref={teamSectionRef} id="team-section" className={`py-16 md:py-24 bg-brand-surface`}>
                     <div className="container mx-auto px-4">
                         <h2 className={`text-3xl md:text-5xl font-bold text-white text-center mb-12 transition-all duration-700 ${teamSectionIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
-                           Meet Your Crypto Coaches
+                           {t('aboutPage.teamTitle')}
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                             {coaches.map((coach, index) => (
@@ -186,30 +206,30 @@ const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBo
                 {/* Why We Do It Section */}
                 <section ref={whySectionRef} className={`py-16 md:py-24 transition-opacity duration-1000 ${whySectionIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
                     <div className="container mx-auto px-4 text-center">
-                        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">Why We Do It</h2>
+                        <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">{t('aboutPage.whyTitle')}</h2>
                         <p className="max-w-3xl mx-auto text-lg text-brand-text-secondary mb-12">
-                            CryptoAX07.com was created with a simple mission: to make crypto accessible, safe, and practical for everyone. We believe blockchain technology is as transformative as the internet—and learning how to use it should not feel overwhelming.
+                            {t('aboutPage.whySubtitle')}
                         </p>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
                             <div ref={whyPoint1Ref} className={`transition-all duration-700 ${whyPoint1IsVisible ? 'animate-slide-in-left' : 'opacity-0 -translate-x-8'}`}>
                                 <Card className="p-8 h-full bg-brand-surface/50">
                                     <BanknotesIcon className="h-10 w-10 text-brand-secondary mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold text-white mb-2">Promote Financial Freedom</h3>
-                                    <p className="text-brand-text-secondary">We do it because traditional banking is changing, and crypto gives people control over their own financial future.</p>
+                                    <h3 className="text-xl font-bold text-white mb-2">{t('aboutPage.whyPoint1Title')}</h3>
+                                    <p className="text-brand-text-secondary">{t('aboutPage.whyPoint1Desc')}</p>
                                 </Card>
                             </div>
                              <div ref={whyPoint2Ref} className={`transition-all duration-700 delay-200 ${whyPoint2IsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`}>
                                 <Card className="p-8 h-full bg-brand-surface/50">
                                     <ShieldCheckIcon className="h-10 w-10 text-brand-secondary mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold text-white mb-2">Remove Fear & Barriers</h3>
-                                    <p className="text-brand-text-secondary">We do it because beginners often get stuck at their first wallet or exchange account—and we want to remove that fear.</p>
+                                    <h3 className="text-xl font-bold text-white mb-2">{t('aboutPage.whyPoint2Title')}</h3>
+                                    <p className="text-brand-text-secondary">{t('aboutPage.whyPoint2Desc')}</p>
                                 </Card>
                             </div>
                              <div ref={whyPoint3Ref} className={`transition-all duration-700 ${whyPoint3IsVisible ? 'animate-slide-in-right' : 'opacity-0 translate-x-8'}`}>
                                  <Card className="p-8 h-full bg-brand-surface/50">
                                     <LightBulbIcon className="h-10 w-10 text-brand-secondary mx-auto mb-4" />
-                                    <h3 className="text-xl font-bold text-white mb-2">Empower Through Understanding</h3>
-                                    <p className="text-brand-text-secondary">We do it because tailored education ensures you don’t just follow instructions, but truly understand how to manage and grow your digital assets.</p>
+                                    <h3 className="text-xl font-bold text-white mb-2">{t('aboutPage.whyPoint3Title')}</h3>
+                                    <p className="text-brand-text-secondary">{t('aboutPage.whyPoint3Desc')}</p>
                                 </Card>
                             </div>
                         </div>
@@ -219,16 +239,16 @@ const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBo
                 {/* How Coaching Works */}
                 <section ref={howItWorksRef} className={`py-16 md:py-24 bg-brand-surface transition-opacity duration-1000 ${howItWorksIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
                      <div className="container mx-auto px-4 text-center">
-                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-12">How Coaching Works</h2>
+                        <h2 className="text-3xl md:text-4xl font-bold text-white mb-12">{t('aboutPage.howCoachingWorks')}</h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
                             <div ref={howCard1Ref} className={`transition-all duration-500 ${howCard1IsVisible ? 'animate-pop-in' : 'opacity-0'}`}>
-                                <Card className="p-8 h-full bg-brand-bg/50 transition-all duration-300 hover:border-brand-primary border border-transparent hover:shadow-lg hover:shadow-brand-primary/20"><CreditCardIcon className="h-10 w-10 text-brand-primary mx-auto mb-4"/> <h3 className="text-xl font-bold text-white mb-2">Payment in Crypto</h3><p className="text-sm text-brand-text-secondary">All sessions are paid securely in cryptocurrency. We’ll guide you through the process if it’s your first time, making sure payments are simple and stress-free.</p></Card>
+                                <Card className="p-8 h-full bg-brand-bg/50 transition-all duration-300 hover:border-brand-primary border border-transparent hover:shadow-lg hover:shadow-brand-primary/20"><CreditCardIcon className="h-10 w-10 text-brand-primary mx-auto mb-4"/> <h3 className="text-xl font-bold text-white mb-2">{t('aboutPage.how1Title')}</h3><p className="text-sm text-brand-text-secondary">{t('aboutPage.how1Desc')}</p></Card>
                             </div>
                             <div ref={howCard2Ref} className={`transition-all duration-500 delay-200 ${howCard2IsVisible ? 'animate-pop-in' : 'opacity-0'}`}>
-                                <Card className="p-8 h-full bg-brand-bg/50 transition-all duration-300 hover:border-brand-primary border border-transparent hover:shadow-lg hover:shadow-brand-primary/20"><VideoCameraIcon className="h-10 w-10 text-brand-primary mx-auto mb-4"/> <h3 className="text-xl font-bold text-white mb-2">Session Recordings</h3><p className="text-sm text-brand-text-secondary">Every session is recorded so you can revisit the lessons anytime, ensuring you never miss a detail.</p></Card>
+                                <Card className="p-8 h-full bg-brand-bg/50 transition-all duration-300 hover:border-brand-primary border border-transparent hover:shadow-lg hover:shadow-brand-primary/20"><VideoCameraIcon className="h-10 w-10 text-brand-primary mx-auto mb-4"/> <h3 className="text-xl font-bold text-white mb-2">{t('aboutPage.how2Title')}</h3><p className="text-sm text-brand-text-secondary">{t('aboutPage.how2Desc')}</p></Card>
                             </div>
                              <div ref={howCard3Ref} className={`transition-all duration-500 delay-400 ${howCard3IsVisible ? 'animate-pop-in' : 'opacity-0'}`}>
-                                <Card className="p-8 h-full bg-brand-bg/50 transition-all duration-300 hover:border-brand-primary border border-transparent hover:shadow-lg hover:shadow-brand-primary/20"><ChatBubbleBottomCenterTextIcon className="h-10 w-10 text-brand-primary mx-auto mb-4"/> <h3 className="text-xl font-bold text-white mb-2">Ongoing Support</h3><p className="text-sm text-brand-text-secondary">Our tailored coaching means you don’t have to “get it all right the first time.” If you’re not confident after a session, you’ll have continued access to your coach for questions and guidance.</p></Card>
+                                <Card className="p-8 h-full bg-brand-bg/50 transition-all duration-300 hover:border-brand-primary border border-transparent hover:shadow-lg hover:shadow-brand-primary/20"><ChatBubbleBottomCenterTextIcon className="h-10 w-10 text-brand-primary mx-auto mb-4"/> <h3 className="text-xl font-bold text-white mb-2">{t('aboutPage.how3Title')}</h3><p className="text-sm text-brand-text-secondary">{t('aboutPage.how3Desc')}</p></Card>
                             </div>
                         </div>
                     </div>
@@ -237,15 +257,15 @@ const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBo
                 {/* Final CTA */}
                 <section ref={finalCtaRef} className={`py-16 md:py-24 transition-opacity duration-1000 ${finalCtaIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
                     <div className="container mx-auto px-4 text-center">
-                        <h2 className="text-3xl md:text-4xl font-bold text-white">Your Crypto Journey Starts Here</h2>
+                        <h2 className="text-3xl md:text-4xl font-bold text-white">{t('aboutPage.finalCtaTitle')}</h2>
                         <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
                              <Button onClick={onOpenBookingModal} className="text-lg py-3 px-8 flex items-center gap-2 transition-transform duration-200 hover:scale-105 btn-glow-blue btn-blue-darken">
                                 <PhoneIcon className="h-6 w-6"/>
-                                Book a Call with a Coach
+                                {t('introPage.bookCallCoach')}
                             </Button>
                             <button onClick={onStart} className="font-bold py-3 px-8 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-surface disabled:opacity-50 disabled:cursor-not-allowed text-lg flex items-center gap-2 bg-transparent border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">
                                 <CheckCircleIcon className="h-6 w-6"/>
-                                Start Learning with the App
+                                {t('introPage.startApp')}
                             </button>
                         </div>
                     </div>

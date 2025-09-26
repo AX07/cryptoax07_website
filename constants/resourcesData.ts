@@ -15,7 +15,7 @@ export interface ResourceCategory {
     items: ResourceItem[];
 }
 
-export const RESOURCES_DATA: ResourceCategory[] = [
+export const GET_RESOURCES_DATA = (t: (key: string) => string): ResourceCategory[] => [
     {
         id: 'exchanges',
         title: 'Exchanges',

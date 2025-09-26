@@ -6,14 +6,14 @@ import CategoryView from './components/CategoryView';
 import ExpertHelp from './components/ExpertHelp';
 import AiChatbot from './components/AiChatbot';
 import Progress from './components/Progress';
-import Button from './components/ui/Button';
 import IntroPage from './components/IntroPage';
 import AboutPage from './components/AboutPage';
 import ResourcesPage from './components/ResourcesPage';
 import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
-import { CATEGORIES, LEARNING_PATH } from './constants';
+import { GET_CATEGORIES, LEARNING_PATH } from './constants';
 import { XMarkIcon } from './components/icons/Icons';
+import { LanguageProvider, useLanguage } from './hooks/useLanguage';
 
 import SeedPhraseSim from './components/simulations/SeedPhraseSim';
 import SwapSim from './components/simulations/SwapSim';
@@ -45,11 +45,13 @@ import DebtRepaymentSim from './components/simulations/DebtRepaymentSim';
 import PerpetualFuturesSim from './components/simulations/PerpetualFuturesSim';
 import ExpenseTrackingSim from './components/simulations/ExpenseTrackingSim';
 import AssetsLiabilitiesSim from './components/simulations/AssetsLiabilitiesSim';
+import Button from './components/ui/Button';
 
+const AppContent: React.FC = () => {
+  const { t } = useLanguage();
+  const CATEGORIES = GET_CATEGORIES(t);
+  const allSimulations = CATEGORIES.flatMap(cat => cat.simulations);
 
-const allSimulations = CATEGORIES.flatMap(cat => cat.simulations);
-
-const App: React.FC = () => {
   const [page, setPage] = useState<Page>('intro');
   const [view, setView] = useState<View>(View.Dashboard);
   const [learningPathStep, setLearningPathStep] = useState<number>(0);
@@ -63,7 +65,6 @@ const App: React.FC = () => {
       return false;
     }
   });
-
 
   const [userProgress, setUserProgress] = useState<UserProgress>(() => {
     try {
@@ -280,9 +281,9 @@ const App: React.FC = () => {
         if (learningPathStep >= LEARNING_PATH.length) {
             return (
                 <div className="text-center animate-fade-in p-8">
-                    <h2 className="text-4xl font-bold text-brand-secondary mb-4">Congratulations!</h2>
-                    <p className="text-lg text-brand-text-secondary mb-8">You have completed the entire learning path. You've built a strong foundation in crypto!</p>
-                    <Button onClick={handleBack}>Return to Dashboard</Button>
+                    <h2 className="text-4xl font-bold text-brand-secondary mb-4">{t('app.congratulations')}</h2>
+                    <p className="text-lg text-brand-text-secondary mb-8">{t('app.pathComplete')}</p>
+                    <Button onClick={handleBack}>{t('app.returnToDashboard')}</Button>
                 </div>
             );
         }
@@ -290,7 +291,7 @@ const App: React.FC = () => {
         const currentSim = allSimulations.find(s => s.id === currentSimId);
 
         if (!currentSim) {
-          return <div className="text-center p-8">Error: Current lesson could not be found.</div>;
+          return <div className="text-center p-8">{t('app.lessonNotFound')}</div>;
         }
 
         const pathProgress = Math.round(((learningPathStep) / LEARNING_PATH.length) * 100);
@@ -299,14 +300,14 @@ const App: React.FC = () => {
             <div className="animate-fade-in">
                 <div className="mb-6 md:mb-8">
                     <button onClick={handleBack} className="text-brand-primary hover:underline text-sm mb-4">
-                        &larr; Back to Dashboard
+                        &larr; {t('app.backToDashboard')}
                     </button>
                     <div className="bg-brand-surface p-4 rounded-xl border border-gray-700/50">
                       <div className="flex justify-between items-center mb-2">
                         <h3 className="text-lg md:text-xl font-semibold text-white">
-                            Lesson {learningPathStep + 1} of {LEARNING_PATH.length}: {currentSim.title}
+                            {t('app.lesson')} {learningPathStep + 1} {t('app.of')} {LEARNING_PATH.length}: {currentSim.title}
                         </h3>
-                        <span className="text-brand-secondary font-bold text-sm hidden md:block">{pathProgress}% Complete</span>
+                        <span className="text-brand-secondary font-bold text-sm hidden md:block">{pathProgress}% {t('app.complete')}</span>
                       </div>
                       <div className="w-full bg-gray-700 rounded-full h-2.5">
                           <div className="bg-brand-secondary h-2.5 rounded-full transition-all duration-500" style={{ width: `${pathProgress}%` }}></div>
@@ -396,7 +397,7 @@ const App: React.FC = () => {
             className="bg-slate-100 rounded-2xl shadow-2xl border border-gray-300 w-[95vw] max-w-4xl h-[90vh] relative animate-pop-in" 
             onClick={e => e.stopPropagation()}
           >
-            <h2 id="booking-modal-title" className="sr-only">Book an Appointment</h2>
+            <h2 id="booking-modal-title" className="sr-only">{t('app.bookAppointment')}</h2>
             <button 
               onClick={closeBookingModal} 
               className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 z-10 p-1 rounded-full bg-white/50 hover:bg-gray-200 transition-colors"
@@ -418,5 +419,11 @@ const App: React.FC = () => {
     </>
   );
 };
+
+const App: React.FC = () => (
+    <LanguageProvider>
+        <AppContent />
+    </LanguageProvider>
+);
 
 export default App;

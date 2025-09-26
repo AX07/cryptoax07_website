@@ -3,7 +3,8 @@ import React from 'react';
 import type { UserProgress, Category } from '../types';
 import Button from './ui/Button';
 import Card from './ui/Card';
-import { CATEGORIES, LEARNING_PATH } from '../constants';
+import { GET_CATEGORIES, LEARNING_PATH } from '../constants';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface DashboardProps {
   onStartLearning: () => void;
@@ -12,6 +13,8 @@ interface DashboardProps {
 }
 
 const Dashboard: React.FC<DashboardProps> = ({ onStartLearning, onSelectCategory, userProgress }) => {
+  const { t } = useLanguage();
+  const CATEGORIES = GET_CATEGORIES(t);
   const totalSimulations = LEARNING_PATH.length;
   const completedCount = userProgress.completedSimulations.length;
   const overallProgressPercentage = totalSimulations > 0 ? Math.round((completedCount / totalSimulations) * 100) : 0;
@@ -20,16 +23,16 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartLearning, onSelectCategory
   return (
     <div className="animate-fade-in">
       <div className="text-center mb-10">
-        <h2 className="text-4xl md:text-5xl font-bold text-white">Welcome to Your Crypto Journey</h2>
+        <h2 className="text-4xl md:text-5xl font-bold text-white">{t('dashboard.welcome')}</h2>
         <p className="mt-4 text-lg text-brand-text-secondary max-w-2xl mx-auto">
-          Follow our guided path or freely explore simulations to master cryptocurrency concepts safely.
+          {t('dashboard.description')}
         </p>
       </div>
 
       <div className="w-full max-w-3xl mx-auto mb-10 bg-brand-surface p-6 rounded-xl border border-gray-700/50">
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-xl font-semibold text-white">Learning Progress</h3>
-          <span className="text-brand-primary font-bold">{overallProgressPercentage}% Complete</span>
+          <h3 className="text-xl font-semibold text-white">{t('dashboard.learningProgress')}</h3>
+          <span className="text-brand-primary font-bold">{overallProgressPercentage}% {t('app.complete')}</span>
         </div>
         <div className="w-full bg-gray-700 rounded-full h-4">
           <div 
@@ -37,17 +40,17 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartLearning, onSelectCategory
             style={{ width: `${overallProgressPercentage}%` }}
           ></div>
         </div>
-        <p className="text-xs text-brand-text-secondary text-right mt-1">{completedCount} / {totalSimulations} Lessons Completed</p>
+        <p className="text-xs text-brand-text-secondary text-right mt-1">{completedCount} / {totalSimulations} {t('dashboard.lessonsCompleted')}</p>
       </div>
 
       <div className="text-center mb-12">
         <Button onClick={onStartLearning} className="text-xl py-4 px-10">
-          {isStarted ? 'Resume Learning' : 'Start Learning'}
+          {isStarted ? t('dashboard.resumeLearning') : t('startLearning')}
         </Button>
       </div>
 
       <div>
-        <h3 className="text-2xl font-bold text-center text-white mb-6">Or, Explore by Category</h3>
+        <h3 className="text-2xl font-bold text-center text-white mb-6">{t('dashboard.exploreByCategory')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {CATEGORIES.map((category) => {
             const totalSimsInCategory = category.simulations.length;
@@ -71,7 +74,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartLearning, onSelectCategory
                 {totalSimsInCategory > 0 && (
                   <div className="px-6 pb-6 mt-auto">
                     <div className="flex justify-between items-center mb-1 text-xs">
-                      <span className="font-semibold text-brand-text-secondary">Progress</span>
+                      <span className="font-semibold text-brand-text-secondary">{t('dashboard.progress')}</span>
                       <span className="font-bold text-brand-primary">{progressPercentage}%</span>
                     </div>
                     <div className="w-full bg-gray-700 rounded-full h-2">

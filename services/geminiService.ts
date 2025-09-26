@@ -6,12 +6,8 @@ let chat: Chat | null = null;
 
 const getAi = (): GoogleGenAI => {
   if (!ai) {
-    // Per instructions, assume process.env.API_KEY is available.
-    // The try/catch in askAi will handle potential initialization errors.
-    // Use optional chaining to prevent ReferenceError if 'process' is not defined in the browser.
     const apiKey = (process as any)?.env?.API_KEY;
     if (!apiKey) {
-        // This will be caught by the try/catch in askAi
         throw new Error("API_KEY is not configured in the environment.");
     }
     ai = new GoogleGenAI({ apiKey });
@@ -20,7 +16,6 @@ const getAi = (): GoogleGenAI => {
 };
 
 const getChat = (): Chat => {
-    // This will throw if getAi() fails, which is intended.
     const aiInstance = getAi();
 
     if (!chat) {
@@ -55,7 +50,7 @@ const getChat = (): Chat => {
 }
 
 
-export const askAi = async (message: string, simulations: Category[]): Promise<AiResponse> => {
+export const askAi = async (message: string, simulations: Category[], t: (key: string) => string): Promise<AiResponse> => {
   try {
     const chatInstance = getChat();
     
@@ -75,18 +70,17 @@ export const askAi = async (message: string, simulations: Category[]): Promise<A
     
     const response = await chatInstance.sendMessage({ message: prompt });
     const jsonString = response.text.trim();
-     // A simple check to see if the response is likely JSON
     if (!jsonString.startsWith('{') && !jsonString.startsWith('[')) {
         console.error("Gemini API returned non-JSON response:", jsonString);
-        return { type: 'answer', text: "I received an unexpected response. Could you please rephrase your question?" };
+        return { type: 'answer', text: t('geminiService.unexpectedResponse') };
     }
     const parsedResponse: AiResponse = JSON.parse(jsonString);
     return parsedResponse;
   } catch (error) {
     console.error("Error with Gemini API:", error);
     if (error instanceof Error && error.message.includes("API_KEY")) {
-        return { type: 'answer', text: "The AI assistant is currently unavailable. Please ensure the API key is configured." };
+        return { type: 'answer', text: t('geminiService.unavailable') };
     }
-    return { type: 'answer', text: "Sorry, I had trouble processing that request. Please try rephrasing your question." };
+    return { type: 'answer', text: t('geminiService.processingError') };
   }
 };

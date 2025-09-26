@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { askAi } from '../services/geminiService';
-import { CATEGORIES } from '../constants';
+import { GET_CATEGORIES } from '../constants';
 import type { AiResponse } from '../types';
 import GeneratedExample from './GeneratedExample';
 import { ChatBubbleBottomCenterTextIcon, PaperAirplaneIcon, XMarkIcon } from './icons/Icons';
 import Button from './ui/Button';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface Message {
   role: 'user' | 'model';
@@ -16,10 +17,13 @@ interface AiChatbotProps {
 }
 
 const AiChatbot: React.FC<AiChatbotProps> = ({ onSelectSimulation }) => {
+  const { t } = useLanguage();
+  const CATEGORIES = GET_CATEGORIES(t);
+
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', content: { type: 'answer', text: "Hi! I'm CryptoAX, your personal crypto guide. Ask me anything about blockchain, wallets, or DeFi!" } }
+    { role: 'model', content: { type: 'answer', text: t('aiChatbot.greeting') } }
   ]);
   const [userInput, setUserInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -40,7 +44,7 @@ const AiChatbot: React.FC<AiChatbotProps> = ({ onSelectSimulation }) => {
     setUserInput('');
     setIsLoading(true);
 
-    const response = await askAi(userInput, CATEGORIES);
+    const response = await askAi(userInput, CATEGORIES, t);
     setMessages([...newMessages, { role: 'model', content: response }]);
     setIsLoading(false);
   };
@@ -71,7 +75,7 @@ const AiChatbot: React.FC<AiChatbotProps> = ({ onSelectSimulation }) => {
               className="mt-3 w-full"
               variant="secondary"
             >
-              Try the Simulation
+              {t('aiChatbot.trySimulation')}
             </Button>
           </div>
         );
@@ -83,7 +87,6 @@ const AiChatbot: React.FC<AiChatbotProps> = ({ onSelectSimulation }) => {
           </div>
         );
       default:
-        // This case handles potential malformed AiResponse objects gracefully
         const contentAsAny = aiContent as any;
         if (contentAsAny && typeof contentAsAny.text === 'string') {
           return <div>{contentAsAny.text}</div>;
@@ -115,7 +118,7 @@ const AiChatbot: React.FC<AiChatbotProps> = ({ onSelectSimulation }) => {
           `}
         >
           <header className="flex justify-between items-center p-4 border-b border-gray-700 flex-shrink-0">
-            <h3 className="text-lg font-bold text-white">CryptoAX Assistant</h3>
+            <h3 className="text-lg font-bold text-white">{t('aiChatbot.assistant')}</h3>
             <button onClick={handleClose} className="text-brand-text-secondary hover:text-white">
               <XMarkIcon className="h-6 w-6" />
             </button>
@@ -150,7 +153,7 @@ const AiChatbot: React.FC<AiChatbotProps> = ({ onSelectSimulation }) => {
                 value={userInput}
                 onFocus={() => setIsExpanded(true)}
                 onChange={(e) => setUserInput(e.target.value)}
-                placeholder="Ask about crypto..."
+                placeholder={t('aiChatbot.placeholder')}
                 className="w-full bg-transparent p-3 focus:outline-none text-brand-text"
                 disabled={isLoading}
               />

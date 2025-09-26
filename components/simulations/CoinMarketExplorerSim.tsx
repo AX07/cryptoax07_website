@@ -3,6 +3,7 @@ import Card from '../ui/Card';
 import Button from '../ui/Button';
 import Quiz from '../ui/Quiz';
 import type { QuizQuestion } from '../../types';
+import { useLanguage } from '../../hooks/useLanguage';
 
 const mockCoins = [
   { rank: 1, name: 'Bitcoin', ticker: 'BTC', price: 65432.1, change24h: 2.5, marketCap: 1.29e12 },
@@ -52,23 +53,24 @@ const formatCurrency = (value: number) => {
 };
 
 const CoinMarketExplorerSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+  const { t } = useLanguage();
   const [showQuiz, setShowQuiz] = useState(false);
   return (
     <Card className="max-w-6xl mx-auto p-6 md:p-8">
-      <h2 className="text-3xl font-bold text-center mb-2 text-white">Coin Market Explorer</h2>
+      <h2 className="text-3xl font-bold text-center mb-2 text-white">{t('simulations.marketExplorer.title')}</h2>
       <p className="text-brand-text-secondary text-center mb-8 max-w-3xl mx-auto">
-        Sites like CoinGecko and CoinMarketCap are essential for crypto research, providing a comprehensive overview of the market. This simulation helps you get familiar with reading the data on these platforms, explaining key metrics like market cap, 24-hour price change, and rank, so you can evaluate different cryptocurrencies.
+        {t('simulations.marketExplorer.description')}
       </p>
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm text-left">
           <thead className="text-xs text-brand-text-secondary uppercase bg-brand-bg/50">
             <tr>
-              <th scope="col" className="px-6 py-3">#</th>
-              <th scope="col" className="px-6 py-3">Name</th>
-              <th scope="col" className="px-6 py-3">Price</th>
-              <th scope="col" className="px-6 py-3">24h %</th>
-              <th scope="col" className="px-6 py-3">Market Cap</th>
+              <th scope="col" className="px-6 py-3">{t('simulations.marketExplorer.rank')}</th>
+              <th scope="col" className="px-6 py-3">{t('simulations.marketExplorer.name')}</th>
+              <th scope="col" className="px-6 py-3">{t('simulations.marketExplorer.price')}</th>
+              <th scope="col" className="px-6 py-3">{t('simulations.marketExplorer.change24h')}</th>
+              <th scope="col" className="px-6 py-3">{t('simulations.marketExplorer.marketCap')}</th>
             </tr>
           </thead>
           <tbody>
@@ -89,13 +91,13 @@ const CoinMarketExplorerSim: React.FC<{ onComplete: () => void }> = ({ onComplet
         </table>
       </div>
        <p className="text-xs text-brand-text-secondary text-center mt-4">
-        <strong>Market Cap</strong> = Current Price × Circulating Supply. It represents the total value of a cryptocurrency.
+        <strong>{t('simulations.marketExplorer.marketCap')}</strong> = {t('simulations.marketExplorer.marketCapDesc')}
       </p>
 
       {!showQuiz && (
         <div className="text-center mt-8 border-t border-gray-700 pt-6">
           <Button onClick={() => setShowQuiz(true)} variant="secondary">
-            Take Quiz
+            {t('takeQuiz')}
           </Button>
         </div>
       )}

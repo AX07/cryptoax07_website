@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { CATEGORIES } from '../constants';
+import { GET_CATEGORIES } from '../constants';
 import { UserProgress, View, Page } from '../types';
 import { CheckCircleIcon, ChevronDownIcon, HomeIcon, ChartBarSquareIcon, InformationCircleIcon, BookOpenIcon, ChevronDoubleRightIcon } from './icons/Icons';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface SidebarProps {
   userProgress: UserProgress;
@@ -16,8 +17,10 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ userProgress, onSelectSimulation, onNavigate, onNavigatePage, currentSimId, isOpen, onClose, isCollapsed, onToggleCollapse }) => {
+  const { t, language, toggleLanguage } = useLanguage();
+  const CATEGORIES = GET_CATEGORIES(t);
+
   const [openCategory, setOpenCategory] = useState<string | null>(() => {
-    // On initial load, open the category of the current simulation
     if (currentSimId) {
         const category = CATEGORIES.find(c => c.simulations.some(s => s.id === currentSimId));
         return category ? category.id : null;
@@ -28,13 +31,13 @@ const Sidebar: React.FC<SidebarProps> = ({ userProgress, onSelectSimulation, onN
   const completedSimIds = new Set(userProgress.completedSimulations.map(s => s.id));
 
   const handleCategoryClick = (categoryId: string) => {
-    if (isCollapsed) return; // Don't allow opening categories in collapsed mode
+    if (isCollapsed) return;
     setOpenCategory(prev => (prev === categoryId ? null : categoryId));
   };
 
   const handleSimClick = (simId: string) => {
     onSelectSimulation(simId);
-    onClose(); // Close sidebar on mobile after selection
+    onClose();
   };
   
   const handleNavClick = (view: View) => {
@@ -49,7 +52,6 @@ const Sidebar: React.FC<SidebarProps> = ({ userProgress, onSelectSimulation, onN
 
   return (
     <>
-      {/* Backdrop for mobile */}
       <div 
         className={`fixed inset-0 bg-black/60 z-40 md:hidden transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={onClose}
@@ -58,51 +60,82 @@ const Sidebar: React.FC<SidebarProps> = ({ userProgress, onSelectSimulation, onN
 
       <aside className={`fixed top-0 right-0 h-full bg-brand-surface border-l border-gray-700/50 z-50 transform transition-all duration-300 ease-in-out md:translate-x-0 flex flex-col ${isOpen ? 'translate-x-0' : 'translate-x-full'} ${isCollapsed ? 'w-20' : 'w-72'}`}>
         <div className="p-4 border-b border-gray-700/50 flex justify-between items-center h-[92px] flex-shrink-0">
-          <h2 className={`text-xl font-bold text-white whitespace-nowrap transition-opacity duration-200 ${isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>Navigation</h2>
+          <h2 className={`text-xl font-bold text-white whitespace-nowrap transition-opacity duration-200 ${isCollapsed ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>{t('navigation')}</h2>
         </div>
         <nav className="p-2 flex-grow overflow-y-auto">
           <ul className="space-y-2">
+            <li>
+                {isCollapsed ? (
+                    <button
+                        onClick={toggleLanguage}
+                        className="w-full flex justify-center p-3 rounded-lg"
+                        title={t(language === 'en' ? 'header.switchToSpanish' : 'header.switchToEnglish')}
+                    >
+                        <div className="bg-brand-primary text-brand-bg font-bold text-sm rounded-md px-2 py-1">
+                            {language.toUpperCase()}
+                        </div>
+                    </button>
+                ) : (
+                    <div className="flex items-center gap-1 p-2 rounded-lg bg-brand-bg mx-2" role="group" aria-label="Language selection">
+                        <button
+                            className={`flex-1 text-center px-2 py-1 text-sm font-bold rounded-md transition-colors ${language === 'en' ? 'bg-brand-primary text-brand-bg' : 'text-brand-text-secondary hover:bg-brand-surface'}`}
+                            onClick={() => { if (language !== 'en') toggleLanguage(); }}
+                            aria-pressed={language === 'en'}
+                        >
+                            EN
+                        </button>
+                        <button
+                            className={`flex-1 text-center px-2 py-1 text-sm font-bold rounded-md transition-colors ${language === 'es' ? 'bg-brand-primary text-brand-bg' : 'text-brand-text-secondary hover:bg-brand-surface'}`}
+                            onClick={() => { if (language !== 'es') toggleLanguage(); }}
+                            aria-pressed={language === 'es'}
+                        >
+                            ES
+                        </button>
+                    </div>
+                )}
+            </li>
+
             <li className="pb-2 border-b border-gray-700/50 mb-2">
-                <span className={`px-2 text-xs font-bold text-gray-500 uppercase whitespace-nowrap transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>Website</span>
+                <span className={`px-2 text-xs font-bold text-gray-500 uppercase whitespace-nowrap transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>{t('sidebar.website')}</span>
             </li>
              <li>
-              <button onClick={() => handlePageNavClick('intro')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-left text-brand-text-secondary hover:bg-brand-bg hover:text-white transition-colors ${isCollapsed ? 'justify-center' : ''}`} title="Home">
+              <button onClick={() => handlePageNavClick('intro')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-left text-brand-text-secondary hover:bg-brand-bg hover:text-white transition-colors ${isCollapsed ? 'justify-center' : ''}`} title={t('home')}>
                 <HomeIcon className="h-6 w-6 flex-shrink-0" />
-                <span className={`font-semibold whitespace-nowrap ${isCollapsed ? 'hidden' : 'block'}`}>Home</span>
+                <span className={`font-semibold whitespace-nowrap ${isCollapsed ? 'hidden' : 'block'}`}>{t('home')}</span>
               </button>
             </li>
              <li>
-              <button onClick={() => handlePageNavClick('about')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-left text-brand-text-secondary hover:bg-brand-bg hover:text-white transition-colors ${isCollapsed ? 'justify-center' : ''}`} title="About">
+              <button onClick={() => handlePageNavClick('about')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-left text-brand-text-secondary hover:bg-brand-bg hover:text-white transition-colors ${isCollapsed ? 'justify-center' : ''}`} title={t('about')}>
                 <InformationCircleIcon className="h-6 w-6 flex-shrink-0" />
-                <span className={`font-semibold whitespace-nowrap ${isCollapsed ? 'hidden' : 'block'}`}>About</span>
+                <span className={`font-semibold whitespace-nowrap ${isCollapsed ? 'hidden' : 'block'}`}>{t('about')}</span>
               </button>
             </li>
              <li>
-              <button onClick={() => handlePageNavClick('resources')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-left text-brand-text-secondary hover:bg-brand-bg hover:text-white transition-colors ${isCollapsed ? 'justify-center' : ''}`} title="Resources">
+              <button onClick={() => handlePageNavClick('resources')} className={`w-full flex items-center gap-3 p-3 rounded-lg text-left text-brand-text-secondary hover:bg-brand-bg hover:text-white transition-colors ${isCollapsed ? 'justify-center' : ''}`} title={t('resources')}>
                 <BookOpenIcon className="h-6 w-6 flex-shrink-0" />
-                <span className={`font-semibold whitespace-nowrap ${isCollapsed ? 'hidden' : 'block'}`}>Resources</span>
+                <span className={`font-semibold whitespace-nowrap ${isCollapsed ? 'hidden' : 'block'}`}>{t('resources')}</span>
               </button>
             </li>
 
             <li className="pt-2 border-t border-gray-700/50 mt-2">
-              <span className={`px-2 text-xs font-bold text-gray-500 uppercase whitespace-nowrap transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>Learning App</span>
+              <span className={`px-2 text-xs font-bold text-gray-500 uppercase whitespace-nowrap transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>{t('sidebar.learningApp')}</span>
             </li>
 
             <li>
-              <button onClick={() => handleNavClick(View.Dashboard)} className={`w-full flex items-center gap-3 p-3 rounded-lg text-left text-brand-text-secondary hover:bg-brand-bg hover:text-white transition-colors ${isCollapsed ? 'justify-center' : ''}`} title="Dashboard">
+              <button onClick={() => handleNavClick(View.Dashboard)} className={`w-full flex items-center gap-3 p-3 rounded-lg text-left text-brand-text-secondary hover:bg-brand-bg hover:text-white transition-colors ${isCollapsed ? 'justify-center' : ''}`} title={t('sidebar.dashboard')}>
                 <HomeIcon className="h-6 w-6 flex-shrink-0" />
-                <span className={`font-semibold whitespace-nowrap ${isCollapsed ? 'hidden' : 'block'}`}>Dashboard</span>
+                <span className={`font-semibold whitespace-nowrap ${isCollapsed ? 'hidden' : 'block'}`}>{t('sidebar.dashboard')}</span>
               </button>
             </li>
              <li>
-              <button onClick={() => handleNavClick(View.Progress)} className={`w-full flex items-center gap-3 p-3 rounded-lg text-left text-brand-text-secondary hover:bg-brand-bg hover:text-white transition-colors ${isCollapsed ? 'justify-center' : ''}`} title="My Progress">
+              <button onClick={() => handleNavClick(View.Progress)} className={`w-full flex items-center gap-3 p-3 rounded-lg text-left text-brand-text-secondary hover:bg-brand-bg hover:text-white transition-colors ${isCollapsed ? 'justify-center' : ''}`} title={t('sidebar.myProgress')}>
                 <ChartBarSquareIcon className="h-6 w-6 flex-shrink-0" />
-                <span className={`font-semibold whitespace-nowrap ${isCollapsed ? 'hidden' : 'block'}`}>My Progress</span>
+                <span className={`font-semibold whitespace-nowrap ${isCollapsed ? 'hidden' : 'block'}`}>{t('sidebar.myProgress')}</span>
               </button>
             </li>
 
             <li className="pt-2 border-t border-gray-700/50 mt-2">
-              <span className={`px-2 text-xs font-bold text-gray-500 uppercase whitespace-nowrap transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>Categories</span>
+              <span className={`px-2 text-xs font-bold text-gray-500 uppercase whitespace-nowrap transition-opacity duration-200 ${isCollapsed ? 'opacity-0' : 'opacity-100'}`}>{t('sidebar.categories')}</span>
             </li>
 
             {CATEGORIES.map(category => (
@@ -139,11 +172,10 @@ const Sidebar: React.FC<SidebarProps> = ({ userProgress, onSelectSimulation, onN
             ))}
           </ul>
         </nav>
-        {/* Collapse button at the bottom */}
         <div className="p-2 border-t border-gray-700/50 flex-shrink-0">
-             <button onClick={onToggleCollapse} className={`w-full hidden md:flex items-center p-3 rounded-lg text-left text-brand-text-secondary hover:bg-brand-bg hover:text-white transition-colors ${isCollapsed ? 'justify-center' : 'justify-start'}`} aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}>
+             <button onClick={onToggleCollapse} className={`w-full hidden md:flex items-center p-3 rounded-lg text-left text-brand-text-secondary hover:bg-brand-bg hover:text-white transition-colors ${isCollapsed ? 'justify-center' : 'justify-start'}`} aria-label={isCollapsed ? t('sidebar.expand') : t('sidebar.collapse')}>
                 <ChevronDoubleRightIcon className={`h-5 w-5 flex-shrink-0 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} />
-                <span className={`font-semibold whitespace-nowrap text-sm ml-2 ${isCollapsed ? 'hidden' : 'block'}`}>Collapse</span>
+                <span className={`font-semibold whitespace-nowrap text-sm ml-2 ${isCollapsed ? 'hidden' : 'block'}`}>{t('sidebar.collapse')}</span>
              </button>
         </div>
       </aside>

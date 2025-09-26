@@ -3,6 +3,7 @@ import React from 'react';
 import type { Category, Simulation, UserProgress } from '../types';
 import Card from './ui/Card';
 import { CheckCircleIcon, ExclamationTriangleIcon } from './icons/Icons';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface CategoryViewProps {
   category: Category;
@@ -12,6 +13,7 @@ interface CategoryViewProps {
 }
 
 const CategoryView: React.FC<CategoryViewProps> = ({ category, onSelectSimulation, onBack, userProgress }) => {
+  const { t } = useLanguage();
   return (
     <div className="animate-fade-in">
       <div className="flex items-center mb-8">
@@ -42,13 +44,13 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category, onSelectSimulatio
               {isCompleted && (
                  <div className="absolute top-3 right-3 flex items-center gap-1 bg-brand-secondary/20 text-brand-secondary text-xs font-bold px-2 py-1 rounded-full z-10">
                    <CheckCircleIcon className="h-4 w-4" />
-                   Completed
+                   {t('completed')}
                  </div>
               )}
               {sim.isSecurityCritical && !isCompleted && (
                  <div className="absolute top-3 left-3 flex items-center gap-1 bg-yellow-500/20 text-yellow-400 text-xs font-bold px-2 py-1 rounded-full z-10">
                    <ExclamationTriangleIcon className="h-4 w-4" />
-                   Security Priority
+                   {t('securityPriority')}
                  </div>
               )}
               <div className={`p-6 flex flex-col flex-grow ${hasBadge ? 'pt-10' : ''}`}>

@@ -3,6 +3,7 @@ import type { QuizQuestion } from '../../types';
 import Button from './Button';
 import Card from './Card';
 import { CheckCircleIcon, XCircleIcon } from '../icons/Icons';
+import { useLanguage } from '../../hooks/useLanguage';
 
 interface QuizProps {
   questions: QuizQuestion[];
@@ -13,6 +14,7 @@ const Quiz: React.FC<QuizProps> = ({ questions, onComplete }) => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswerIndex, setSelectedAnswerIndex] = useState<number | null>(null);
   const [isAnswered, setIsAnswered] = useState(false);
+  const { t } = useLanguage();
 
   const currentQuestion = questions[currentQuestionIndex];
   const isCorrect = isAnswered && selectedAnswerIndex !== null ? currentQuestion.options[selectedAnswerIndex].isCorrect : false;
@@ -53,7 +55,7 @@ const Quiz: React.FC<QuizProps> = ({ questions, onComplete }) => {
 
   return (
     <div className="mt-8 border-t border-gray-700 pt-6 animate-fade-in">
-      <h3 className="text-xl font-bold text-center text-white mb-4">Knowledge Check</h3>
+      <h3 className="text-xl font-bold text-center text-white mb-4">{t('knowledgeCheck')}</h3>
       <Card className="p-6 bg-brand-bg/50">
         <p className="text-lg font-semibold text-brand-text mb-4 text-center">{currentQuestion.question}</p>
         <div className="space-y-3">
@@ -75,16 +77,16 @@ const Quiz: React.FC<QuizProps> = ({ questions, onComplete }) => {
         {isAnswered && (
           <div className="mt-4 text-center p-4 rounded-lg bg-brand-surface animate-fade-in">
             <h4 className={`font-bold text-lg ${isCorrect ? 'text-brand-secondary' : 'text-red-500'}`}>
-              {isCorrect ? 'Correct!' : 'Not Quite'}
+              {isCorrect ? t('correct') : t('notQuite')}
             </h4>
             <p className="text-brand-text-secondary mt-1">{currentQuestion.explanation}</p>
             {isCorrect ? (
               <Button onClick={handleNext} variant="secondary" className="mt-4">
-                {currentQuestionIndex < questions.length - 1 ? 'Next Question' : 'Finish Lesson'}
+                {currentQuestionIndex < questions.length - 1 ? t('nextQuestion') : t('finishLesson')}
               </Button>
             ) : (
               <Button onClick={handleTryAgain} variant="accent" className="mt-4">
-                Try Again
+                {t('tryAgain')}
               </Button>
             )}
           </div>

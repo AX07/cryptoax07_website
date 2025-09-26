@@ -3,28 +3,15 @@ import Button from './ui/Button';
 import Card from './ui/Card';
 import { MenuIcon, XMarkIcon, PhoneIcon, CheckCircleIcon, NewspaperIcon, Squares2X2Icon } from './icons/Icons';
 import { Page } from '../types';
-import { RESOURCES_DATA, ResourceItem } from '../constants/resourcesData';
+import { GET_RESOURCES_DATA, ResourceItem } from '../constants/resourcesData';
 import Footer from './Footer';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface ResourcesPageProps {
   onStart: () => void;
   onNavigatePage: (page: Page) => void;
   onOpenBookingModal: () => void;
 }
-
-const useScrollAnimation = <T extends Element>(options?: IntersectionObserverInit) => {
-    const [isVisible, setIsVisible] = useState(false);
-    const ref = useRef<T>(null);
-    useEffect(() => {
-        const element = ref.current;
-        const observer = new IntersectionObserver(([entry]) => {
-            if (entry.isIntersecting) setIsVisible(true);
-        }, { threshold: 0.1, ...options });
-        if (element) observer.observe(element);
-        return () => { if (element) observer.unobserve(element); };
-    }, [options]);
-    return [ref, isVisible] as const;
-};
 
 const ResourceCard: React.FC<{ item: ResourceItem }> = ({ item }) => (
     <a href={item.link} target="_blank" rel="noopener noreferrer" className="block h-full">
@@ -42,6 +29,8 @@ const ResourcesPage: React.FC<ResourcesPageProps> = ({ onStart, onNavigatePage, 
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('');
+    const { language, toggleLanguage, t } = useLanguage();
+    const RESOURCES_DATA = GET_RESOURCES_DATA(t);
 
     const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -87,8 +76,8 @@ const ResourcesPage: React.FC<ResourcesPageProps> = ({ onStart, onNavigatePage, 
                     </a>
                     <div className="flex items-center gap-4">
                         <div className="hidden md:flex items-center gap-4">
-                            <Button onClick={onOpenBookingModal} className="transition-transform duration-200 hover:scale-105 btn-glow-blue btn-blue-darken">Book a Call</Button>
-                            <button onClick={onStart} className="font-bold py-2 px-4 rounded-lg transition-all duration-200 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">Start Learning</button>
+                            <Button onClick={onOpenBookingModal} className="transition-transform duration-200 hover:scale-105 btn-glow-blue btn-blue-darken">{t('bookACall')}</Button>
+                            <button onClick={onStart} className="font-bold py-2 px-4 rounded-lg transition-all duration-200 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">{t('startLearning')}</button>
                         </div>
                         <div className="relative">
                             <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 rounded-md text-white hover:bg-brand-surface">
@@ -101,11 +90,29 @@ const ResourcesPage: React.FC<ResourcesPageProps> = ({ onStart, onNavigatePage, 
                     <div className="md:absolute md:top-full md:right-0 md:container md:mx-auto md:px-4 md:flex md:justify-end">
                         <div className="animate-fade-in bg-brand-surface/95 backdrop-blur-sm border-t md:border border-gray-700/50 md:mt-2 md:w-64 md:rounded-lg shadow-lg">
                             <nav className="container mx-auto px-4 py-4 flex flex-col items-center md:items-start md:p-4 gap-4">
-                                <button onClick={() => { onNavigatePage('intro'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Home</button>
-                                <button onClick={() => { onNavigatePage('about'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">About</button>
-                                <button onClick={() => { onNavigatePage('resources'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Resources</button>
-                                <button onClick={() => { onStart(); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Start Learning</button>
-                                <button onClick={() => { onOpenBookingModal(); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">Book a Call</button>
+                                <button onClick={() => { onNavigatePage('intro'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('home')}</button>
+                                <button onClick={() => { onNavigatePage('about'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('about')}</button>
+                                <button onClick={() => { onNavigatePage('resources'); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('resources')}</button>
+                                <button onClick={() => { onStart(); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('startLearning')}</button>
+                                <button onClick={() => { onOpenBookingModal(); setIsMenuOpen(false); }} className="font-semibold text-white hover:text-brand-primary w-full text-left">{t('bookACall')}</button>
+                                <div className="w-full pt-4 border-t border-gray-700/50 mt-2">
+                                    <div className="flex items-center gap-1 p-1 rounded-lg bg-brand-bg justify-center max-w-[120px] mx-auto md:mx-0" role="group" aria-label="Language selection">
+                                        <button
+                                            className={`flex-1 text-center px-3 py-1 text-sm font-bold rounded-md transition-colors ${language === 'en' ? 'bg-brand-primary text-brand-bg' : 'text-brand-text-secondary hover:bg-brand-surface'}`}
+                                            onClick={() => { if (language !== 'en') toggleLanguage(); }}
+                                            aria-pressed={language === 'en'}
+                                        >
+                                            EN
+                                        </button>
+                                        <button
+                                            className={`flex-1 text-center px-3 py-1 text-sm font-bold rounded-md transition-colors ${language === 'es' ? 'bg-brand-primary text-brand-bg' : 'text-brand-text-secondary hover:bg-brand-surface'}`}
+                                            onClick={() => { if (language !== 'es') toggleLanguage(); }}
+                                            aria-pressed={language === 'es'}
+                                        >
+                                            ES
+                                        </button>
+                                    </div>
+                                </div>
                             </nav>
                         </div>
                     </div>
@@ -115,8 +122,8 @@ const ResourcesPage: React.FC<ResourcesPageProps> = ({ onStart, onNavigatePage, 
             <main>
                 {/* Hero */}
                 <section className="py-16 md:py-24 text-center">
-                    <h1 className="text-4xl md:text-6xl font-bold text-white">Your Crypto Resource Center</h1>
-                    <p className="mt-4 text-lg text-brand-text-secondary max-w-3xl mx-auto">All the tools, platforms, and guides you need to navigate the world of cryptocurrency—curated in one place.</p>
+                    <h1 className="text-4xl md:text-6xl font-bold text-white">{t('resourcesPage.heroTitle')}</h1>
+                    <p className="mt-4 text-lg text-brand-text-secondary max-w-3xl mx-auto">{t('resourcesPage.heroSubtitle')}</p>
                 </section>
                 
                 {/* Sticky Nav */}
@@ -139,18 +146,18 @@ const ResourcesPage: React.FC<ResourcesPageProps> = ({ onStart, onNavigatePage, 
                         <h2 className="text-3xl font-bold text-white text-center mb-8">{headline}</h2>
                         {id === 'blog' ? (
                             <div className="max-w-3xl mx-auto">
-                                <a href="https://www.cryptoax07.com/blog" target="_blank" rel="noopener noreferrer" className="block group">
+                                <a href="https://cryptoax07.wixstudio.com/cryptoax07/blog" target="_blank" rel="noopener noreferrer" className="block group">
                                     <Card className="p-0 overflow-hidden bg-brand-surface hover:border-brand-primary transition-all duration-300 card-glow-blue-hover">
                                         <div className="md:flex">
                                             <div className="md:flex-shrink-0">
-                                                <img className="h-48 w-full object-cover md:h-full md:w-64 transition-transform duration-300 group-hover:scale-105" src="https://images.unsplash.com/photo-1585241936939-be4099591252?q=80&w=800&auto=format&fit=crop" alt="Person reading crypto articles on a tablet" />
+                                                <img className="h-48 w-full object-cover md:h-full md:w-64 transition-transform duration-300 group-hover:scale-105" src="https://static.wixstatic.com/media/4a78c1_eba74c01cf294a3aa898cff4e6914944~mv2.png/v1/crop/x_0,y_0,w_417,h_433/fill/w_494,h_520,fp_0.50_0.50,lg_1,q_85,enc_avif,quality_auto/Dise%C3%B1o%20sin%20t%C3%ADtulo.png" alt="CryptoAX07 Blog" />
                                             </div>
                                             <div className="p-8 text-left flex flex-col justify-center">
-                                                <h3 className="text-2xl font-bold text-white mb-2">Explore Our Blog</h3>
-                                                <p className="text-brand-text-secondary mb-4">Dive deeper into crypto topics with our latest articles, insights, and tutorials on the official CryptoAX07 blog.</p>
+                                                <h3 className="text-2xl font-bold text-white mb-2">{t('resourcesPage.blogTitle')}</h3>
+                                                <p className="text-brand-text-secondary mb-4">{t('resourcesPage.blogDesc')}</p>
                                                 <div className="mt-auto">
                                                     <span className="font-semibold text-brand-primary group-hover:underline">
-                                                        Read Articles &rarr;
+                                                        {t('resourcesPage.blogAction')} &rarr;
                                                     </span>
                                                 </div>
                                             </div>
@@ -160,14 +167,14 @@ const ResourcesPage: React.FC<ResourcesPageProps> = ({ onStart, onNavigatePage, 
                             </div>
                         ) : id === 'tracker' ? (
                             <div className="text-center">
-                                <p className="text-center text-brand-text-secondary mb-4">Stay on top of your crypto and fiat finances with our simple tracker tool.</p>
+                                <p className="text-center text-brand-text-secondary mb-4">{t('resourcesPage.trackerDesc')}</p>
                                 <a
                                   href="https://fintrack-ai-ruddy.vercel.app/#/dashboard"
                                   target="_blank"
                                   rel="noopener noreferrer"
                                   className="inline-block font-bold py-2 px-6 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-surface bg-brand-primary hover:bg-sky-400 text-brand-bg focus:ring-brand-primary btn-glow-blue"
                                 >
-                                  Launch Tracker
+                                  {t('resourcesPage.launchTracker')}
                                 </a>
                             </div>
                         ) : (
@@ -181,14 +188,14 @@ const ResourcesPage: React.FC<ResourcesPageProps> = ({ onStart, onNavigatePage, 
                  {/* Final CTA */}
                 <section className="py-16 md:py-24 bg-brand-surface/50">
                     <div className="container mx-auto px-4 text-center">
-                        <h2 className="text-3xl md:text-4xl font-bold text-white">Ready to Start Your Crypto Journey?</h2>
+                        <h2 className="text-3xl md:text-4xl font-bold text-white">{t('resourcesPage.finalCtaTitle')}</h2>
                         <div className="mt-8 flex flex-col sm:flex-row justify-center items-center gap-4">
                             <Button onClick={onOpenBookingModal} className="text-lg py-3 px-8 flex items-center gap-2 transition-transform duration-200 hover:scale-105 btn-glow-blue btn-blue-darken">
-                                <PhoneIcon className="h-6 w-6"/> Book a Call with a Coach
+                                <PhoneIcon className="h-6 w-6"/> {t('introPage.bookCallCoach')}
                             </Button>
                             <button onClick={onStart} className="font-bold py-3 px-8 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-surface disabled:opacity-50 disabled:cursor-not-allowed text-lg flex items-center gap-2 bg-transparent border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">
                                 <CheckCircleIcon className="h-6 w-6"/>
-                                Start Learning with the App
+                                {t('introPage.startApp')}
                             </button>
                         </div>
                     </div>

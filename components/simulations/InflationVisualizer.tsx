@@ -4,6 +4,7 @@ import Card from '../ui/Card';
 import Button from '../ui/Button';
 import Quiz from '../ui/Quiz';
 import type { QuizQuestion } from '../../types';
+import { useLanguage } from '../../hooks/useLanguage';
 
 // Simplified historical data for visualization purposes
 const data = [
@@ -57,11 +58,11 @@ const formatYAxis = (value: number) => {
     return `$${value}`;
 };
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip: React.FC<any> = ({ active, payload, label, t }) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-brand-surface p-4 border border-gray-700 rounded-lg shadow-lg">
-        <p className="font-bold text-white">{`Year: ${label}`}</p>
+        <p className="font-bold text-white">{`${t('simulations.inflation.tooltipYear')}: ${label}`}</p>
         {payload.map((p: any, i: number) => (
           <p key={i} style={{ color: p.color }}>
             {`${p.name}: ${formatYAxis(p.value)}`}
@@ -74,14 +75,15 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 };
 
 const InflationVisualizer: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+    const { t } = useLanguage();
     const [logScale, setLogScale] = useState(true);
     const [showQuiz, setShowQuiz] = useState(false);
 
   return (
     <Card className="p-4 md:p-8">
-      <h2 className="text-3xl font-bold text-center mb-2 text-white">Fiat Inflation vs. Crypto</h2>
+      <h2 className="text-3xl font-bold text-center mb-2 text-white">{t('simulations.inflation.title')}</h2>
       <p className="text-brand-text-secondary text-center mb-8 max-w-2xl mx-auto">
-        This chart explores inflation and its effect on money. You will see how the purchasing power of $100 has changed over time compared to the value of $100 invested in Bitcoin. This is key to understanding why some view crypto as a long-term store of value.
+        {t('simulations.inflation.description')}
       </p>
       
       <div className="h-96 w-full mb-6">
@@ -99,27 +101,27 @@ const InflationVisualizer: React.FC<{ onComplete: () => void }> = ({ onComplete 
                 domain={logScale ? [1, 'auto'] : [0, 'auto']}
                 allowDataOverflow={true}
             />
-            <Tooltip content={<CustomTooltip />} />
+            <Tooltip content={<CustomTooltip t={t} />} />
             <Legend wrapperStyle={{ color: '#E2E8F0' }} />
-            <Line type="monotone" name="Purchasing Power of $100" dataKey="usdValue" stroke="#F472B6" strokeWidth={2} dot={false} />
-            <Line type="monotone" name="$100 in Bitcoin" dataKey="btcValue" stroke="#38BDF8" strokeWidth={2} dot={false} />
-            <Line type="monotone" name="$100 in Ethereum" dataKey="ethValue" stroke="#34D399" strokeWidth={2} dot={false} />
+            <Line type="monotone" name={t('simulations.inflation.powerOf100')} dataKey="usdValue" stroke="#F472B6" strokeWidth={2} dot={false} />
+            <Line type="monotone" name={t('simulations.inflation.inBitcoin')} dataKey="btcValue" stroke="#38BDF8" strokeWidth={2} dot={false} />
+            <Line type="monotone" name={t('simulations.inflation.inEthereum')} dataKey="ethValue" stroke="#34D399" strokeWidth={2} dot={false} />
           </LineChart>
         </ResponsiveContainer>
       </div>
 
       <div className="flex justify-center items-center gap-4">
         <Button onClick={() => setLogScale(!logScale)}>
-          Switch to {logScale ? 'Linear' : 'Logarithmic'} Scale
+          {t('simulations.inflation.logScaleButton', { scale: logScale ? t('simulations.inflation.linear') : t('simulations.inflation.log') })}
         </Button>
         {!showQuiz &&
             <Button onClick={() => setShowQuiz(true)} variant="secondary">
-              I Understand, Take Quiz
+              {t('simulations.inflation.quizButton')}
             </Button>
         }
       </div>
        <p className="text-xs text-brand-text-secondary text-center mt-4">
-        Note: This is a simplified educational visualization and not financial advice. Past performance is not indicative of future results.
+        {t('simulations.inflation.disclaimer')}
       </p>
 
       {showQuiz && <Quiz questions={quizQuestions} onComplete={onComplete} />}

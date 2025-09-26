@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, type UserProgress, Page } from '../types';
 import { ShieldCheckIcon, StarIcon, MenuIcon } from './icons/Icons';
 import Button from './ui/Button';
+import { useLanguage } from '../hooks/useLanguage';
 
 interface HeaderProps {
   userProgress: UserProgress;
@@ -14,6 +15,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ userProgress, onNavigate, onNavigatePage, onStartLearning, onOpenBookingModal, onToggleSidebar }) => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -46,7 +48,7 @@ const Header: React.FC<HeaderProps> = ({ userProgress, onNavigate, onNavigatePag
             <button 
               onClick={() => onNavigate(View.Progress)}
               className="flex items-center gap-2 p-2 rounded-lg hover:bg-brand-surface/50 transition-colors" 
-              title="View Your Progress"
+              title={t('viewYourProgress')}
             >
               <StarIcon className="h-6 w-6 text-yellow-400" />
               <span className="font-semibold text-white">{userProgress.xp} XP</span>
@@ -54,19 +56,19 @@ const Header: React.FC<HeaderProps> = ({ userProgress, onNavigate, onNavigatePag
             <button 
               onClick={() => onNavigate(View.Progress)}
               className="flex items-center gap-2 p-2 rounded-lg hover:bg-brand-surface/50 transition-colors"
-              title="View Your Progress"
+              title={t('viewYourProgress')}
             >
               <ShieldCheckIcon className="h-6 w-6 text-brand-secondary" />
               <span className="font-semibold text-white">{userProgress.badges.length}</span>
             </button>
             <Button onClick={onOpenBookingModal} className="transition-transform duration-200 hover:scale-105 btn-glow-blue btn-blue-darken">
-              Book a Call
+              {t('appHeader.bookACall')}
             </Button>
             <button 
               onClick={onStartLearning}
               className="font-bold py-2 px-4 rounded-lg transition-all duration-200 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange"
             >
-              Start Learning
+              {t('appHeader.startLearning')}
             </button>
           </div>
 
@@ -75,14 +77,14 @@ const Header: React.FC<HeaderProps> = ({ userProgress, onNavigate, onNavigatePag
             <button 
               onClick={() => onNavigate(View.Progress)}
               className="p-2 rounded-lg hover:bg-brand-surface/50 transition-colors" 
-              title="View Your Progress"
+              title={t('viewYourProgress')}
             >
               <StarIcon className="h-6 w-6 text-yellow-400" />
             </button>
             <button 
               onClick={() => onNavigate(View.Progress)}
               className="p-2 rounded-lg hover:bg-brand-surface/50 transition-colors"
-              title="View Your Progress"
+              title={t('viewYourProgress')}
             >
               <ShieldCheckIcon className="h-6 w-6 text-brand-secondary" />
             </button>
