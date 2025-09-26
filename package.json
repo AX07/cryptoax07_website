@@ -8,8 +8,8 @@
     "build": "vite build",
     "preview": "vite preview"
   },
-  "dependencies": {,
-    @vercel/speed-insights,
+  "dependencies": {
+    @vercel/analytics,
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "@google/genai": "^1.16.0",
