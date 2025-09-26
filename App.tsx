@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { Analytics } from "@vercel/analytics/react";
 import { View, Simulation, UserProgress, Category, Page } from './types';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
@@ -420,10 +421,12 @@ const AppContent: React.FC = () => {
   );
 };
 
+
 const App: React.FC = () => (
-    <LanguageProvider>
-        <AppContent />
-    </LanguageProvider>
+  <LanguageProvider>
+    <AppContent />
+    <Analytics />
+  </LanguageProvider>
 );
 
 export default App;

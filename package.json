@@ -1,5 +1,5 @@
 {
-  "name": "cryptoax07-crypto-education-hub",
+  "name": "cryptoax07:-crypto-education-hub",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,10 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    @vercel/analytics,
+    "@google/genai": "^1.16.0",
+    "@vercel/analytics": "^1.5.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
-    "@google/genai": "^1.16.0",
     "recharts": "^3.1.2"
   },
   "devDependencies": {
