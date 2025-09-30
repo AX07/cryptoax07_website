@@ -6,7 +6,7 @@ export type Language = 'en' | 'es';
 interface LanguageContextType {
   language: Language;
   toggleLanguage: () => void;
-  t: (key: string, replacements?: { [key: string]: string | number }) => string;
+  t: (key: string, replacements?: { [key: string]: string | number }) => any;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
@@ -18,7 +18,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
     setLanguage(prev => (prev === 'en' ? 'es' : 'en'));
   }, []);
 
-  const t = useCallback((key: string, replacements?: { [key: string]: string | number }): string => {
+  const t = useCallback((key: string, replacements?: { [key: string]: string | number }): any => {
     const keys = key.split('.');
     let result: any = translations[language];
     for (const k of keys) {
@@ -35,15 +35,15 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
       }
     }
     
-    let strResult = String(result);
-
-    if (replacements) {
+    if (typeof result === 'string' && replacements) {
+        let strResult = result;
         Object.keys(replacements).forEach(rKey => {
             strResult = strResult.replace(`{{${rKey}}}`, String(replacements[rKey]));
         });
+        return strResult;
     }
 
-    return strResult;
+    return result;
   }, [language]);
 
   return (

@@ -1,6 +1,4 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
 import { View, Simulation, UserProgress, Category, Page } from './types';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
@@ -14,7 +12,7 @@ import ResourcesPage from './components/ResourcesPage';
 import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
 import { GET_CATEGORIES, LEARNING_PATH } from './constants';
-import { XMarkIcon } from './components/icons/Icons';
+import { XMarkIcon, ShareIcon, CheckCircleIcon } from './components/icons/Icons';
 import { LanguageProvider, useLanguage } from './hooks/useLanguage';
 
 import SeedPhraseSim from './components/simulations/SeedPhraseSim';
@@ -60,6 +58,7 @@ const AppContent: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     try {
       return localStorage.getItem('sidebarCollapsed') === 'true';
@@ -104,11 +103,11 @@ const AppContent: React.FC = () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [isBookingModalOpen]);
-
-  const handleEnterApp = () => {
+    
+  const handleEnterApp = useCallback(() => {
     setPage('app');
     setView(View.Dashboard);
-  };
+  }, []);
 
   const handleNavigatePage = (targetPage: Page) => {
     setPage(targetPage);
@@ -175,6 +174,28 @@ const AppContent: React.FC = () => {
       console.warn(`Simulation with id "${simulationId}" not found in LEARNING_PATH.`);
     }
   }, []);
+  
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const simId = params.get('sim');
+    if (simId && allSimulations.some(s => s.id === simId)) {
+      handleEnterApp();
+      // Using a timeout to ensure the state update for `page` has propagated before setting the view.
+      setTimeout(() => {
+        handleSelectSimulationById(simId);
+      }, 50);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only on mount to handle deep links
+
+  const handleShare = (simId: string) => {
+    const url = `${window.location.origin}${window.location.pathname}?sim=${simId}`;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopyStatus('copied');
+      setTimeout(() => setCopyStatus('idle'), 2000);
+    });
+  };
+
 
   const handleNavigate = (targetView: View) => {
     if (targetView === View.About) {
@@ -309,7 +330,12 @@ const AppContent: React.FC = () => {
                         <h3 className="text-lg md:text-xl font-semibold text-white">
                             {t('app.lesson')} {learningPathStep + 1} {t('app.of')} {LEARNING_PATH.length}: {currentSim.title}
                         </h3>
-                        <span className="text-brand-secondary font-bold text-sm hidden md:block">{pathProgress}% {t('app.complete')}</span>
+                        <div className="flex items-center gap-2">
+                            <span className="text-brand-secondary font-bold text-sm hidden md:block">{pathProgress}% {t('app.complete')}</span>
+                            <button onClick={() => handleShare(currentSim.id)} className="p-2 rounded-full hover:bg-brand-bg transition-colors" title="Share this simulation">
+                                {copyStatus === 'copied' ? <CheckCircleIcon className="h-5 w-5 text-brand-secondary" /> : <ShareIcon className="h-5 w-5 text-brand-primary" />}
+                            </button>
+                        </div>
                       </div>
                       <div className="w-full bg-gray-700 rounded-full h-2.5">
                           <div className="bg-brand-secondary h-2.5 rounded-full transition-all duration-500" style={{ width: `${pathProgress}%` }}></div>
@@ -422,13 +448,10 @@ const AppContent: React.FC = () => {
   );
 };
 
-
 const App: React.FC = () => (
-  <LanguageProvider>
-    <AppContent />
-    <Analytics />
-    <SpeedInsights />
-  </LanguageProvider>
+    <LanguageProvider>
+        <AppContent />
+    </LanguageProvider>
 );
 
 export default App;

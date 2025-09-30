@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Button from './ui/Button';
 import Card from './ui/Card';
-import { MenuIcon, XMarkIcon, CreditCardIcon, VideoCameraIcon, ChatBubbleBottomCenterTextIcon, PhoneIcon, CheckCircleIcon, BanknotesIcon, ShieldCheckIcon, LightBulbIcon } from './icons/Icons';
+import { MenuIcon, XMarkIcon, CreditCardIcon, VideoCameraIcon, ChatBubbleBottomCenterTextIcon, PhoneIcon, CheckCircleIcon, BanknotesIcon, ShieldCheckIcon, LightBulbIcon, ChevronDownIcon } from './icons/Icons';
 import { Page } from '../types';
 import Footer from './Footer';
 import { useLanguage } from '../hooks/useLanguage';
@@ -67,6 +67,7 @@ const coaches = [
 const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBookingModal }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
     const { language, toggleLanguage, t } = useLanguage();
     
     const [heroRef, heroIsVisible] = useScrollAnimation<HTMLElement>();
@@ -84,12 +85,20 @@ const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBo
     const [whyPoint2Ref, whyPoint2IsVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.4 });
     const [whyPoint3Ref, whyPoint3IsVisible] = useScrollAnimation<HTMLDivElement>({ threshold: 0.4 });
 
+    const [faqSectionRef, faqSectionIsVisible] = useScrollAnimation<HTMLElement>();
+
     const [howItWorksRef, howItWorksIsVisible] = useScrollAnimation<HTMLElement>();
     const [howCard1Ref, howCard1IsVisible] = useScrollAnimation<HTMLDivElement>();
     const [howCard2Ref, howCard2IsVisible] = useScrollAnimation<HTMLDivElement>();
     const [howCard3Ref, howCard3IsVisible] = useScrollAnimation<HTMLDivElement>();
 
     const [finalCtaRef, finalCtaIsVisible] = useScrollAnimation<HTMLElement>();
+
+    const faqData = t('aboutPage.faq', {}) as unknown as { q: string; a: string }[];
+
+    const toggleFaq = (index: number) => {
+        setOpenFaqIndex(prev => (prev === index ? null : index));
+    };
 
 
     useEffect(() => {
@@ -250,6 +259,28 @@ const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBo
                              <div ref={howCard3Ref} className={`transition-all duration-500 delay-400 ${howCard3IsVisible ? 'animate-pop-in' : 'opacity-0'}`}>
                                 <Card className="p-8 h-full bg-brand-bg/50 transition-all duration-300 hover:border-brand-primary border border-transparent hover:shadow-lg hover:shadow-brand-primary/20"><ChatBubbleBottomCenterTextIcon className="h-10 w-10 text-brand-primary mx-auto mb-4"/> <h3 className="text-xl font-bold text-white mb-2">{t('aboutPage.how3Title')}</h3><p className="text-sm text-brand-text-secondary">{t('aboutPage.how3Desc')}</p></Card>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* FAQ Section */}
+                <section ref={faqSectionRef} className={`py-16 md:py-24 bg-brand-bg transition-opacity duration-1000 ${faqSectionIsVisible ? 'animate-fade-in' : 'opacity-0'}`}>
+                    <div className="container mx-auto px-4 max-w-3xl">
+                        <h2 className="text-3xl md:text-5xl font-bold text-white text-center mb-12">{t('aboutPage.faqTitle')}</h2>
+                        <div className="space-y-4">
+                            {(faqData || []).map((faq, index) => (
+                                <Card key={index} className="bg-brand-surface/50 overflow-hidden">
+                                    <button onClick={() => toggleFaq(index)} className="w-full p-6 text-left flex justify-between items-center group">
+                                        <h3 className="text-lg font-semibold text-white group-hover:text-brand-primary transition-colors">{faq.q}</h3>
+                                        <ChevronDownIcon className={`h-6 w-6 text-brand-primary flex-shrink-0 transition-transform duration-300 ${openFaqIndex === index ? 'rotate-180' : ''}`} />
+                                    </button>
+                                    <div className={`transition-all duration-500 ease-in-out ${openFaqIndex === index ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
+                                        <div className="px-6 pb-6 text-brand-text-secondary">
+                                            {faq.a}
+                                        </div>
+                                    </div>
+                                </Card>
+                            ))}
                         </div>
                     </div>
                 </section>

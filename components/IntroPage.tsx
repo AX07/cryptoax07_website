@@ -458,14 +458,14 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
         <section className="py-16 md:py-24 text-center">
           <div className="container mx-auto px-4">
             <h1 className="text-4xl md:text-6xl font-bold text-white max-w-4xl mx-auto leading-tight">{t('introPage.heroTitle')}</h1>
-            <p className="mt-4 text-lg text-brand-text-secondary max-w-2xl mx-auto">
+            <p className="mt-4 text-lg font-bold text-brand-text-secondary max-w-2xl mx-auto">
               {t('introPage.heroSubtitle')}
             </p>
             <div ref={videoRef} className={`mt-12 max-w-4xl mx-auto transition-all duration-700 ${videoIsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`}>
               <div className="aspect-video rounded-xl shadow-lg overflow-hidden">
                 <iframe
                   className="w-full h-full"
-                  src="https://www.youtube.com/embed/kEpWnSzNAlY?playlist=kEpWnSzNAlY&autoplay=1&mute=1&loop=1&controls=0&modestbranding=1&showinfo=0&rel=0&iv_load_policy=3"
+                  src="https://www.youtube.com/embed/kEpWnSzNAlY?playlist=kEpWnSzNAlY&autoplay=1&mute=1&loop=1&controls=0"
                   title="CryptoAX07 Logo Reveal"
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
