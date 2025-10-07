@@ -1,10 +1,12 @@
 
+
 import React from 'react';
 import type { UserProgress, Category } from '../types';
 import Button from './ui/Button';
 import Card from './ui/Card';
 import { GET_CATEGORIES, LEARNING_PATH } from '../constants';
 import { useLanguage } from '../hooks/useLanguage';
+import { StarIcon } from './icons/Icons';
 
 interface DashboardProps {
   onStartLearning: () => void;
@@ -41,6 +43,16 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartLearning, onSelectCategory
           ></div>
         </div>
         <p className="text-xs text-brand-text-secondary text-right mt-1">{completedCount} / {totalSimulations} {t('dashboard.lessonsCompleted')}</p>
+        
+        {overallProgressPercentage < 100 && (
+          <div className="mt-4 text-center p-3 bg-brand-orange/10 border border-brand-orange/50 rounded-lg animate-fade-in flex items-center justify-center gap-2">
+            <StarIcon className="h-5 w-5 text-brand-orange" />
+            <p className="font-semibold text-brand-orange">
+              {t('rewards.completionReward')}
+            </p>
+          </div>
+        )}
+
       </div>
 
       <div className="text-center mb-12">

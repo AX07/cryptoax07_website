@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import Button from './ui/Button';
 import Card from './ui/Card';
-import { BookOpenIcon, ChartBarSquareIcon, CheckCircleIcon, CpuChipIcon, CubeIcon, DevicePhoneMobileIcon, MenuIcon, PhoneIcon, PuzzlePieceIcon, RocketLaunchIcon, ShieldCheckIcon, StarIcon, XCircleIcon, XMarkIcon } from './icons/Icons';
+import { BookOpenIcon, ChartBarSquareIcon, CheckCircleIcon, CpuChipIcon, CubeIcon, DevicePhoneMobileIcon, MenuIcon, PhoneIcon, PuzzlePieceIcon, ShieldCheckIcon, StarIcon, XCircleIcon, XMarkIcon } from './icons/Icons';
 import { Page } from '../types';
 import Footer from './Footer';
 import { useLanguage } from '../hooks/useLanguage';
@@ -102,8 +102,7 @@ const DcaCalculatorEmbed: React.FC = () => {
                     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
                 }
                 #dca-calculator-root .dca-header { text-align: center; margin-bottom: 2.5rem; }
-                #dca-calculator-root .dca-header p { color: var(--dca-text-secondary); font-size: 1.1rem; }
-                #dca-calculator-root #dca-calculator-form { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; align-items: flex-end; margin-top: 2.5rem; }
+                #dca-calculator-root #dca-calculator-form { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; align-items: flex-end; margin-bottom: 2.5rem; }
                 #dca-calculator-root .dca-input-field { display: flex; flex-direction: column; gap: 8px; }
                 #dca-calculator-root label { font-size: 0.9rem; color: var(--dca-text-secondary); font-weight: 600; }
                 #dca-calculator-root input[type="number"] { background-color: rgba(0,0,0,0.2); border: 1px solid var(--dca-border-color); border-radius: 8px; padding: 12px 16px; color: var(--dca-text-primary); font-size: 1rem; width: 200px; transition: border-color 0.3s, box-shadow 0.3s; }
@@ -117,7 +116,7 @@ const DcaCalculatorEmbed: React.FC = () => {
                 #dca-calculator-root .dca-loader-container.visible { opacity: 1; visibility: visible; }
                 #dca-calculator-root .dca-loader { width: 48px; height: 48px; border: 5px solid var(--dca-text-primary); border-bottom-color: var(--dca-bitcoin-orange); border-radius: 50%; display: inline-block; animation: dca-rotation 1s linear infinite; }
                 @keyframes dca-rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-                #dca-calculator-root .dca-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 2rem; }
+                #dca-calculator-root .dca-summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 2rem; }
                 #dca-calculator-root .dca-summary-card { background: var(--dca-surface-color); border: 1px solid var(--dca-border-color); border-radius: 12px; padding: 20px; text-align: center; transition: transform 0.3s; }
                 #dca-calculator-root .dca-summary-card:hover { transform: translateY(-5px); }
                 #dca-calculator-root .dca-summary-card h3 { font-size: 1rem; font-weight: 600; color: var(--dca-text-secondary); margin-bottom: 0.75rem; }
@@ -140,6 +139,25 @@ const DcaCalculatorEmbed: React.FC = () => {
                         <h1>Bitcoin DCA Growth Calculator</h1>
                         <p>See how consistent investments in Bitcoin could grow over time.</p>
                     </header>
+                    <form id="dca-calculator-form" aria-label="Bitcoin investment form">
+                        <div class="dca-input-field">
+                            <label for="dca-monthlyInvestment">Monthly Investment (USD)</label>
+                            <input type="number" id="dca-monthlyInvestment" value="100" min="1" required aria-required="true">
+                        </div>
+                        <div class="dca-input-field">
+                            <label for="dca-months">Number of Months</label>
+                            <input type="number" id="dca-months" value="24" min="1" max="120" required aria-required="true">
+                        </div>
+                        <button type="submit" id="dca-calculate-button">Visualize Growth</button>
+                    </form>
+                    <div class="dca-results-container">
+                        <div class="dca-loader-container" id="dca-loader">
+                            <div class="dca-loader"></div>
+                        </div>
+                        <div class="dca-chart-container">
+                            <canvas id="dca-chart"></canvas>
+                        </div>
+                    </div>
                     <div class="dca-summary">
                         <div class="dca-summary-card">
                             <h3>Total Invested</h3>
@@ -154,25 +172,6 @@ const DcaCalculatorEmbed: React.FC = () => {
                             <div id="dca-totalBtc" class="dca-summary-value btc">0.0000</div>
                         </div>
                     </div>
-                    <div class="dca-results-container">
-                        <div class="dca-loader-container" id="dca-loader">
-                            <div class="dca-loader"></div>
-                        </div>
-                        <div class="dca-chart-container">
-                            <canvas id="dca-chart"></canvas>
-                        </div>
-                    </div>
-                    <form id="dca-calculator-form" aria-label="Bitcoin investment form">
-                        <div class="dca-input-field">
-                            <label for="dca-monthlyInvestment">Monthly Investment (USD)</label>
-                            <input type="number" id="dca-monthlyInvestment" value="100" min="1" required aria-required="true">
-                        </div>
-                        <div class="dca-input-field">
-                            <label for="dca-months">Number of Months</label>
-                            <input type="number" id="dca-months" value="24" min="1" max="120" required aria-required="true">
-                        </div>
-                        <button type="submit" id="dca-calculate-button">Visualize Growth</button>
-                    </form>
                     <div id="dca-error-message" role="alert"></div>
                     <div id="dca-live-price" class="text-center text-sm text-brand-text-secondary mt-4 font-mono"></div>
                 </div>
@@ -407,9 +406,14 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
             {/* Desktop Nav */}
             <div className="hidden md:flex items-center gap-4">
               <Button onClick={onOpenBookingModal} className="transition-transform duration-200 hover:scale-105 btn-glow-blue btn-blue-darken">{t('bookACall')}</Button>
-              <button onClick={onStart} className="font-bold py-2 px-4 rounded-lg transition-all duration-200 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">
-                  {t('startLearning')}
-              </button>
+              <div className="relative">
+                <button onClick={onStart} className="font-bold py-2 px-4 rounded-lg transition-all duration-200 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">
+                    {t('startLearning')}
+                </button>
+                <div className="absolute top-0 right-0 transform -translate-y-1/2 translate-x-1/2 bg-brand-orange text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-pulse-glow-orange z-10 whitespace-nowrap">
+                  {t('earnFiveUsd')}
+                </div>
+              </div>
             </div>
             {/* Menu Button */}
             <div className="relative">
@@ -478,10 +482,15 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
                   <PhoneIcon className="h-6 w-6"/>
                   {t('introPage.bookCallCoach')}
               </Button>
-              <button onClick={onStart} className="font-bold py-3 px-8 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-surface disabled:opacity-50 disabled:cursor-not-allowed text-lg flex items-center gap-2 bg-transparent border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">
-                <CheckCircleIcon className="h-6 w-6"/>
-                {t('introPage.startApp')}
-              </button>
+              <div className="relative">
+                <button onClick={onStart} className="font-bold py-3 px-8 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-surface disabled:opacity-50 disabled:cursor-not-allowed text-lg flex items-center gap-2 bg-transparent border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">
+                  <CheckCircleIcon className="h-6 w-6"/>
+                  {t('introPage.startApp')}
+                </button>
+                <div className="absolute top-0 right-0 transform -translate-y-1/2 translate-x-1/2 bg-brand-orange text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-pulse-glow-orange z-10 whitespace-nowrap">
+                  {t('earnFiveUsd')}
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -537,7 +546,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
                     <div className="grid grid-cols-1 gap-6">
                         <div ref={how1Ref} className={`transition-all duration-500 ${how1IsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`}><Card className="p-6 bg-brand-bg/50 h-full transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg flex items-center gap-6"><DevicePhoneMobileIcon className="h-12 w-12 text-brand-primary flex-shrink-0" /><div className="text-left"><h3 className="text-xl font-bold text-white mb-1">{t('introPage.useTheApp')}</h3><p className="text-brand-text-secondary">{t('introPage.useTheAppDesc')}</p></div></Card></div>
                         <div ref={how2Ref} className={`transition-all duration-500 ${how2IsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`} style={{transitionDelay: '150ms'}}><Card className="p-6 bg-brand-bg/50 h-full transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg flex items-center gap-6"><BookOpenIcon className="h-12 w-12 text-brand-primary flex-shrink-0" /><div className="text-left"><h3 className="text-xl font-bold text-white mb-1">{t('introPage.learnWithCoach')}</h3><p className="text-brand-text-secondary">{t('introPage.learnWithCoachDesc')}</p></div></Card></div>
-                        <div ref={how3Ref} className={`transition-all duration-500 ${how3IsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`} style={{transitionDelay: '300ms'}}><Card className="p-6 bg-brand-bg/50 h-full transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg flex items-center gap-6"><RocketLaunchIcon className="h-12 w-12 text-brand-primary flex-shrink-0" /><div className="text-left"><h3 className="text-xl font-bold text-white mb-1">{t('introPage.reachGoals')}</h3><p className="text-brand-text-secondary">{t('introPage.reachGoalsDesc')}</p></div></Card></div>
+                        <div ref={how3Ref} className={`transition-all duration-500 ${how3IsVisible ? 'animate-slide-in-up' : 'opacity-0 translate-y-8'}`} style={{transitionDelay: '300ms'}}><Card className="p-6 bg-brand-bg/50 h-full transition-transform duration-300 hover:-translate-y-2 hover:shadow-lg flex items-center gap-6"><ChartBarSquareIcon className="h-12 w-12 text-brand-primary flex-shrink-0" /><div className="text-left"><h3 className="text-xl font-bold text-white mb-1">{t('introPage.reachGoals')}</h3><p className="text-brand-text-secondary">{t('introPage.reachGoalsDesc')}</p></div></Card></div>
                     </div>
                     {/* Image Column */}
                     <div ref={howImgRef} className={`transition-all duration-700 ${howImgIsVisible ? 'animate-slide-in-right' : 'opacity-0 translate-x-8'}`}>
@@ -679,10 +688,15 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
                         <PhoneIcon className="h-6 w-6"/>
                         {t('introPage.bookCallCoach')}
                     </Button>
-                    <button onClick={onStart} className="font-bold py-3 px-8 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-surface disabled:opacity-50 disabled:cursor-not-allowed text-lg flex items-center gap-2 bg-transparent border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">
-                        <CheckCircleIcon className="h-6 w-6"/>
-                        {t('introPage.startApp')}
-                    </button>
+                    <div className="relative">
+                      <button onClick={onStart} className="font-bold py-3 px-8 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-brand-surface disabled:opacity-50 disabled:cursor-not-allowed text-lg flex items-center gap-2 bg-transparent border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange">
+                          <CheckCircleIcon className="h-6 w-6"/>
+                          {t('introPage.startApp')}
+                      </button>
+                      <div className="absolute top-0 right-0 transform -translate-y-1/2 translate-x-1/2 bg-brand-orange text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-pulse-glow-orange z-10 whitespace-nowrap">
+                        {t('earnFiveUsd')}
+                      </div>
+                    </div>
                 </div>
             </div>
         </section>

@@ -48,6 +48,7 @@ import PerpetualFuturesSim from './components/simulations/PerpetualFuturesSim';
 import ExpenseTrackingSim from './components/simulations/ExpenseTrackingSim';
 import AssetsLiabilitiesSim from './components/simulations/AssetsLiabilitiesSim';
 import Button from './components/ui/Button';
+import Confetti from './components/ui/Confetti';
 
 const AppContent: React.FC = () => {
   const { t } = useLanguage();
@@ -61,6 +62,7 @@ const AppContent: React.FC = () => {
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
+  const [showConfetti, setShowConfetti] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     try {
       return localStorage.getItem('sidebarCollapsed') === 'true';
@@ -109,6 +111,7 @@ const AppContent: React.FC = () => {
   const handleEnterApp = useCallback(() => {
     setPage('app');
     setView(View.Dashboard);
+    window.scrollTo({ top: 0, behavior: 'auto' });
   }, []);
 
   const handleNavigatePage = (targetPage: Page) => {
@@ -129,6 +132,9 @@ const AppContent: React.FC = () => {
       };
     });
     
+    setShowConfetti(true);
+    setTimeout(() => setShowConfetti(false), 5000);
+
     setTimeout(() => {
         const currentSimIndex = LEARNING_PATH.findIndex(id => id === simId);
         if (currentSimIndex !== -1 && currentSimIndex + 1 < LEARNING_PATH.length) {
@@ -155,11 +161,13 @@ const AppContent: React.FC = () => {
     const nextStepIndex = LEARNING_PATH.findIndex(id => !userProgress.completedSimulations.some(s => s.id === id));
     setLearningPathStep(nextStepIndex === -1 ? 0 : nextStepIndex);
     setView(View.Simulation);
+    window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
   const handleSelectCategory = (category: Category) => {
     setSelectedCategory(category);
     setView(View.Category);
+    window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
   const handleSelectSimulation = (simulation: Simulation) => {
@@ -172,6 +180,7 @@ const AppContent: React.FC = () => {
     if (indexInPath !== -1) {
       setLearningPathStep(indexInPath);
       setView(View.Simulation);
+      window.scrollTo({ top: 0, behavior: 'auto' });
     } else {
       console.warn(`Simulation with id "${simulationId}" not found in LEARNING_PATH.`);
     }
@@ -208,11 +217,13 @@ const AppContent: React.FC = () => {
         setPage('app');
         setView(targetView);
     }
+    window.scrollTo({ top: 0, behavior: 'auto' });
   }
 
   const handleBack = () => {
     setView(View.Dashboard);
     setSelectedCategory(null);
+    window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
   const renderSimulation = (simulationId: string) => {
@@ -414,6 +425,7 @@ const AppContent: React.FC = () => {
 
   return (
     <>
+      {showConfetti && <Confetti />}
       {renderPage()}
       {isBookingModalOpen && (
         <div 

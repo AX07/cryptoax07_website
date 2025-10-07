@@ -2,7 +2,7 @@ import React from 'react';
 import type { UserProgress } from '../types';
 import Card from './ui/Card';
 import { GET_CATEGORIES } from '../constants';
-import { ShieldCheckIcon } from './icons/Icons';
+import { ShieldCheckIcon, StarIcon } from './icons/Icons';
 // FIX: Changed import to be a named import.
 import { ContributionCalendar } from './ui/ContributionCalendar';
 import { useLanguage } from '../hooks/useLanguage';
@@ -15,6 +15,8 @@ interface ProgressProps {
 const Progress: React.FC<ProgressProps> = ({ userProgress, onBack }) => {
   const { t } = useLanguage();
   const allSimulations = GET_CATEGORIES(t).flatMap(cat => cat.simulations);
+  const totalSimulations = allSimulations.length;
+  const completedCount = userProgress.completedSimulations.length;
   
   return (
     <div className="animate-fade-in max-w-4xl mx-auto">
@@ -28,6 +30,17 @@ const Progress: React.FC<ProgressProps> = ({ userProgress, onBack }) => {
         </div>
       </div>
       
+      {completedCount < totalSimulations && (
+        <Card className="p-4 mb-8 text-center bg-brand-orange/10 border border-brand-orange/50 animate-fade-in">
+          <div className="flex items-center justify-center gap-2">
+            <StarIcon className="h-5 w-5 text-brand-orange" />
+            <p className="font-semibold text-brand-orange">
+                {t('rewards.completionReward')}
+            </p>
+          </div>
+        </Card>
+      )}
+
       <Card className="p-6 mb-8 text-center bg-gradient-to-r from-brand-surface to-brand-bg">
         <p className="text-sm font-semibold text-yellow-400 uppercase">{t('progressPage.totalExperience')}</p>
         <p className="text-6xl font-bold text-white">{userProgress.xp} <span className="text-4xl text-yellow-400">XP</span></p>

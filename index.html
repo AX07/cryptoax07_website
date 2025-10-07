@@ -3,25 +3,25 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/jpeg" href="https://pbs.twimg.com/profile_images/1846153025183719424/6c8EEteQ_400x400.jpg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
     <!-- SEO & Social Media Preview Tags -->
     <title>CryptoAX07: Crypto Education Hub</title>
-    <meta name="description" content="An all-in-one crypto education and coaching hub with interactive simulations, an AI assistant, and tailored learning paths to help users master blockchain technology safely and effectively." />
+    <meta name="description" content="Master cryptocurrency with CryptoAX07. We offer crypto tailored education, one to one coaching, and interactive simulations. Learn about blockchain technology, digital assets, DeFi explained, and cryptocurrency trading basics in a safe, effective environment." />
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://cryptoax07.com/" />
     <meta property="og:title" content="CryptoAX07: Crypto Education Hub" />
-    <meta property="og:description" content="An all-in-one crypto education and coaching hub with interactive simulations, an AI assistant, and tailored learning paths to help users master blockchain technology safely and effectively." />
-    <meta property="og:image" content="https://pbs.twimg.com/profile_images/1846153025183719424/6c8EEteQ_400x400.jpg" />
+    <meta property="og:description" content="Master cryptocurrency with CryptoAX07. We offer crypto tailored education, one to one coaching, and interactive simulations. Learn about blockchain technology, digital assets, DeFi explained, and cryptocurrency trading basics in a safe, effective environment." />
+    <meta property="og:image" content="https://static.wixstatic.com/media/4a78c1_a8c4d304c7a7403ea0167bfe07a2af8e~mv2.jpg" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://cryptoax07.com/" />
     <meta name="twitter:title" content="CryptoAX07: Crypto Education Hub" />
-    <meta name="twitter:description" content="An all-in-one crypto education and coaching hub with interactive simulations, an AI assistant, and tailored learning paths to help users master blockchain technology safely and effectively." />
-    <meta name="twitter:image" content="https://pbs.twimg.com/profile_images/1846153025183719424/6c8EEteQ_400x400.jpg" />
+    <meta name="twitter:description" content="Master cryptocurrency with CryptoAX07. We offer crypto tailored education, one to one coaching, and interactive simulations. Learn about blockchain technology, digital assets, DeFi explained, and cryptocurrency trading basics in a safe, effective environment." />
+    <meta name="twitter:image" content="https://static.wixstatic.com/media/4a78c1_a8c4d304c7a7403ea0167bfe07a2af8e~mv2.jpg" />
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -52,6 +52,7 @@
               'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
               'subtle-bounce': 'subtleBounce 2s infinite ease-in-out',
               'pulse-glow-blue': 'pulseGlowBlue 2.5s infinite ease-in-out',
+              'pulse-glow-orange': 'pulseGlowOrange 2.5s infinite ease-in-out',
             },
             keyframes: {
               fadeIn: {
@@ -96,6 +97,20 @@
                 '0%, 100%': { boxShadow: '0 0 25px 5px rgba(56, 189, 248, 0.4)' },
                 '50%': { boxShadow: '0 0 40px 10px rgba(56, 189, 248, 0.6)' },
               },
+              pulseGlowOrange: {
+                '0%, 100%': { boxShadow: '0 0 15px 3px rgba(247, 154, 26, 0.4)' },
+                '50%': { boxShadow: '0 0 25px 8px rgba(247, 154, 26, 0.6)' },
+              },
+              'confetti-fall': {
+                '0%': {
+                  opacity: '1',
+                  transform: 'translateY(-10vh) rotateZ(0deg)',
+                },
+                '100%': {
+                  opacity: '0',
+                  transform: 'translateY(110vh) rotateZ(720deg)',
+                },
+              },
             }
           },
         },
@@ -125,6 +140,13 @@
       }
       .btn-blue-darken:hover {
         background-color: #2563EB; /* A darker shade of the primary blue */
+      }
+      .confetti-piece {
+        position: absolute;
+        width: 8px;
+        height: 16px;
+        opacity: 0;
+        animation: confetti-fall 5s infinite;
       }
     </style>
     <link rel="preconnect" href="https://fonts.googleapis.com">

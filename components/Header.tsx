@@ -64,12 +64,17 @@ const Header: React.FC<HeaderProps> = ({ userProgress, onNavigate, onNavigatePag
             <Button onClick={onOpenBookingModal} className="transition-transform duration-200 hover:scale-105 btn-glow-blue btn-blue-darken">
               {t('appHeader.bookACall')}
             </Button>
-            <button 
-              onClick={onStartLearning}
-              className="font-bold py-2 px-4 rounded-lg transition-all duration-200 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange"
-            >
-              {t('appHeader.startLearning')}
-            </button>
+            <div className="relative">
+              <button 
+                onClick={onStartLearning}
+                className="font-bold py-2 px-4 rounded-lg transition-all duration-200 border-2 border-brand-orange text-brand-orange hover:bg-brand-orange hover:text-white hover:scale-105 btn-glow-orange"
+              >
+                {t('appHeader.startLearning')}
+              </button>
+              <div className="absolute top-0 right-0 transform -translate-y-1/2 translate-x-1/2 bg-brand-orange text-white text-xs font-bold px-2 py-1 rounded-full shadow-lg animate-pulse-glow-orange z-10 whitespace-nowrap">
+                {t('earnFiveUsd')}
+              </div>
+            </div>
           </div>
 
           {/* Mobile Right-Side Content (Progress Icons & Menu) */}
