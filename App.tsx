@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { View, Simulation, UserProgress, Category, Page } from './types';
@@ -464,9 +465,21 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => (
   <LanguageProvider>
-    <AppContent />
-    <Analytics />
-    <SpeedInsights />
+    <Router>
+      <Header />
+      <Sidebar />
+      <Routes>
+        <Route path="/" element={<IntroPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/resources" element={<ResourcesPage />} />
+        <Route path="/expert-help" element={<ExpertHelp />} />
+        {/* Add more routes as needed */}
+      </Routes>
+      <Footer />
+      <Analytics />
+      <SpeedInsights />
+    </Router>
   </LanguageProvider>
 );
 
