@@ -54,4 +54,4 @@ const ExpertHelp: React.FC<ExpertHelpProps> = ({ onBack }) => {
   );
 };
 
-export default ExpertHelp;
+export default React.memo(ExpertHelp);

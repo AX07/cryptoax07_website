@@ -207,6 +207,8 @@ const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBo
                                             src={coach.imageUrl} 
                                             alt={`Photo of ${coach.name}`} 
                                             className="w-32 h-32 object-cover rounded-full mb-4 border-4 border-brand-surface shadow-lg transition-transform duration-300 group-hover:scale-105 group-hover:border-brand-primary/50"
+                                            loading="lazy"
+                                            decoding="async"
                                         />
                                         <h3 className="text-xl font-bold text-white mb-2">{coach.name}</h3>
                                         <p className="text-sm text-brand-text-secondary text-center flex-grow">{coach.bio}</p>
@@ -324,4 +326,4 @@ const AboutPage: React.FC<AboutPageProps> = ({ onStart, onNavigatePage, onOpenBo
     );
 };
 
-export default AboutPage;
+export default React.memo(AboutPage);

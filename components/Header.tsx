@@ -107,4 +107,4 @@ const Header: React.FC<HeaderProps> = ({ userProgress, onNavigate, onNavigatePag
   );
 };
 
-export default Header;
+export default React.memo(Header);
