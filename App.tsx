@@ -1,4 +1,6 @@
 import React, { useState, useCallback, useEffect, Suspense, lazy } from 'react';
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import { View, Simulation, UserProgress, Category, Page } from './types';
 import Header from './components/Header';
 import AiChatbot from './components/AiChatbot';
@@ -8,8 +10,6 @@ import { GET_CATEGORIES, LEARNING_PATH } from './constants';
 import { XMarkIcon } from './components/icons/Icons';
 import { LanguageProvider, useLanguage } from './hooks/useLanguage';
 import Button from './components/ui/Button';
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
 
 // Performance: Add a spinner for lazy-loading fallbacks
 const Spinner: React.FC = () => (
