@@ -349,7 +349,7 @@ const DcaCalculatorEmbed: React.FC = () => {
 const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBookingModal }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const { language, toggleLanguage, t } = useLanguage();
+    const { language, setLanguage, t } = useLanguage();
 
     useEffect(() => {
       const handleScroll = () => {
@@ -437,14 +437,14 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
                           <div className="flex items-center gap-1 p-1 rounded-lg bg-brand-bg justify-center max-w-[120px] mx-auto md:mx-0" role="group" aria-label="Language selection">
                               <button
                                   className={`flex-1 text-center px-3 py-1 text-sm font-bold rounded-md transition-colors ${language === 'en' ? 'bg-brand-primary text-brand-bg' : 'text-brand-text-secondary hover:bg-brand-surface'}`}
-                                  onClick={() => { if (language !== 'en') toggleLanguage(); }}
+                                  onClick={() => setLanguage('en')}
                                   aria-pressed={language === 'en'}
                               >
                                   EN
                               </button>
                               <button
                                   className={`flex-1 text-center px-3 py-1 text-sm font-bold rounded-md transition-colors ${language === 'es' ? 'bg-brand-primary text-brand-bg' : 'text-brand-text-secondary hover:bg-brand-surface'}`}
-                                  onClick={() => { if (language !== 'es') toggleLanguage(); }}
+                                  onClick={() => setLanguage('es')}
                                   aria-pressed={language === 'es'}
                               >
                                   ES
