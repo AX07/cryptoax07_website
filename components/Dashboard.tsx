@@ -1,5 +1,3 @@
-
-
 import React from 'react';
 import type { UserProgress, Category } from '../types';
 import Button from './ui/Button';
@@ -106,4 +104,4 @@ const Dashboard: React.FC<DashboardProps> = ({ onStartLearning, onSelectCategory
   );
 };
 
-export default Dashboard;
+export default React.memo(Dashboard);

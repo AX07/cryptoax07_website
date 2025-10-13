@@ -169,4 +169,4 @@ const AiChatbot: React.FC<AiChatbotProps> = ({ onSelectSimulation }) => {
   );
 };
 
-export default AiChatbot;
+export default React.memo(AiChatbot);
