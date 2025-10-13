@@ -40,6 +40,7 @@ export interface UserProgress {
   xp: number;
   badges: string[];
   completedSimulations: CompletedSimulation[];
+  hasBookedCall?: boolean;
 }
 
 export interface GeneratedStep {

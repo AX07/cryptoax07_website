@@ -2,17 +2,19 @@ import React from 'react';
 import type { UserProgress } from '../types';
 import Card from './ui/Card';
 import { GET_CATEGORIES } from '../constants';
-import { ShieldCheckIcon, StarIcon } from './icons/Icons';
-// FIX: Changed import to be a named import.
+import { ShieldCheckIcon, StarIcon, PhoneIcon, CheckCircleIcon } from './icons/Icons';
 import { ContributionCalendar } from './ui/ContributionCalendar';
 import { useLanguage } from '../hooks/useLanguage';
+import Button from './ui/Button';
 
 interface ProgressProps {
   userProgress: UserProgress;
   onBack: () => void;
+  onOpenBookingModal: () => void;
+  onContinueLearning: () => void;
 }
 
-const Progress: React.FC<ProgressProps> = ({ userProgress, onBack }) => {
+const Progress: React.FC<ProgressProps> = ({ userProgress, onBack, onOpenBookingModal, onContinueLearning }) => {
   const { t } = useLanguage();
   const allSimulations = GET_CATEGORIES(t).flatMap(cat => cat.simulations);
   const totalSimulations = allSimulations.length;
@@ -30,6 +32,30 @@ const Progress: React.FC<ProgressProps> = ({ userProgress, onBack }) => {
         </div>
       </div>
       
+      {userProgress.hasBookedCall ? (
+        <Card className="p-6 mb-8 bg-gradient-to-r from-brand-secondary/10 to-brand-surface border border-brand-secondary/50 text-center">
+          <CheckCircleIcon className="h-10 w-10 text-brand-secondary mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-white mb-2">{t('progressPage.callBookedTitle')}</h3>
+          <p className="text-brand-text-secondary mb-6 max-w-xl mx-auto">
+            {t('progressPage.callBookedDesc')}
+          </p>
+          <Button onClick={onOpenBookingModal}>
+            {t('progressPage.rescheduleButton')}
+          </Button>
+        </Card>
+      ) : (
+        <Card className="p-6 mb-8 bg-gradient-to-r from-brand-primary/10 to-brand-surface border border-brand-primary/50 text-center">
+          <PhoneIcon className="h-10 w-10 text-brand-primary mx-auto mb-4" />
+          <h3 className="text-xl font-bold text-white mb-2">{t('progressPage.bookCallTitle')}</h3>
+          <p className="text-brand-text-secondary mb-6 max-w-xl mx-auto">
+            {t('progressPage.bookCallDesc')}
+          </p>
+          <Button onClick={onOpenBookingModal} className="btn-glow-blue">
+            {t('progressPage.bookCallButton')}
+          </Button>
+        </Card>
+      )}
+
       {completedCount < totalSimulations && (
         <Card className="p-4 mb-8 text-center bg-brand-orange/10 border border-brand-orange/50 animate-fade-in">
           <div className="flex items-center justify-center gap-2">
@@ -45,6 +71,12 @@ const Progress: React.FC<ProgressProps> = ({ userProgress, onBack }) => {
         <p className="text-sm font-semibold text-yellow-400 uppercase">{t('progressPage.totalExperience')}</p>
         <p className="text-6xl font-bold text-white">{userProgress.xp} <span className="text-4xl text-yellow-400">XP</span></p>
       </Card>
+
+      <div className="text-center mb-8">
+        <Button onClick={onContinueLearning} className="text-lg py-3 px-8">
+            {t('progressPage.continueLearning')}
+        </Button>
+      </div>
 
       <div className="mb-8">
         <ContributionCalendar completedSimulations={userProgress.completedSimulations} />

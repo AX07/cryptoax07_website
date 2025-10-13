@@ -1,6 +1,4 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
 import { View, Simulation, UserProgress, Category, Page } from './types';
 import Header from './components/Header';
 import Dashboard from './components/Dashboard';
@@ -14,7 +12,7 @@ import ResourcesPage from './components/ResourcesPage';
 import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
 import { GET_CATEGORIES, LEARNING_PATH } from './constants';
-import { XMarkIcon, ShareIcon, CheckCircleIcon } from './components/icons/Icons';
+import { XMarkIcon } from './components/icons/Icons';
 import { LanguageProvider, useLanguage } from './hooks/useLanguage';
 
 import SeedPhraseSim from './components/simulations/SeedPhraseSim';
@@ -50,6 +48,18 @@ import AssetsLiabilitiesSim from './components/simulations/AssetsLiabilitiesSim'
 import Button from './components/ui/Button';
 import Confetti from './components/ui/Confetti';
 
+const updateUrl = (p?: string, id?: string) => {
+    const url = new URL(window.location.href);
+    url.search = '';
+    if (p) {
+        url.searchParams.set('p', p);
+        if (id) {
+            url.searchParams.set('id', id);
+        }
+    }
+    window.history.pushState({}, '', url.pathname + url.search);
+};
+
 const AppContent: React.FC = () => {
   const { t } = useLanguage();
   const CATEGORIES = GET_CATEGORIES(t);
@@ -61,7 +71,6 @@ const AppContent: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [copyStatus, setCopyStatus] = useState<'idle' | 'copied'>('idle');
   const [showConfetti, setShowConfetti] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
     try {
@@ -74,10 +83,10 @@ const AppContent: React.FC = () => {
   const [userProgress, setUserProgress] = useState<UserProgress>(() => {
     try {
       const savedProgress = localStorage.getItem('userProgress');
-      return savedProgress ? JSON.parse(savedProgress) : { xp: 0, badges: [], completedSimulations: [] };
+      return savedProgress ? JSON.parse(savedProgress) : { xp: 0, badges: [], completedSimulations: [], hasBookedCall: false };
     } catch (error) {
       console.error("Failed to parse user progress from localStorage", error);
-      return { xp: 0, badges: [], completedSimulations: [] };
+      return { xp: 0, badges: [], completedSimulations: [], hasBookedCall: false };
     }
   });
   
@@ -108,17 +117,86 @@ const AppContent: React.FC = () => {
         };
     }, [isBookingModalOpen]);
     
-  const handleEnterApp = useCallback(() => {
-    setPage('app');
-    setView(View.Dashboard);
+  const handleNavigatePage = useCallback((targetPage: Page) => {
+    if (targetPage === 'intro') {
+        updateUrl();
+    } else {
+        updateUrl(targetPage);
+    }
+    setPage(targetPage);
     window.scrollTo({ top: 0, behavior: 'auto' });
   }, []);
 
-  const handleNavigatePage = (targetPage: Page) => {
-    setPage(targetPage);
-    window.scrollTo({ top: 0, behavior: 'auto' });
-  };
+  const handleSelectSimulationById = useCallback((simulationId: string) => {
+    const indexInPath = LEARNING_PATH.findIndex(id => id === simulationId);
 
+    if (indexInPath !== -1) {
+      setLearningPathStep(indexInPath);
+      setView(View.Simulation);
+      updateUrl('sim', simulationId);
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    } else {
+      console.warn(`Simulation with id "${simulationId}" not found in LEARNING_PATH.`);
+    }
+  }, []);
+  
+  const handleNavigate = useCallback((targetView: View) => {
+      if (targetView === View.About) {
+          handleNavigatePage('about');
+      } else if (targetView === View.Resources) {
+          handleNavigatePage('resources');
+      } else {
+          setPage('app');
+          setView(targetView);
+          if (targetView === View.Dashboard) {
+              updateUrl('dashboard');
+          } else if (targetView === View.Progress) {
+              updateUrl('progress');
+          }
+      }
+      window.scrollTo({ top: 0, behavior: 'auto' });
+  }, [handleNavigatePage]);
+
+  const handleEnterApp = useCallback(() => {
+    handleNavigate(View.Dashboard);
+  }, [handleNavigate]);
+
+  useEffect(() => {
+    const handleUrlChange = () => {
+        const params = new URLSearchParams(window.location.search);
+        const p = params.get('p');
+        const id = params.get('id');
+
+        if (p === 'about' || p === 'resources') {
+            setPage(p);
+        } else if (p === 'dashboard' || p === 'progress' || p === 'category' || p === 'sim') {
+            setPage('app');
+            setTimeout(() => { 
+                if (p === 'dashboard') {
+                    setView(View.Dashboard);
+                } else if (p === 'progress') {
+                    setView(View.Progress);
+                } else if (p === 'category' && id) {
+                    const category = CATEGORIES.find(c => c.id === id);
+                    if (category) {
+                        setSelectedCategory(category);
+                        setView(View.Category);
+                    } else {
+                        handleNavigate(View.Dashboard);
+                    }
+                } else if (p === 'sim' && id) {
+                    handleSelectSimulationById(id);
+                }
+            }, 50);
+        } else if (!p) {
+            setPage('intro');
+        }
+    };
+
+    handleUrlChange();
+    window.addEventListener('popstate', handleUrlChange);
+    return () => window.removeEventListener('popstate', handleUrlChange);
+  }, [CATEGORIES, handleNavigate, handleSelectSimulationById]);
 
   const completeSimulation = useCallback((simId: string, xpGained: number, badge?: string) => {
     setUserProgress(prev => {
@@ -126,6 +204,7 @@ const AppContent: React.FC = () => {
         return prev; // Already completed
       }
       return {
+        ...prev,
         xp: prev.xp + xpGained,
         badges: badge && !prev.badges.includes(badge) ? [...prev.badges, badge] : prev.badges,
         completedSimulations: [...prev.completedSimulations, { id: simId, completedAt: new Date().toISOString(), xpGained }],
@@ -138,12 +217,13 @@ const AppContent: React.FC = () => {
     setTimeout(() => {
         const currentSimIndex = LEARNING_PATH.findIndex(id => id === simId);
         if (currentSimIndex !== -1 && currentSimIndex + 1 < LEARNING_PATH.length) {
-            setLearningPathStep(currentSimIndex + 1);
+            const nextSimId = LEARNING_PATH[currentSimIndex + 1];
+            handleSelectSimulationById(nextSimId);
         } else {
-            setView(View.Dashboard);
+            handleNavigate(View.Dashboard);
         }
     }, 1500);
-  }, []);
+  }, [handleNavigate, handleSelectSimulationById]);
   
   const toggleSidebarCollapse = useCallback(() => {
     setIsSidebarCollapsed(prev => {
@@ -157,16 +237,21 @@ const AppContent: React.FC = () => {
     });
   }, []);
 
-  const startOrResumeLearningPath = () => {
+  const startOrResumeLearningPath = useCallback(() => {
     const nextStepIndex = LEARNING_PATH.findIndex(id => !userProgress.completedSimulations.some(s => s.id === id));
-    setLearningPathStep(nextStepIndex === -1 ? 0 : nextStepIndex);
-    setView(View.Simulation);
-    window.scrollTo({ top: 0, behavior: 'auto' });
-  };
+    const stepIndex = nextStepIndex === -1 ? 0 : nextStepIndex;
+    const simId = LEARNING_PATH[stepIndex];
+    if (simId) {
+        handleSelectSimulationById(simId);
+    } else {
+        handleNavigate(View.Dashboard);
+    }
+  }, [userProgress.completedSimulations, handleSelectSimulationById, handleNavigate]);
 
   const handleSelectCategory = (category: Category) => {
     setSelectedCategory(category);
     setView(View.Category);
+    updateUrl('category', category.id);
     window.scrollTo({ top: 0, behavior: 'auto' });
   };
 
@@ -174,56 +259,14 @@ const AppContent: React.FC = () => {
     handleSelectSimulationById(simulation.id);
   };
 
-  const handleSelectSimulationById = useCallback((simulationId: string) => {
-    const indexInPath = LEARNING_PATH.findIndex(id => id === simulationId);
-
-    if (indexInPath !== -1) {
-      setLearningPathStep(indexInPath);
-      setView(View.Simulation);
-      window.scrollTo({ top: 0, behavior: 'auto' });
-    } else {
-      console.warn(`Simulation with id "${simulationId}" not found in LEARNING_PATH.`);
-    }
-  }, []);
-  
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const simId = params.get('sim');
-    if (simId && allSimulations.some(s => s.id === simId)) {
-      handleEnterApp();
-      // Using a timeout to ensure the state update for `page` has propagated before setting the view.
-      setTimeout(() => {
-        handleSelectSimulationById(simId);
-      }, 50);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only on mount to handle deep links
-
-  const handleShare = (simId: string) => {
-    const url = `${window.location.origin}${window.location.pathname}?sim=${simId}`;
-    navigator.clipboard.writeText(url).then(() => {
-      setCopyStatus('copied');
-      setTimeout(() => setCopyStatus('idle'), 2000);
-    });
-  };
-
-
-  const handleNavigate = (targetView: View) => {
-    if (targetView === View.About) {
-        setPage('about');
-    } else if (targetView === View.Resources) {
-        setPage('resources');
-    } else {
-        setPage('app');
-        setView(targetView);
-    }
-    window.scrollTo({ top: 0, behavior: 'auto' });
-  }
+  const handleBookingConfirmation = useCallback(() => {
+    setUserProgress(prev => ({ ...prev, hasBookedCall: true }));
+    closeBookingModal();
+    handleNavigate(View.Progress);
+  }, [handleNavigate]);
 
   const handleBack = () => {
-    setView(View.Dashboard);
-    setSelectedCategory(null);
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    handleNavigate(View.Dashboard);
   };
 
   const renderSimulation = (simulationId: string) => {
@@ -343,12 +386,7 @@ const AppContent: React.FC = () => {
                         <h3 className="text-lg md:text-xl font-semibold text-white">
                             {t('app.lesson')} {learningPathStep + 1} {t('app.of')} {LEARNING_PATH.length}: {currentSim.title}
                         </h3>
-                        <div className="flex items-center gap-2">
-                            <span className="text-brand-secondary font-bold text-sm hidden md:block">{pathProgress}% {t('app.complete')}</span>
-                            <button onClick={() => handleShare(currentSim.id)} className="p-2 rounded-full hover:bg-brand-bg transition-colors" title="Share this simulation">
-                                {copyStatus === 'copied' ? <CheckCircleIcon className="h-5 w-5 text-brand-secondary" /> : <ShareIcon className="h-5 w-5 text-brand-primary" />}
-                            </button>
-                        </div>
+                        <span className="text-brand-secondary font-bold text-sm hidden md:block">{pathProgress}% {t('app.complete')}</span>
                       </div>
                       <div className="w-full bg-gray-700 rounded-full h-2.5">
                           <div className="bg-brand-secondary h-2.5 rounded-full transition-all duration-500" style={{ width: `${pathProgress}%` }}></div>
@@ -361,7 +399,7 @@ const AppContent: React.FC = () => {
       case View.ExpertHelp:
         return <ExpertHelp onBack={handleBack} />;
       case View.Progress:
-        return <Progress userProgress={userProgress} onBack={handleBack} />;
+        return <Progress userProgress={userProgress} onBack={handleBack} onOpenBookingModal={openBookingModal} onContinueLearning={startOrResumeLearningPath} />;
       default:
         return <Dashboard 
                 onStartLearning={startOrResumeLearningPath}
@@ -436,25 +474,31 @@ const AppContent: React.FC = () => {
           aria-labelledby="booking-modal-title"
         >
           <div 
-            className="bg-slate-100 rounded-2xl shadow-2xl border border-gray-300 w-[95vw] max-w-4xl h-[90vh] relative animate-pop-in" 
+            className="bg-brand-surface rounded-2xl shadow-2xl border border-gray-700/50 w-[95vw] max-w-4xl h-[90vh] relative animate-pop-in flex flex-col" 
             onClick={e => e.stopPropagation()}
           >
             <h2 id="booking-modal-title" className="sr-only">{t('app.bookAppointment')}</h2>
             <button 
               onClick={closeBookingModal} 
-              className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 z-10 p-1 rounded-full bg-white/50 hover:bg-gray-200 transition-colors"
+              className="absolute top-3 right-3 text-gray-400 hover:text-white z-10 p-1 rounded-full bg-brand-surface/50 hover:bg-brand-bg transition-colors"
               aria-label="Close booking modal"
             >
               <XMarkIcon className="h-6 w-6" />
             </button>
-            <iframe
-              src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0167PaK4gkglb-8diXPCzvZM2sz4ZqKNiCernRxnmLAjpnjvllox8tT5hFTKojodg2nkjA4DPj?gv=true&bgcolor=%23ffffff"
-              width="100%"
-              height="100%"
-              frameBorder="0"
-              className="rounded-2xl"
-              title="Book an Appointment with CryptoAX07"
-            ></iframe>
+            <div className="flex-grow rounded-t-2xl overflow-hidden bg-white">
+                <iframe
+                src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ0167PaK4gkglb-8diXPCzvZM2sz4ZqKNiCernRxnmLAjpnjvllox8tT5hFTKojodg2nkjA4DPj?gv=true"
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                title="Book an Appointment with CryptoAX07"
+                ></iframe>
+            </div>
+             <div className="p-4 bg-brand-bg rounded-b-2xl border-t border-gray-700 text-center">
+                <Button onClick={handleBookingConfirmation} variant="secondary">
+                    {t('app.iveBooked')}
+                </Button>
+            </div>
           </div>
         </div>
       )}
@@ -463,11 +507,9 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => (
-  <LanguageProvider>
-    <AppContent />
-    <Analytics />
-    <SpeedInsights />
-  </LanguageProvider>
+    <LanguageProvider>
+        <AppContent />
+    </LanguageProvider>
 );
 
 export default App;
