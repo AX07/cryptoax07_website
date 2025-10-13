@@ -474,6 +474,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
                   frameBorder="0"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                   allowFullScreen
+                  loading="lazy"
                 ></iframe>
               </div>
             </div>
@@ -554,6 +555,8 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
                           src="https://static.wixstatic.com/media/4a78c1_eba74c01cf294a3aa898cff4e6914944~mv2.png/v1/crop/x_0,y_0,w_417,h_433/fill/w_494,h_520,fp_0.50_0.50,lg_1,q_85,enc_avif,quality_auto/Dise%C3%B1o%20sin%20t%C3%ADtulo.png"
                           alt="CryptoAX07 coach guiding a student"
                           className="rounded-xl shadow-2xl w-full max-w-md mx-auto md:mx-0 h-auto object-cover"
+                          loading="lazy"
+                          decoding="async"
                         />
                     </div>
                 </div>
@@ -605,7 +608,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
               <Card className="p-8 text-left bg-brand-bg/50 transition-transform duration-300 hover:-translate-y-2">
                 <p className="text-brand-text mb-4 italic">{t('introPage.testimonial1')}</p>
                 <div className="flex items-center gap-4 group">
-                  <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop" alt="Anna R." className="h-12 w-12 rounded-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                  <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop" alt="Anna R." className="h-12 w-12 rounded-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" decoding="async" />
                   <div>
                     <p className="font-bold text-white">{t('introPage.testimonial1Name')}</p>
                     <p className="text-sm text-brand-text-secondary">{t('introPage.testimonial1Role')}</p>
@@ -615,7 +618,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
               <Card className="p-8 text-left bg-brand-bg/50 transition-transform duration-300 hover:-translate-y-2">
                 <p className="text-brand-text mb-4 italic">{t('introPage.testimonial2')}</p>
                 <div className="flex items-center gap-4 group">
-                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" alt="James T." className="h-12 w-12 rounded-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop" alt="James T." className="h-12 w-12 rounded-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" decoding="async" />
                   <div>
                     <p className="font-bold text-white">{t('introPage.testimonial2Name')}</p>
                     <p className="text-sm text-brand-text-secondary">{t('introPage.testimonial2Role')}</p>
@@ -625,7 +628,7 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
                <Card className="p-8 text-left bg-brand-bg/50 transition-transform duration-300 hover:-translate-y-2">
                 <p className="text-brand-text mb-4 italic">{t('introPage.testimonial3')}</p>
                 <div className="flex items-center gap-4 group">
-                  <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&auto=format&fit=crop" alt="Maria S." className="h-12 w-12 rounded-full object-cover transition-transform duration-300 group-hover:scale-110" />
+                  <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=200&auto=format&fit=crop" alt="Maria S." className="h-12 w-12 rounded-full object-cover transition-transform duration-300 group-hover:scale-110" loading="lazy" decoding="async" />
                   <div>
                     <p className="font-bold text-white">{t('introPage.testimonial3Name')}</p>
                     <p className="text-sm text-brand-text-secondary">{t('introPage.testimonial3Role')}</p>
@@ -712,4 +715,4 @@ const IntroPage: React.FC<IntroPageProps> = ({ onStart, onNavigatePage, onOpenBo
   );
 };
 
-export default IntroPage;
+export default React.memo(IntroPage);

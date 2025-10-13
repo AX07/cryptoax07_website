@@ -183,4 +183,4 @@ const Sidebar: React.FC<SidebarProps> = ({ userProgress, onSelectSimulation, onN
   );
 };
 
-export default Sidebar;
+export default React.memo(Sidebar);

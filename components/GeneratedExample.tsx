@@ -40,4 +40,4 @@ const GeneratedExample: React.FC<GeneratedExampleProps> = ({ steps }) => {
   );
 };
 
-export default GeneratedExample;
+export default React.memo(GeneratedExample);

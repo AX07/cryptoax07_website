@@ -16,7 +16,7 @@ interface ResourcesPageProps {
 const ResourceCard: React.FC<{ item: ResourceItem }> = ({ item }) => (
     <a href={item.link} target="_blank" rel="noopener noreferrer" className="block h-full">
         <Card className="p-4 h-full bg-brand-bg/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-brand-primary/50 flex items-center gap-4">
-            <img src={item.logoUrl} alt={`${item.name} logo`} className="h-12 w-12 object-contain flex-shrink-0 bg-white/10 rounded-full p-1" />
+            <img src={item.logoUrl} alt={`${item.name} logo`} className="h-12 w-12 object-contain flex-shrink-0 bg-white/10 rounded-full p-1" loading="lazy" decoding="async" />
             <div>
                 <h4 className="font-bold text-white">{item.name}</h4>
                 <p className="text-xs text-brand-text-secondary">{item.description}</p>
@@ -155,7 +155,7 @@ const ResourcesPage: React.FC<ResourcesPageProps> = ({ onStart, onNavigatePage, 
                                     <Card className="p-0 overflow-hidden bg-brand-surface hover:border-brand-primary transition-all duration-300 card-glow-blue-hover">
                                         <div className="md:flex">
                                             <div className="md:flex-shrink-0">
-                                                <img className="h-48 w-full object-cover md:h-full md:w-64 transition-transform duration-300 group-hover:scale-105" src="https://static.wixstatic.com/media/4a78c1_eba74c01cf294a3aa898cff4e6914944~mv2.png/v1/crop/x_0,y_0,w_417,h_433/fill/w_494,h_520,fp_0.50_0.50,lg_1,q_85,enc_avif,quality_auto/Dise%C3%B1o%20sin%20t%C3%ADtulo.png" alt="CryptoAX07 Blog" />
+                                                <img className="h-48 w-full object-cover md:h-full md:w-64 transition-transform duration-300 group-hover:scale-105" src="https://static.wixstatic.com/media/4a78c1_eba74c01cf294a3aa898cff4e6914944~mv2.png/v1/crop/x_0,y_0,w_417,h_433/fill/w_494,h_520,fp_0.50_0.50,lg_1,q_85,enc_avif,quality_auto/Dise%C3%B1o%20sin%20t%C3%ADtulo.png" alt="CryptoAX07 Blog" loading="lazy" decoding="async" />
                                             </div>
                                             <div className="p-8 text-left flex flex-col justify-center">
                                                 <h3 className="text-2xl font-bold text-white mb-2">{t('resourcesPage.blogTitle')}</h3>
@@ -222,4 +222,4 @@ const ResourcesPage: React.FC<ResourcesPageProps> = ({ onStart, onNavigatePage, 
     );
 };
 
-export default ResourcesPage;
+export default React.memo(ResourcesPage);

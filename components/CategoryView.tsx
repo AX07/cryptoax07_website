@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { Category, Simulation, UserProgress } from '../types';
 import Card from './ui/Card';
@@ -70,4 +69,4 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category, onSelectSimulatio
   );
 };
 
-export default CategoryView;
+export default React.memo(CategoryView);
