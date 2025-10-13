@@ -64,14 +64,23 @@ const simulationComponents = {
 
 const updateUrl = (p?: string, id?: string) => {
     const url = new URL(window.location.href);
-    url.search = '';
     if (p) {
         url.searchParams.set('p', p);
-        if (id) {
-            url.searchParams.set('id', id);
-        }
+    } else {
+        url.searchParams.delete('p');
     }
-    window.history.pushState({}, '', url.pathname + url.search);
+
+    if (id) {
+        url.searchParams.set('id', id);
+    } else {
+        url.searchParams.delete('id');
+    }
+
+    if (!p) {
+        url.searchParams.delete('id');
+    }
+    
+    window.history.pushState({}, '', url.toString());
 };
 
 const AppContent: React.FC = () => {
