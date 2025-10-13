@@ -129,4 +129,4 @@ const Progress: React.FC<ProgressProps> = ({ userProgress, onBack, onOpenBooking
   );
 };
 
-export default Progress;
+export default React.memo(Progress);

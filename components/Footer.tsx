@@ -73,4 +73,4 @@ const Footer: React.FC<FooterProps> = ({ onStart, onNavigatePage, onOpenBookingM
   );
 };
 
-export default Footer;
+export default React.memo(Footer);

@@ -1,52 +1,64 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, Suspense, lazy } from 'react';
 import { View, Simulation, UserProgress, Category, Page } from './types';
 import Header from './components/Header';
-import Dashboard from './components/Dashboard';
-import CategoryView from './components/CategoryView';
-import ExpertHelp from './components/ExpertHelp';
 import AiChatbot from './components/AiChatbot';
-import Progress from './components/Progress';
-import IntroPage from './components/IntroPage';
-import AboutPage from './components/AboutPage';
-import ResourcesPage from './components/ResourcesPage';
 import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
 import { GET_CATEGORIES, LEARNING_PATH } from './constants';
 import { XMarkIcon } from './components/icons/Icons';
 import { LanguageProvider, useLanguage } from './hooks/useLanguage';
-
-import SeedPhraseSim from './components/simulations/SeedPhraseSim';
-import SwapSim from './components/simulations/SwapSim';
-import InflationVisualizer from './components/simulations/InflationVisualizer';
-import WalletConnectionSim from './components/simulations/WalletConnectionSim';
-import KycSim from './components/simulations/KycSim';
-import PortfolioSim from './components/simulations/PortfolioSim';
-import TokenApprovalSim from './components/simulations/TokenApprovalSim';
-import BitcoinTransactionSim from './components/simulations/BitcoinTransactionSim';
-import EthereumTransactionSim from './components/simulations/EthereumTransactionSim';
-import WalletOverviewSim from './components/simulations/WalletOverviewSim';
-import PortfolioTrackerSim from './components/simulations/PortfolioTrackerSim';
-import CandlestickChartSim from './components/simulations/CandlestickChartSim';
-import CoinMarketExplorerSim from './components/simulations/CoinMarketExplorerSim';
-import PasswordManagerSim from './components/simulations/PasswordManagerSim';
-import LendingBorrowingSim from './components/simulations/LendingBorrowingSim';
-import LiquidationRiskSim from './components/simulations/LiquidationRiskSim';
-import FiatDepositSim from './components/simulations/FiatDepositSim';
-import CryptoWithdrawSim from './components/simulations/CryptoWithdrawSim';
-import SelfCustodySim from './components/simulations/SelfCustodySim';
-import TwoFactorAuthSim from './components/simulations/TwoFactorAuthSim';
-import BuyAndWithdrawSim from './components/simulations/BuyAndWithdrawSim';
-import FractionalReserveSim from './components/simulations/FractionalReserveSim';
-import AirdropSim from './components/simulations/AirdropSim';
-import NftSim from './components/simulations/NftSim';
-import Layer2Sim from './components/simulations/Layer2Sim';
-import EmergencyFundSim from './components/simulations/EmergencyFundSim';
-import DebtRepaymentSim from './components/simulations/DebtRepaymentSim';
-import PerpetualFuturesSim from './components/simulations/PerpetualFuturesSim';
-import ExpenseTrackingSim from './components/simulations/ExpenseTrackingSim';
-import AssetsLiabilitiesSim from './components/simulations/AssetsLiabilitiesSim';
 import Button from './components/ui/Button';
-import Confetti from './components/ui/Confetti';
+
+// Performance: Add a spinner for lazy-loading fallbacks
+const Spinner: React.FC = () => (
+    <div className="flex justify-center items-center h-full min-h-[300px] w-full">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
+    </div>
+);
+
+// Performance: Lazy-load components to code-split the application
+const Dashboard = lazy(() => import('./components/Dashboard'));
+const CategoryView = lazy(() => import('./components/CategoryView'));
+const ExpertHelp = lazy(() => import('./components/ExpertHelp'));
+const Progress = lazy(() => import('./components/Progress'));
+const IntroPage = lazy(() => import('./components/IntroPage'));
+const AboutPage = lazy(() => import('./components/AboutPage'));
+const ResourcesPage = lazy(() => import('./components/ResourcesPage'));
+const Confetti = lazy(() => import('./components/ui/Confetti'));
+
+// Performance: Lazy-load all simulation components
+const simulationComponents = {
+  'seed-phrase': lazy(() => import('./components/simulations/SeedPhraseSim')),
+  'swap-tool': lazy(() => import('./components/simulations/SwapSim')),
+  'inflation-visualizer': lazy(() => import('./components/simulations/InflationVisualizer')),
+  'wallet-connection': lazy(() => import('./components/simulations/WalletConnectionSim')),
+  'kyc-sim': lazy(() => import('./components/simulations/KycSim')),
+  'portfolio-sim': lazy(() => import('./components/simulations/PortfolioSim')),
+  'token-approval': lazy(() => import('./components/simulations/TokenApprovalSim')),
+  'bitcoin-transaction': lazy(() => import('./components/simulations/BitcoinTransactionSim')),
+  'ethereum-transaction': lazy(() => import('./components/simulations/EthereumTransactionSim')),
+  'wallet-overview': lazy(() => import('./components/simulations/WalletOverviewSim')),
+  'portfolio-tracker': lazy(() => import('./components/simulations/PortfolioTrackerSim')),
+  'candlestick-chart': lazy(() => import('./components/simulations/CandlestickChartSim')),
+  'coin-market-explorer': lazy(() => import('./components/simulations/CoinMarketExplorerSim')),
+  'password-manager': lazy(() => import('./components/simulations/PasswordManagerSim')),
+  'lending-borrowing': lazy(() => import('./components/simulations/LendingBorrowingSim')),
+  'liquidation-risk': lazy(() => import('./components/simulations/LiquidationRiskSim')),
+  'fiat-deposit': lazy(() => import('./components/simulations/FiatDepositSim')),
+  'buy-and-withdraw': lazy(() => import('./components/simulations/BuyAndWithdrawSim')),
+  'crypto-withdraw': lazy(() => import('./components/simulations/CryptoWithdrawSim')),
+  'self-custody': lazy(() => import('./components/simulations/SelfCustodySim')),
+  'two-factor-auth': lazy(() => import('./components/simulations/TwoFactorAuthSim')),
+  'airdrops-farming': lazy(() => import('./components/simulations/AirdropSim')),
+  'nft-explained': lazy(() => import('./components/simulations/NftSim')),
+  'layer-2-scaling': lazy(() => import('./components/simulations/Layer2Sim')),
+  'emergency-fund': lazy(() => import('./components/simulations/EmergencyFundSim')),
+  'debt-repayment': lazy(() => import('./components/simulations/DebtRepaymentSim')),
+  'perpetual-futures': lazy(() => import('./components/simulations/PerpetualFuturesSim')),
+  'expense-tracking': lazy(() => import('./components/simulations/ExpenseTrackingSim')),
+  'assets-liabilities': lazy(() => import('./components/simulations/AssetsLiabilitiesSim')),
+  'fractional-reserve': lazy(() => import('./components/simulations/FractionalReserveSim')),
+};
 
 const updateUrl = (p?: string, id?: string) => {
     const url = new URL(window.location.href);
@@ -96,6 +108,54 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('userProgress', JSON.stringify(userProgress));
   }, [userProgress]);
+
+    useEffect(() => {
+    let title = 'CryptoAX07: Crypto Education Hub';
+    let description = 'Master cryptocurrency with CryptoAX07. We offer crypto tailored education, one to one coaching, and interactive simulations. Learn about blockchain technology, digital assets, DeFi explained, and cryptocurrency trading basics in a safe, effective environment.';
+
+    const currentSim = (page === 'app' && view === View.Simulation && learningPathStep < LEARNING_PATH.length) 
+      ? allSimulations.find(s => s.id === LEARNING_PATH[learningPathStep])
+      : null;
+
+    if (page === 'about') {
+        title = t('aboutPage.metaTitle');
+        description = t('aboutPage.metaDescription');
+    } else if (page === 'resources') {
+        title = t('resourcesPage.metaTitle');
+        description = t('resourcesPage.metaDescription');
+    } else if (page === 'app') {
+        if (view === View.Dashboard) {
+            title = 'Dashboard | CryptoAX07 App';
+            description = 'Track your learning progress, earn badges, and explore interactive crypto simulations.';
+        } else if (view === View.Progress) {
+            title = 'My Progress | CryptoAX07 App';
+            description = 'View your XP, earned badges, and completed lessons. Book a call with an expert to discuss your journey.';
+        } else if (view === View.Category && selectedCategory) {
+            title = `${selectedCategory.title} | CryptoAX07 App`;
+            description = `Explore simulations in the ${selectedCategory.title} category: ${selectedCategory.description}`;
+        } else if (view === View.Simulation && currentSim) {
+            title = `${currentSim.title} | CryptoAX07 App`;
+            description = `Interactive Simulation: ${currentSim.description}`;
+        }
+    }
+
+    document.title = title;
+    
+    const updateMetaTag = (selector: string, content: string) => {
+        const element = document.querySelector(selector) as HTMLMetaElement | null;
+        if (element) {
+            element.content = content;
+        }
+    };
+
+    updateMetaTag('meta[name="description"]', description);
+    updateMetaTag('meta[property="og:title"]', title);
+    updateMetaTag('meta[property="og:description"]', description);
+    updateMetaTag('meta[name="twitter:title"]', title);
+    updateMetaTag('meta[name="twitter:description"]', description);
+
+  }, [page, view, selectedCategory, learningPathStep, allSimulations, t]);
+
 
   useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -271,70 +331,46 @@ const AppContent: React.FC = () => {
 
   const renderSimulation = (simulationId: string) => {
     if (!simulationId) return null;
-    switch (simulationId) {
-      case 'seed-phrase':
-        return <SeedPhraseSim onComplete={() => completeSimulation('seed-phrase', 100, 'Seed Phrase Master')} />;
-      case 'swap-tool':
-        return <SwapSim onComplete={() => completeSimulation('swap-tool', 150, 'DeFi Swapper')} />;
-      case 'inflation-visualizer':
-        return <InflationVisualizer onComplete={() => completeSimulation('inflation-visualizer', 50, 'Inflation Aware')} />;
-      case 'fractional-reserve':
-        return <FractionalReserveSim onComplete={() => completeSimulation('fractional-reserve', 100, 'Money Multiplier')} />;
-      case 'wallet-connection':
-        return <WalletConnectionSim onComplete={() => completeSimulation('wallet-connection', 75, 'Wallet Connector')} />;
-      case 'kyc-sim':
-        return <KycSim onComplete={() => completeSimulation('kyc-sim', 75, 'Verified User')} />;
-      case 'portfolio-sim':
-        return <PortfolioSim onComplete={() => completeSimulation('portfolio-sim', 200, 'Portfolio Pro')} />;
-      case 'token-approval':
-        return <TokenApprovalSim onComplete={() => completeSimulation('token-approval', 125, 'Approval Guardian')} />;
-      case 'bitcoin-transaction':
-        return <BitcoinTransactionSim onComplete={() => completeSimulation('bitcoin-transaction', 250, 'BTC Transactor')} />;
-      case 'ethereum-transaction':
-        return <EthereumTransactionSim onComplete={() => completeSimulation('ethereum-transaction', 250, 'ETH Transactor')} />;
-      case 'wallet-overview':
-        return <WalletOverviewSim onComplete={() => completeSimulation('wallet-overview', 150, 'Wallet Manager')} />;
-      case 'portfolio-tracker':
-        return <PortfolioTrackerSim onComplete={() => completeSimulation('portfolio-tracker', 100, 'Asset Analyst')} />;
-      case 'candlestick-chart':
-        return <CandlestickChartSim onComplete={() => completeSimulation('candlestick-chart', 125, 'Chart Reader')} />;
-      case 'coin-market-explorer':
-        return <CoinMarketExplorerSim onComplete={() => completeSimulation('coin-market-explorer', 75, 'Market Observer')} />;
-      case 'password-manager':
-        return <PasswordManagerSim onComplete={() => completeSimulation('password-manager', 100, 'Security Savvy')} />;
-      case 'lending-borrowing':
-        return <LendingBorrowingSim onComplete={() => completeSimulation('lending-borrowing', 200, 'DeFi Banker')} />;
-      case 'liquidation-risk':
-        return <LiquidationRiskSim onComplete={() => completeSimulation('liquidation-risk', 150, 'Risk Manager')} />;
-      case 'fiat-deposit':
-        return <FiatDepositSim onComplete={() => completeSimulation('fiat-deposit', 75, 'Fiat Depositor')} />;
-      case 'buy-and-withdraw':
-        return <BuyAndWithdrawSim onComplete={() => completeSimulation('buy-and-withdraw', 125, 'Sovereign Owner')} />;
-      case 'crypto-withdraw':
-        return <CryptoWithdrawSim onComplete={() => completeSimulation('crypto-withdraw', 125, 'Fiat Withdrawer')} />;
-      case 'self-custody':
-        return <SelfCustodySim onComplete={() => completeSimulation('self-custody', 150, 'Self-Custody Champ')} />;
-      case 'two-factor-auth':
-        return <TwoFactorAuthSim onComplete={() => completeSimulation('two-factor-auth', 125, 'Security Guardian')} />;
-      case 'airdrops-farming':
-        return <AirdropSim onComplete={() => completeSimulation('airdrops-farming', 175, 'Yield Farmer')} />;
-      case 'nft-explained':
-        return <NftSim onComplete={() => completeSimulation('nft-explained', 150, 'NFT Explorer')} />;
-      case 'layer-2-scaling':
-        return <Layer2Sim onComplete={() => completeSimulation('layer-2-scaling', 200, 'Scale Specialist')} />;
-      case 'emergency-fund':
-        return <EmergencyFundSim onComplete={() => completeSimulation('emergency-fund', 150, 'Recession Proof')} />;
-      case 'debt-repayment':
-        return <DebtRepaymentSim onComplete={() => completeSimulation('debt-repayment', 175, 'Debt Slayer')} />;
-      case 'perpetual-futures':
-        return <PerpetualFuturesSim onComplete={() => completeSimulation('perpetual-futures', 250, 'Derivatives Trader')} />;
-      case 'expense-tracking':
-        return <ExpenseTrackingSim onComplete={() => completeSimulation('expense-tracking', 100, 'Budget Boss')} />;
-      case 'assets-liabilities':
-        return <AssetsLiabilitiesSim onComplete={() => completeSimulation('assets-liabilities', 125, 'Net Worth Ninja')} />;
-      default:
+    
+    const SimComponent = simulationComponents[simulationId as keyof typeof simulationComponents];
+    if (!SimComponent) {
         return <div className="text-center p-8">Simulation not found.</div>;
     }
+
+    const completionHandlers: { [key: string]: () => void } = {
+        'seed-phrase': () => completeSimulation('seed-phrase', 100, 'Seed Phrase Master'),
+        'swap-tool': () => completeSimulation('swap-tool', 150, 'DeFi Swapper'),
+        'inflation-visualizer': () => completeSimulation('inflation-visualizer', 50, 'Inflation Aware'),
+        'fractional-reserve': () => completeSimulation('fractional-reserve', 100, 'Money Multiplier'),
+        'wallet-connection': () => completeSimulation('wallet-connection', 75, 'Wallet Connector'),
+        'kyc-sim': () => completeSimulation('kyc-sim', 75, 'Verified User'),
+        'portfolio-sim': () => completeSimulation('portfolio-sim', 200, 'Portfolio Pro'),
+        'token-approval': () => completeSimulation('token-approval', 125, 'Approval Guardian'),
+        'bitcoin-transaction': () => completeSimulation('bitcoin-transaction', 250, 'BTC Transactor'),
+        'ethereum-transaction': () => completeSimulation('ethereum-transaction', 250, 'ETH Transactor'),
+        'wallet-overview': () => completeSimulation('wallet-overview', 150, 'Wallet Manager'),
+        'portfolio-tracker': () => completeSimulation('portfolio-tracker', 100, 'Asset Analyst'),
+        'candlestick-chart': () => completeSimulation('candlestick-chart', 125, 'Chart Reader'),
+        'coin-market-explorer': () => completeSimulation('coin-market-explorer', 75, 'Market Observer'),
+        'password-manager': () => completeSimulation('password-manager', 100, 'Security Savvy'),
+        'lending-borrowing': () => completeSimulation('lending-borrowing', 200, 'DeFi Banker'),
+        'liquidation-risk': () => completeSimulation('liquidation-risk', 150, 'Risk Manager'),
+        'fiat-deposit': () => completeSimulation('fiat-deposit', 75, 'Fiat Depositor'),
+        'buy-and-withdraw': () => completeSimulation('buy-and-withdraw', 125, 'Sovereign Owner'),
+        'crypto-withdraw': () => completeSimulation('crypto-withdraw', 125, 'Fiat Withdrawer'),
+        'self-custody': () => completeSimulation('self-custody', 150, 'Self-Custody Champ'),
+        'two-factor-auth': () => completeSimulation('two-factor-auth', 125, 'Security Guardian'),
+        'airdrops-farming': () => completeSimulation('airdrops-farming', 175, 'Yield Farmer'),
+        'nft-explained': () => completeSimulation('nft-explained', 150, 'NFT Explorer'),
+        'layer-2-scaling': () => completeSimulation('layer-2-scaling', 200, 'Scale Specialist'),
+        'emergency-fund': () => completeSimulation('emergency-fund', 150, 'Recession Proof'),
+        'debt-repayment': () => completeSimulation('debt-repayment', 175, 'Debt Slayer'),
+        'perpetual-futures': () => completeSimulation('perpetual-futures', 250, 'Derivatives Trader'),
+        'expense-tracking': () => completeSimulation('expense-tracking', 100, 'Budget Boss'),
+        'assets-liabilities': () => completeSimulation('assets-liabilities', 125, 'Net Worth Ninja'),
+    };
+
+    return <SimComponent onComplete={completionHandlers[simulationId]} />;
   };
   
   const renderContent = () => {
@@ -393,7 +429,9 @@ const AppContent: React.FC = () => {
                       </div>
                     </div>
                 </div>
-                {renderSimulation(currentSim.id)}
+                <Suspense fallback={<Spinner />}>
+                    {renderSimulation(currentSim.id)}
+                </Suspense>
             </div>
         );
       case View.ExpertHelp:
@@ -415,55 +453,60 @@ const AppContent: React.FC = () => {
           currentSimId = LEARNING_PATH[learningPathStep];
       }
       
-      switch(page) {
-        case 'intro':
-            return <IntroPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />;
-        case 'about':
-            return <AboutPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />;
-        case 'resources':
-            return <ResourcesPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />;
-        case 'app':
-        default:
-            return (
-                <div className="min-h-screen bg-brand-bg flex">
-                    <div className={`flex-1 flex flex-col transition-all duration-300 w-full md:w-auto ${isSidebarCollapsed ? 'md:mr-20' : 'md:mr-72'}`}>
-                        <Header 
-                            userProgress={userProgress} 
+      const pageContent = () => {
+        switch(page) {
+            case 'intro':
+                return <IntroPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />;
+            case 'about':
+                return <AboutPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />;
+            case 'resources':
+                return <ResourcesPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />;
+            case 'app':
+            default:
+                return (
+                    <div className="min-h-screen bg-brand-bg flex">
+                        <div className={`flex-1 flex flex-col transition-all duration-300 w-full md:w-auto ${isSidebarCollapsed ? 'md:mr-20' : 'md:mr-72'}`}>
+                            <Header 
+                                userProgress={userProgress} 
+                                onNavigate={handleNavigate}
+                                onNavigatePage={handleNavigatePage}
+                                onStartLearning={startOrResumeLearningPath}
+                                onOpenBookingModal={openBookingModal}
+                                onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
+                            />
+                            <main className="flex-grow container mx-auto px-4 py-8">
+                                <Suspense fallback={<Spinner />}>
+                                    {renderContent()}
+                                </Suspense>
+                            </main>
+                            <Footer 
+                                onStart={startOrResumeLearningPath}
+                                onNavigatePage={handleNavigatePage}
+                                onOpenBookingModal={openBookingModal}
+                            />
+                        </div>
+                        <Sidebar
+                            userProgress={userProgress}
+                            onSelectSimulation={handleSelectSimulationById}
                             onNavigate={handleNavigate}
                             onNavigatePage={handleNavigatePage}
-                            onStartLearning={startOrResumeLearningPath}
-                            onOpenBookingModal={openBookingModal}
-                            onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
+                            currentSimId={currentSimId}
+                            isOpen={isSidebarOpen}
+                            onClose={() => setIsSidebarOpen(false)}
+                            isCollapsed={isSidebarCollapsed}
+                            onToggleCollapse={toggleSidebarCollapse}
                         />
-                        <main className="flex-grow container mx-auto px-4 py-8">
-                            {renderContent()}
-                        </main>
-                        <Footer 
-                            onStart={startOrResumeLearningPath}
-                            onNavigatePage={handleNavigatePage}
-                            onOpenBookingModal={openBookingModal}
-                        />
+                        <AiChatbot onSelectSimulation={handleSelectSimulationById} />
                     </div>
-                    <Sidebar
-                        userProgress={userProgress}
-                        onSelectSimulation={handleSelectSimulationById}
-                        onNavigate={handleNavigate}
-                        onNavigatePage={handleNavigatePage}
-                        currentSimId={currentSimId}
-                        isOpen={isSidebarOpen}
-                        onClose={() => setIsSidebarOpen(false)}
-                        isCollapsed={isSidebarCollapsed}
-                        onToggleCollapse={toggleSidebarCollapse}
-                    />
-                    <AiChatbot onSelectSimulation={handleSelectSimulationById} />
-                </div>
-            );
+                );
+          }
       }
+      return <Suspense fallback={<Spinner />}>{pageContent()}</Suspense>;
   }
 
   return (
     <>
-      {showConfetti && <Confetti />}
+      {showConfetti && <Suspense fallback={null}><Confetti /></Suspense>}
       {renderPage()}
       {isBookingModalOpen && (
         <div 
