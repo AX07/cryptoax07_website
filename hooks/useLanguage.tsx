@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
+import React, { createContext, useState, useContext, ReactNode, useCallback, useEffect } from 'react';
 import { translations } from '../translations';
 
 export type Language = 'en' | 'es';
@@ -6,32 +6,66 @@ export type Language = 'en' | 'es';
 interface LanguageContextType {
   language: Language;
   toggleLanguage: () => void;
+  setLanguage: (lang: Language) => void;
   t: (key: string, replacements?: { [key: string]: string | number }) => any;
 }
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('en');
+  const getLangFromUrl = (): Language => {
+    const params = new URLSearchParams(window.location.search);
+    const lang = params.get('lang');
+    if (lang === 'es' || lang === 'en') {
+      return lang;
+    }
+    return 'en'; // Default language
+  };
+
+  const [language, setLanguageState] = useState<Language>(getLangFromUrl());
+
+  const setLanguage = useCallback((lang: Language) => {
+    if (lang !== language) {
+        setLanguageState(lang);
+        const url = new URL(window.location.href);
+        url.searchParams.set('lang', lang);
+        window.history.pushState({}, '', url.toString());
+    }
+  }, [language]);
 
   const toggleLanguage = useCallback(() => {
-    setLanguage(prev => (prev === 'en' ? 'es' : 'en'));
+    setLanguage(language === 'en' ? 'es' : 'en');
+  }, [language, setLanguage]);
+
+  // Effect to handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      setLanguageState(getLangFromUrl());
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
   }, []);
 
   const t = useCallback((key: string, replacements?: { [key: string]: string | number }): any => {
     const keys = key.split('.');
-    let result: any = translations[language];
+    
+    // Check if the current language is a valid key in translations
+    const currentTranslations = translations[language] || translations.en;
+    
+    let result: any = currentTranslations;
     for (const k of keys) {
       result = result?.[k];
       if (result === undefined) {
-        // Fallback to English if translation is missing in current language
+        // Fallback to English if translation is missing
         let fallbackResult: any = translations['en'];
         for (const fk of keys) {
             fallbackResult = fallbackResult?.[fk];
-            if (fallbackResult === undefined) return key; // return key if not found in English either
+            if (fallbackResult === undefined) return key;
         }
         result = fallbackResult || key;
-        break; // Found fallback, stop searching
+        break;
       }
     }
     
@@ -47,7 +81,7 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
   }, [language]);
 
   return (
-    <LanguageContext.Provider value={{ language, toggleLanguage, t }}>
+    <LanguageContext.Provider value={{ language, toggleLanguage, setLanguage, t }}>
       {children}
     </LanguageContext.Provider>
   );
