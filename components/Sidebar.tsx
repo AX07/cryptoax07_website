@@ -17,7 +17,7 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ userProgress, onSelectSimulation, onNavigate, onNavigatePage, currentSimId, isOpen, onClose, isCollapsed, onToggleCollapse }) => {
-  const { t, language, toggleLanguage } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
   const CATEGORIES = GET_CATEGORIES(t);
 
   const [openCategory, setOpenCategory] = useState<string | null>(() => {
@@ -67,7 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userProgress, onSelectSimulation, onN
             <li>
                 {isCollapsed ? (
                     <button
-                        onClick={toggleLanguage}
+                        onClick={() => setLanguage(language === 'en' ? 'es' : 'en')}
                         className="w-full flex justify-center p-3 rounded-lg"
                         title={t(language === 'en' ? 'header.switchToSpanish' : 'header.switchToEnglish')}
                     >
@@ -79,14 +79,14 @@ const Sidebar: React.FC<SidebarProps> = ({ userProgress, onSelectSimulation, onN
                     <div className="flex items-center gap-1 p-2 rounded-lg bg-brand-bg mx-2" role="group" aria-label="Language selection">
                         <button
                             className={`flex-1 text-center px-2 py-1 text-sm font-bold rounded-md transition-colors ${language === 'en' ? 'bg-brand-primary text-brand-bg' : 'text-brand-text-secondary hover:bg-brand-surface'}`}
-                            onClick={() => { if (language !== 'en') toggleLanguage(); }}
+                            onClick={() => setLanguage('en')}
                             aria-pressed={language === 'en'}
                         >
                             EN
                         </button>
                         <button
                             className={`flex-1 text-center px-2 py-1 text-sm font-bold rounded-md transition-colors ${language === 'es' ? 'bg-brand-primary text-brand-bg' : 'text-brand-text-secondary hover:bg-brand-surface'}`}
-                            onClick={() => { if (language !== 'es') toggleLanguage(); }}
+                            onClick={() => setLanguage('es')}
                             aria-pressed={language === 'es'}
                         >
                             ES
