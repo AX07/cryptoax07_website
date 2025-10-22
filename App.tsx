@@ -1,7 +1,8 @@
 import React, { useState, useCallback, useEffect, Suspense, lazy } from 'react';
+import { Routes, Route, useParams, useNavigate, useLocation, Navigate, Outlet, Link } from 'react-router-dom';
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
-import { View, Simulation, UserProgress, Category, Page } from './types';
+import { Simulation, UserProgress, Category, Page } from './types';
 import Header from './components/Header';
 import AiChatbot from './components/AiChatbot';
 import Footer from './components/Footer';
@@ -62,35 +63,11 @@ const simulationComponents = {
   'fractional-reserve': lazy(() => import('./components/simulations/FractionalReserveSim')),
 };
 
-const updateUrl = (p?: string, id?: string) => {
-    const url = new URL(window.location.href);
-    if (p) {
-        url.searchParams.set('p', p);
-    } else {
-        url.searchParams.delete('p');
-    }
-
-    if (id) {
-        url.searchParams.set('id', id);
-    } else {
-        url.searchParams.delete('id');
-    }
-
-    if (!p) {
-        url.searchParams.delete('id');
-    }
-    
-    window.history.pushState({}, '', url.toString());
-};
-
 const AppContent: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language: lang } = useLanguage(); // Use language from the hook
   const CATEGORIES = GET_CATEGORIES(t);
   const allSimulations = CATEGORIES.flatMap(cat => cat.simulations);
 
-  const [page, setPage] = useState<Page>('intro');
-  const [view, setView] = useState<View>(View.Dashboard);
-  const [learningPathStep, setLearningPathStep] = useState<number>(0);
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -120,38 +97,45 @@ const AppContent: React.FC = () => {
     localStorage.setItem('userProgress', JSON.stringify(userProgress));
   }, [userProgress]);
 
-    useEffect(() => {
+  // SEO and Meta Tag Management
+  const location = useLocation();
+  const { simId, categoryId } = useParams();
+  useEffect(() => {
     let title = 'CryptoAX07: Crypto Education Hub';
     let description = 'Master cryptocurrency with CryptoAX07. We offer crypto tailored education, one to one coaching, and interactive simulations. Learn about blockchain technology, digital assets, DeFi explained, and cryptocurrency trading basics in a safe, effective environment.';
 
-    const currentSim = (page === 'app' && view === View.Simulation && learningPathStep < LEARNING_PATH.length) 
-      ? allSimulations.find(s => s.id === LEARNING_PATH[learningPathStep])
-      : null;
+    const path = location.pathname;
 
-    if (page === 'about') {
+    if (path.endsWith('/about')) {
         title = t('aboutPage.metaTitle');
         description = t('aboutPage.metaDescription');
-    } else if (page === 'resources') {
+    } else if (path.endsWith('/resources')) {
         title = t('resourcesPage.metaTitle');
         description = t('resourcesPage.metaDescription');
-    } else if (page === 'app') {
-        if (view === View.Dashboard) {
+    } else if (path.includes('/app')) {
+        if (path.endsWith('/dashboard')) {
             title = 'Dashboard | CryptoAX07 App';
             description = 'Track your learning progress, earn badges, and explore interactive crypto simulations.';
-        } else if (view === View.Progress) {
+        } else if (path.endsWith('/progress')) {
             title = 'My Progress | CryptoAX07 App';
             description = 'View your XP, earned badges, and completed lessons. Book a call with an expert to discuss your journey.';
-        } else if (view === View.Category && selectedCategory) {
-            title = `${selectedCategory.title} | CryptoAX07 App`;
-            description = `Explore simulations in the ${selectedCategory.title} category: ${selectedCategory.description}`;
-        } else if (view === View.Simulation && currentSim) {
-            title = `${currentSim.title} | CryptoAX07 App`;
-            description = `Interactive Simulation: ${currentSim.description}`;
+        } else if (categoryId) {
+            const category = CATEGORIES.find(c => c.id === categoryId);
+            if (category) {
+                title = `${category.title} | CryptoAX07 App`;
+                description = `Explore simulations in the ${category.title} category: ${category.description}`;
+            }
+        } else if (simId) {
+            const currentSim = allSimulations.find(s => s.id === simId);
+            if (currentSim) {
+                title = `${currentSim.title} | CryptoAX07 App`;
+                description = `Interactive Simulation: ${currentSim.description}`;
+            }
         }
     }
 
     document.title = title;
-    
+
     const updateMetaTag = (selector: string, content: string) => {
         const element = document.querySelector(selector) as HTMLMetaElement | null;
         if (element) {
@@ -164,8 +148,7 @@ const AppContent: React.FC = () => {
     updateMetaTag('meta[property="og:description"]', description);
     updateMetaTag('meta[name="twitter:title"]', title);
     updateMetaTag('meta[name="twitter:description"]', description);
-
-  }, [page, view, selectedCategory, learningPathStep, allSimulations, t]);
+  }, [location.pathname, lang, simId, categoryId, allSimulations, t, CATEGORIES]);
 
 
   useEffect(() => {
@@ -187,87 +170,32 @@ const AppContent: React.FC = () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
     }, [isBookingModalOpen]);
-    
-  const handleNavigatePage = useCallback((targetPage: Page) => {
-    if (targetPage === 'intro') {
-        updateUrl();
-    } else {
-        updateUrl(targetPage);
-    }
-    setPage(targetPage);
+
+  const navigate = useNavigate();
+  const handleNavigate = useCallback((path: string) => {
+    navigate(path);
     window.scrollTo({ top: 0, behavior: 'auto' });
-  }, []);
+  }, [navigate]);
 
   const handleSelectSimulationById = useCallback((simulationId: string) => {
-    const indexInPath = LEARNING_PATH.findIndex(id => id === simulationId);
-
-    if (indexInPath !== -1) {
-      setLearningPathStep(indexInPath);
-      setView(View.Simulation);
-      updateUrl('sim', simulationId);
-      window.scrollTo({ top: 0, behavior: 'auto' });
+    if (LEARNING_PATH.includes(simulationId)) {
+      handleNavigate(`/${lang}/app/sim/${simulationId}`);
     } else {
       console.warn(`Simulation with id "${simulationId}" not found in LEARNING_PATH.`);
     }
-  }, []);
-  
-  const handleNavigate = useCallback((targetView: View) => {
-      if (targetView === View.About) {
-          handleNavigatePage('about');
-      } else if (targetView === View.Resources) {
-          handleNavigatePage('resources');
-      } else {
-          setPage('app');
-          setView(targetView);
-          if (targetView === View.Dashboard) {
-              updateUrl('dashboard');
-          } else if (targetView === View.Progress) {
-              updateUrl('progress');
-          }
-      }
-      window.scrollTo({ top: 0, behavior: 'auto' });
-  }, [handleNavigatePage]);
+  }, [lang, handleNavigate]);
 
   const handleEnterApp = useCallback(() => {
-    handleNavigate(View.Dashboard);
-  }, [handleNavigate]);
+    handleNavigate(`/${lang}/app/dashboard`);
+  }, [lang, handleNavigate]);
 
-  useEffect(() => {
-    const handleUrlChange = () => {
-        const params = new URLSearchParams(window.location.search);
-        const p = params.get('p');
-        const id = params.get('id');
-
-        if (p === 'about' || p === 'resources') {
-            setPage(p);
-        } else if (p === 'dashboard' || p === 'progress' || p === 'category' || p === 'sim') {
-            setPage('app');
-            setTimeout(() => { 
-                if (p === 'dashboard') {
-                    setView(View.Dashboard);
-                } else if (p === 'progress') {
-                    setView(View.Progress);
-                } else if (p === 'category' && id) {
-                    const category = CATEGORIES.find(c => c.id === id);
-                    if (category) {
-                        setSelectedCategory(category);
-                        setView(View.Category);
-                    } else {
-                        handleNavigate(View.Dashboard);
-                    }
-                } else if (p === 'sim' && id) {
-                    handleSelectSimulationById(id);
-                }
-            }, 50);
-        } else if (!p) {
-            setPage('intro');
-        }
-    };
-
-    handleUrlChange();
-    window.addEventListener('popstate', handleUrlChange);
-    return () => window.removeEventListener('popstate', handleUrlChange);
-  }, [CATEGORIES, handleNavigate, handleSelectSimulationById]);
+  const handleNavigatePage = useCallback((page: Page) => {
+    if (page === 'intro') {
+      handleNavigate(`/${lang}`);
+    } else {
+      handleNavigate(`/${lang}/${page}`);
+    }
+  }, [lang, handleNavigate]);
 
   const completeSimulation = useCallback((simId: string, xpGained: number, badge?: string) => {
     setUserProgress(prev => {
@@ -291,11 +219,11 @@ const AppContent: React.FC = () => {
             const nextSimId = LEARNING_PATH[currentSimIndex + 1];
             handleSelectSimulationById(nextSimId);
         } else {
-            handleNavigate(View.Dashboard);
+            handleNavigate(`/${lang}/app/dashboard`);
         }
     }, 1500);
-  }, [handleNavigate, handleSelectSimulationById]);
-  
+  }, [handleNavigate, handleSelectSimulationById, lang]);
+
   const toggleSidebarCollapse = useCallback(() => {
     setIsSidebarCollapsed(prev => {
         const newState = !prev;
@@ -315,15 +243,12 @@ const AppContent: React.FC = () => {
     if (simId) {
         handleSelectSimulationById(simId);
     } else {
-        handleNavigate(View.Dashboard);
+        handleNavigate(`/${lang}/app/dashboard`);
     }
-  }, [userProgress.completedSimulations, handleSelectSimulationById, handleNavigate]);
+  }, [userProgress.completedSimulations, handleSelectSimulationById, handleNavigate, lang]);
 
   const handleSelectCategory = (category: Category) => {
-    setSelectedCategory(category);
-    setView(View.Category);
-    updateUrl('category', category.id);
-    window.scrollTo({ top: 0, behavior: 'auto' });
+    handleNavigate(`/${lang}/app/category/${category.id}`);
   };
 
   const handleSelectSimulation = (simulation: Simulation) => {
@@ -333,11 +258,11 @@ const AppContent: React.FC = () => {
   const handleBookingConfirmation = useCallback(() => {
     setUserProgress(prev => ({ ...prev, hasBookedCall: true }));
     closeBookingModal();
-    handleNavigate(View.Progress);
-  }, [handleNavigate]);
+    handleNavigate(`/${lang}/app/progress`);
+  }, [handleNavigate, lang]);
 
   const handleBack = () => {
-    handleNavigate(View.Dashboard);
+    handleNavigate(`/${lang}/app/dashboard`);
   };
 
   const renderSimulation = (simulationId: string) => {
@@ -383,145 +308,40 @@ const AppContent: React.FC = () => {
 
     return <SimComponent onComplete={completionHandlers[simulationId]} />;
   };
-  
-  const renderContent = () => {
-    switch(view) {
-      case View.Dashboard:
-        return <Dashboard 
-                onStartLearning={startOrResumeLearningPath} 
-                onSelectCategory={handleSelectCategory}
-                userProgress={userProgress} 
-               />;
-      case View.Category:
-        if (!selectedCategory) {
-          handleBack();
-          return null;
-        }
-        return <CategoryView 
-                  category={selectedCategory} 
-                  onSelectSimulation={handleSelectSimulation}
-                  onBack={handleBack}
-                  userProgress={userProgress}
-                />;
-      case View.Simulation:
-        if (learningPathStep >= LEARNING_PATH.length) {
-            return (
-                <div className="text-center animate-fade-in p-8">
-                    <h2 className="text-4xl font-bold text-brand-secondary mb-4">{t('app.congratulations')}</h2>
-                    <p className="text-lg text-brand-text-secondary mb-8">{t('app.pathComplete')}</p>
-                    <Button onClick={handleBack}>{t('app.returnToDashboard')}</Button>
-                </div>
-            );
-        }
-        const currentSimId = LEARNING_PATH[learningPathStep];
-        const currentSim = allSimulations.find(s => s.id === currentSimId);
-
-        if (!currentSim) {
-          return <div className="text-center p-8">{t('app.lessonNotFound')}</div>;
-        }
-
-        const pathProgress = Math.round(((learningPathStep) / LEARNING_PATH.length) * 100);
-
-        return (
-            <div className="animate-fade-in">
-                <div className="mb-6 md:mb-8">
-                    <button onClick={handleBack} className="text-brand-primary hover:underline text-sm mb-4">
-                        &larr; {t('app.backToDashboard')}
-                    </button>
-                    <div className="bg-brand-surface p-4 rounded-xl border border-gray-700/50">
-                      <div className="flex justify-between items-center mb-2">
-                        <h3 className="text-lg md:text-xl font-semibold text-white">
-                            {t('app.lesson')} {learningPathStep + 1} {t('app.of')} {LEARNING_PATH.length}: {currentSim.title}
-                        </h3>
-                        <span className="text-brand-secondary font-bold text-sm hidden md:block">{pathProgress}% {t('app.complete')}</span>
-                      </div>
-                      <div className="w-full bg-gray-700 rounded-full h-2.5">
-                          <div className="bg-brand-secondary h-2.5 rounded-full transition-all duration-500" style={{ width: `${pathProgress}%` }}></div>
-                      </div>
-                    </div>
-                </div>
-                <Suspense fallback={<Spinner />}>
-                    {renderSimulation(currentSim.id)}
-                </Suspense>
-            </div>
-        );
-      case View.ExpertHelp:
-        return <ExpertHelp onBack={handleBack} />;
-      case View.Progress:
-        return <Progress userProgress={userProgress} onBack={handleBack} onOpenBookingModal={openBookingModal} onContinueLearning={startOrResumeLearningPath} />;
-      default:
-        return <Dashboard 
-                onStartLearning={startOrResumeLearningPath}
-                onSelectCategory={handleSelectCategory}
-                userProgress={userProgress}
-               />;
-    }
-  };
-
-  const renderPage = () => {
-      let currentSimId: string | null = null;
-      if (page === 'app' && view === View.Simulation && learningPathStep < LEARNING_PATH.length) {
-          currentSimId = LEARNING_PATH[learningPathStep];
-      }
-      
-      const pageContent = () => {
-        switch(page) {
-            case 'intro':
-                return <IntroPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />;
-            case 'about':
-                return <AboutPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />;
-            case 'resources':
-                return <ResourcesPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />;
-            case 'app':
-            default:
-                const isDashboardOrProgress = view === View.Dashboard || view === View.Progress;
-                return (
-                    <div className="min-h-screen bg-brand-bg flex">
-                        <div className={`flex-1 flex flex-col transition-all duration-300 w-full md:w-auto ${isSidebarCollapsed ? 'md:mr-20' : 'md:mr-72'}`}>
-                            <Header 
-                                userProgress={userProgress} 
-                                onNavigate={handleNavigate}
-                                onNavigatePage={handleNavigatePage}
-                                onStartLearning={startOrResumeLearningPath}
-                                onOpenBookingModal={openBookingModal}
-                                onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
-                            />
-                            <main className={`flex-grow ${isDashboardOrProgress ? 'dashboard-progress-bg' : ''}`}>
-                                <div className="container mx-auto px-4 py-8">
-                                    <Suspense fallback={<Spinner />}>
-                                        {renderContent()}
-                                    </Suspense>
-                                </div>
-                            </main>
-                            <Footer 
-                                onStart={startOrResumeLearningPath}
-                                onNavigatePage={handleNavigatePage}
-                                onOpenBookingModal={openBookingModal}
-                            />
-                        </div>
-                        <Sidebar
-                            userProgress={userProgress}
-                            onSelectSimulation={handleSelectSimulationById}
-                            onNavigate={handleNavigate}
-                            onNavigatePage={handleNavigatePage}
-                            currentSimId={currentSimId}
-                            isOpen={isSidebarOpen}
-                            onClose={() => setIsSidebarOpen(false)}
-                            isCollapsed={isSidebarCollapsed}
-                            onToggleCollapse={toggleSidebarCollapse}
-                        />
-                        <AiChatbot onSelectSimulation={handleSelectSimulationById} />
-                    </div>
-                );
-          }
-      }
-      return <Suspense fallback={<Spinner />}>{pageContent()}</Suspense>;
-  }
 
   return (
     <>
-      {showConfetti && <Suspense fallback={null}><Confetti /></Suspense>}
-      {renderPage()}
+      {showConfetti && <Suspense fallback={null}><Confetti key={Date.now()} /></Suspense>}
+      <Routes>
+        <Route path="/" element={<Navigate to="/en" replace />} />
+        <Route path="/:lang" element={<LanguageWrapper />}>
+          <Route index element={<IntroPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />} />
+          <Route path="about" element={<AboutPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />} />
+          <Route path="resources" element={<ResourcesPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />} />
+          <Route path="app" element={
+            <AppLayout
+              userProgress={userProgress}
+              onNavigate={(path) => handleNavigate(`/${lang}${path}`)}
+              onNavigatePage={handleNavigatePage}
+              onStartLearning={startOrResumeLearningPath}
+              onOpenBookingModal={openBookingModal}
+              isSidebarOpen={isSidebarOpen}
+              setIsSidebarOpen={setIsSidebarOpen}
+              isSidebarCollapsed={isSidebarCollapsed}
+              toggleSidebarCollapse={toggleSidebarCollapse}
+              onSelectSimulationById={handleSelectSimulationById}
+            />
+          }>
+            <Route path="dashboard" element={<Dashboard onStartLearning={startOrResumeLearningPath} onSelectCategory={handleSelectCategory} userProgress={userProgress} />} />
+            <Route path="progress" element={<Progress userProgress={userProgress} onBack={handleBack} onOpenBookingModal={openBookingModal} onContinueLearning={startOrResumeLearningPath} />} />
+            <Route path="category/:categoryId" element={<CategoryPage onSelectSimulation={handleSelectSimulation} onBack={handleBack} userProgress={userProgress} />} />
+            <Route path="sim/:simId" element={<SimulationPage allSimulations={allSimulations} onBack={handleBack} renderSimulation={renderSimulation} />} />
+            <Route path="expert-help" element={<ExpertHelp onBack={handleBack} />} />
+          </Route>
+        </Route>
+        <Route path="*" element={<div>404 Not Found</div>} />
+      </Routes>
+
       {isBookingModalOpen && (
         <div 
           className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex justify-center items-center animate-fade-in" 
@@ -560,6 +380,124 @@ const AppContent: React.FC = () => {
         </div>
       )}
     </>
+  );
+};
+
+const LanguageWrapper: React.FC = () => {
+  const { lang } = useParams();
+  const { setLanguage } = useLanguage();
+
+  useEffect(() => {
+    const supportedLanguages = ['en', 'es', 'fr']; // Add your supported languages
+    if (lang && supportedLanguages.includes(lang)) {
+      setLanguage(lang);
+    } else {
+      // Optionally navigate to a default language or show a 404
+    }
+  }, [lang, setLanguage]);
+
+  return <Outlet />;
+};
+
+const AppLayout: React.FC<any> = ({
+  userProgress, onNavigate, onNavigatePage, onStartLearning, onOpenBookingModal,
+  isSidebarOpen, setIsSidebarOpen, isSidebarCollapsed, toggleSidebarCollapse, onSelectSimulationById
+}) => {
+  const location = useLocation();
+  const { simId } = useParams();
+  const isDashboardOrProgress = location.pathname.endsWith('/dashboard') || location.pathname.endsWith('/progress');
+
+  return (
+    <div className="min-h-screen bg-brand-bg flex">
+      <div className={`flex-1 flex flex-col transition-all duration-300 w-full md:w-auto ${isSidebarCollapsed ? 'md:mr-20' : 'md:mr-72'}`}>
+        <Header 
+          userProgress={userProgress} 
+          onNavigate={onNavigate}
+          onNavigatePage={onNavigatePage}
+          onStartLearning={onStartLearning}
+          onOpenBookingModal={onOpenBookingModal}
+          onToggleSidebar={() => setIsSidebarOpen((prev: boolean) => !prev)}
+        />
+        <main className={`flex-grow ${isDashboardOrProgress ? 'dashboard-progress-bg' : ''}`}>
+          <div className="container mx-auto px-4 py-8">
+            <Suspense fallback={<Spinner />}>
+              <Outlet />
+            </Suspense>
+          </div>
+        </main>
+        <Footer 
+          onStart={onStartLearning}
+          onNavigatePage={onNavigatePage}
+          onOpenBookingModal={onOpenBookingModal}
+        />
+      </div>
+      <Sidebar
+        userProgress={userProgress}
+        onSelectSimulation={onSelectSimulationById}
+        onNavigate={onNavigate}
+        onNavigatePage={onNavigatePage}
+        currentSimId={simId}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        isCollapsed={isSidebarCollapsed}
+        onToggleCollapse={toggleSidebarCollapse}
+      />
+      <AiChatbot onSelectSimulation={onSelectSimulationById} />
+    </div>
+  );
+};
+
+const CategoryPage: React.FC<any> = ({ onSelectSimulation, onBack, userProgress }) => {
+  const { categoryId } = useParams();
+  const { t } = useLanguage();
+  const CATEGORIES = GET_CATEGORIES(t);
+  const category = CATEGORIES.find(c => c.id === categoryId);
+
+  if (!category) {
+    onBack();
+    return null;
+  }
+  return <CategoryView category={category} onSelectSimulation={onSelectSimulation} onBack={onBack} userProgress={userProgress} />;
+};
+
+const SimulationPage: React.FC<any> = ({ allSimulations, onBack, renderSimulation }) => {
+  const { simId } = useParams();
+  const { t } = useLanguage();
+  const learningPathStep = LEARNING_PATH.findIndex(id => id === simId);
+
+  if (learningPathStep === -1) {
+    return <div className="text-center p-8">{t('app.lessonNotFound')}</div>;
+  }
+
+  const currentSim = allSimulations.find((s: Simulation) => s.id === simId);
+  if (!currentSim) {
+    return <div className="text-center p-8">{t('app.lessonNotFound')}</div>;
+  }
+
+  const pathProgress = Math.round(((learningPathStep) / LEARNING_PATH.length) * 100);
+
+  return (
+    <div className="animate-fade-in">
+      <div className="mb-6 md:mb-8">
+        <button onClick={onBack} className="text-brand-primary hover:underline text-sm mb-4">
+          &larr; {t('app.backToDashboard')}
+        </button>
+        <div className="bg-brand-surface p-4 rounded-xl border border-gray-700/50">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg md:text-xl font-semibold text-white">
+              {t('app.lesson')} {learningPathStep + 1} {t('app.of')} {LEARNING_PATH.length}: {currentSim.title}
+            </h3>
+            <span className="text-brand-secondary font-bold text-sm hidden md:block">{pathProgress}% {t('app.complete')}</span>
+          </div>
+          <div className="w-full bg-gray-700 rounded-full h-2.5">
+            <div className="bg-brand-secondary h-2.5 rounded-full transition-all duration-500" style={{ width: `${pathProgress}%` }}></div>
+          </div>
+        </div>
+      </div>
+      <Suspense fallback={<Spinner />}>
+        {renderSimulation(currentSim.id)}
+      </Suspense>
+    </div>
   );
 };
 
