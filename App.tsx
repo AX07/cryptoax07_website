@@ -474,6 +474,7 @@ const AppContent: React.FC = () => {
                 return <ResourcesPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />;
             case 'app':
             default:
+                const isDashboardOrProgress = view === View.Dashboard || view === View.Progress;
                 return (
                     <div className="min-h-screen bg-brand-bg flex">
                         <div className={`flex-1 flex flex-col transition-all duration-300 w-full md:w-auto ${isSidebarCollapsed ? 'md:mr-20' : 'md:mr-72'}`}>
@@ -485,10 +486,12 @@ const AppContent: React.FC = () => {
                                 onOpenBookingModal={openBookingModal}
                                 onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
                             />
-                            <main className="flex-grow container mx-auto px-4 py-8">
-                                <Suspense fallback={<Spinner />}>
-                                    {renderContent()}
-                                </Suspense>
+                            <main className={`flex-grow ${isDashboardOrProgress ? 'dashboard-progress-bg' : ''}`}>
+                                <div className="container mx-auto px-4 py-8">
+                                    <Suspense fallback={<Spinner />}>
+                                        {renderContent()}
+                                    </Suspense>
+                                </div>
                             </main>
                             <Footer 
                                 onStart={startOrResumeLearningPath}
