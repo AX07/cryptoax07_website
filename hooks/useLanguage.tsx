@@ -14,8 +14,8 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const getLangFromUrl = (): Language => {
-    const params = new URLSearchParams(window.location.search);
-    const lang = params.get('lang');
+    const parts = window.location.pathname.split('/').filter(Boolean);
+    const lang = parts[0];
     if (lang === 'es' || lang === 'en') {
       return lang;
     }
@@ -27,9 +27,15 @@ export const LanguageProvider: React.FC<{ children: ReactNode }> = ({ children }
   const setLanguage = useCallback((lang: Language) => {
     if (lang !== language) {
         setLanguageState(lang);
-        const url = new URL(window.location.href);
-        url.searchParams.set('lang', lang);
-        window.history.pushState({}, '', url.toString());
+        const parts = window.location.pathname.split('/').filter(Boolean);
+        let newParts: string[];
+        if (parts.length > 0 && (parts[0] === 'en' || parts[0] === 'es')) {
+          newParts = [lang, ...parts.slice(1)];
+        } else {
+          newParts = [lang, ...parts];
+        }
+        const newPath = `/${newParts.join('/')}`;
+        window.history.pushState({}, '', newPath);
     }
   }, [language]);
 
