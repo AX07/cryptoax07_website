@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, Suspense, lazy } from 'react';
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 import { View, Simulation, UserProgress, Category, Page } from './types';
 import Header from './components/Header';
 import AiChatbot from './components/AiChatbot';
@@ -8,7 +8,7 @@ import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
 import { GET_CATEGORIES, LEARNING_PATH } from './constants';
 import { XMarkIcon } from './components/icons/Icons';
-import { LanguageProvider, useLanguage } from './hooks/useLanguage';
+import { LanguageProvider, useLanguage, Language } from './hooks/useLanguage';
 import Button from './components/ui/Button';
 
 // Performance: Add a spinner for lazy-loading fallbacks
@@ -62,29 +62,8 @@ const simulationComponents = {
   'fractional-reserve': lazy(() => import('./components/simulations/FractionalReserveSim')),
 };
 
-const updateUrl = (p?: string, id?: string) => {
-    const url = new URL(window.location.href);
-    if (p) {
-        url.searchParams.set('p', p);
-    } else {
-        url.searchParams.delete('p');
-    }
-
-    if (id) {
-        url.searchParams.set('id', id);
-    } else {
-        url.searchParams.delete('id');
-    }
-
-    if (!p) {
-        url.searchParams.delete('id');
-    }
-    
-    window.history.pushState({}, '', url.toString());
-};
-
 const AppContent: React.FC = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const CATEGORIES = GET_CATEGORIES(t);
   const allSimulations = CATEGORIES.flatMap(cat => cat.simulations);
 
@@ -115,6 +94,20 @@ const AppContent: React.FC = () => {
   
   const openBookingModal = () => setIsBookingModalOpen(true);
   const closeBookingModal = () => setIsBookingModalOpen(false);
+
+  const updateUrl = useCallback((p?: string, id?: string) => {
+      let path = `/${language}`;
+      if (p && p !== 'intro') {
+          path += `/${p}`;
+          if (id) {
+              path += `/${id}`;
+          }
+      }
+  
+      if (window.location.pathname !== path) {
+          window.history.pushState({}, '', path);
+      }
+  }, [language]);
 
   useEffect(() => {
     localStorage.setItem('userProgress', JSON.stringify(userProgress));
@@ -196,7 +189,7 @@ const AppContent: React.FC = () => {
     }
     setPage(targetPage);
     window.scrollTo({ top: 0, behavior: 'auto' });
-  }, []);
+  }, [updateUrl]);
 
   const handleSelectSimulationById = useCallback((simulationId: string) => {
     const indexInPath = LEARNING_PATH.findIndex(id => id === simulationId);
@@ -209,7 +202,7 @@ const AppContent: React.FC = () => {
     } else {
       console.warn(`Simulation with id "${simulationId}" not found in LEARNING_PATH.`);
     }
-  }, []);
+  }, [updateUrl]);
   
   const handleNavigate = useCallback((targetView: View) => {
       if (targetView === View.About) {
@@ -226,7 +219,7 @@ const AppContent: React.FC = () => {
           }
       }
       window.scrollTo({ top: 0, behavior: 'auto' });
-  }, [handleNavigatePage]);
+  }, [handleNavigatePage, updateUrl]);
 
   const handleEnterApp = useCallback(() => {
     handleNavigate(View.Dashboard);
@@ -234,9 +227,10 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     const handleUrlChange = () => {
-        const params = new URLSearchParams(window.location.search);
-        const p = params.get('p');
-        const id = params.get('id');
+        const parts = window.location.pathname.split('/').filter(Boolean);
+        // parts[0] is lang, handled by useLanguage hook.
+        const p = parts[1];
+        const id = parts[2];
 
         if (p === 'about' || p === 'resources') {
             setPage(p);
@@ -257,17 +251,23 @@ const AppContent: React.FC = () => {
                     }
                 } else if (p === 'sim' && id) {
                     handleSelectSimulationById(id);
+                } else if (!id && (p === 'category' || p === 'sim')) {
+                    handleNavigate(View.Dashboard);
                 }
             }, 50);
         } else if (!p) {
             setPage('intro');
+            if (parts.length === 0) {
+                // Root URL, redirect to language-specific intro page
+                window.history.replaceState({}, '', `/${language}`);
+            }
         }
     };
 
     handleUrlChange();
     window.addEventListener('popstate', handleUrlChange);
     return () => window.removeEventListener('popstate', handleUrlChange);
-  }, [CATEGORIES, handleNavigate, handleSelectSimulationById]);
+  }, [CATEGORIES, handleNavigate, handleSelectSimulationById, language]);
 
   const completeSimulation = useCallback((simId: string, xpGained: number, badge?: string) => {
     setUserProgress(prev => {
@@ -319,12 +319,12 @@ const AppContent: React.FC = () => {
     }
   }, [userProgress.completedSimulations, handleSelectSimulationById, handleNavigate]);
 
-  const handleSelectCategory = (category: Category) => {
+  const handleSelectCategory = useCallback((category: Category) => {
     setSelectedCategory(category);
     setView(View.Category);
     updateUrl('category', category.id);
     window.scrollTo({ top: 0, behavior: 'auto' });
-  };
+  }, [updateUrl]);
 
   const handleSelectSimulation = (simulation: Simulation) => {
     handleSelectSimulationById(simulation.id);
@@ -474,7 +474,6 @@ const AppContent: React.FC = () => {
                 return <ResourcesPage onStart={handleEnterApp} onNavigatePage={handleNavigatePage} onOpenBookingModal={openBookingModal} />;
             case 'app':
             default:
-                const isDashboardOrProgress = view === View.Dashboard || view === View.Progress;
                 return (
                     <div className="min-h-screen bg-brand-bg flex">
                         <div className={`flex-1 flex flex-col transition-all duration-300 w-full md:w-auto ${isSidebarCollapsed ? 'md:mr-20' : 'md:mr-72'}`}>
@@ -486,12 +485,10 @@ const AppContent: React.FC = () => {
                                 onOpenBookingModal={openBookingModal}
                                 onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
                             />
-                            <main className={`flex-grow ${isDashboardOrProgress ? 'dashboard-progress-bg' : ''}`}>
-                                <div className="container mx-auto px-4 py-8">
-                                    <Suspense fallback={<Spinner />}>
-                                        {renderContent()}
-                                    </Suspense>
-                                </div>
+                            <main className="flex-grow container mx-auto px-4 py-8">
+                                <Suspense fallback={<Spinner />}>
+                                    {renderContent()}
+                                </Suspense>
                             </main>
                             <Footer 
                                 onStart={startOrResumeLearningPath}
@@ -520,6 +517,8 @@ const AppContent: React.FC = () => {
 
   return (
     <>
+      <Analytics />
+      <SpeedInsights />
       {showConfetti && <Suspense fallback={null}><Confetti /></Suspense>}
       {renderPage()}
       {isBookingModalOpen && (
@@ -564,11 +563,9 @@ const AppContent: React.FC = () => {
 };
 
 const App: React.FC = () => (
-  <LanguageProvider>
-    <AppContent />
-    <Analytics />
-    <SpeedInsights />
-  </LanguageProvider>
+    <LanguageProvider>
+        <AppContent />
+    </LanguageProvider>
 );
 
 export default App;
