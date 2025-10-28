@@ -1,3 +1,6 @@
+
+// FIX: Import React to make the React namespace available for type definitions like React.FC.
+import type React from 'react';
 import { BanknotesIcon, CreditCardIcon, PuzzlePieceIcon, CurrencyDollarIcon, CubeIcon, NewspaperIcon, Squares2X2Icon, type IconProps, VideoCameraIcon } from '../components/icons/Icons';
 
 export interface ResourceItem {

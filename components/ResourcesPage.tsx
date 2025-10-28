@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import Button from './ui/Button';
 import Card from './ui/Card';
@@ -45,13 +46,17 @@ const ResourcesPage: React.FC<ResourcesPageProps> = ({ onStart, onNavigatePage, 
             });
         }, observerOptions);
 
-        Object.values(sectionRefs.current).forEach(section => {
+        // FIX: Replaced Object.values with Object.keys for type-safe iteration over the refs object.
+        Object.keys(sectionRefs.current).forEach(key => {
+            const section = sectionRefs.current[key];
             if (section) observer.observe(section);
         });
 
         return () => {
             window.removeEventListener('scroll', handleScroll);
-            Object.values(sectionRefs.current).forEach(section => {
+            // FIX: Replaced Object.values with Object.keys for type-safe iteration over the refs object.
+            Object.keys(sectionRefs.current).forEach(key => {
+                const section = sectionRefs.current[key];
                 if (section) observer.unobserve(section);
             });
         };
