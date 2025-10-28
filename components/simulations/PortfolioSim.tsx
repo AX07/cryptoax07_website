@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
@@ -20,14 +21,16 @@ const PortfolioSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
     pALT: 25,
   });
 
-  const total = useMemo(() => Object.values(portfolio).reduce((sum, val) => sum + val, 0), [portfolio]);
+  // FIX: Explicitly type reduce accumulator and value to prevent 'unknown' type errors.
+  const total = useMemo(() => Object.values(portfolio).reduce((sum: number, val: number) => sum + val, 0), [portfolio]);
 
   const handleSliderChange = (asset: AssetId, value: number) => {
     setPortfolio(prev => ({ ...prev, [asset]: value }));
   };
 
   const normalizePortfolio = () => {
-    const currentTotal = Object.values(portfolio).reduce((sum, val) => sum + val, 0);
+    // FIX: Explicitly type reduce accumulator and value to prevent 'unknown' type errors.
+    const currentTotal = Object.values(portfolio).reduce((sum: number, val: number) => sum + val, 0);
     
     // Avoid division by zero and unnecessary updates
     if (currentTotal === 0 || currentTotal === 100) return;
@@ -39,6 +42,7 @@ const PortfolioSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
     assetKeys.forEach((key, index) => {
       // For all but the last item, calculate the normalized value and round it.
       if (index < assetKeys.length - 1) {
+        // FIX: The error on this line is resolved by correctly typing `currentTotal` above.
         const normalizedValue = Math.round((portfolio[key] / currentTotal) * 100);
         newPortfolio[key] = normalizedValue;
         runningTotal += normalizedValue;
