@@ -64,7 +64,7 @@ const simulationComponents = {
 
 const AppContent: React.FC = () => {
   const { t, language } = useLanguage();
-  const CATEGORIES = GET_CATEGORIES(t);
+  const CATEGORIES = useMemo(() => GET_CATEGORIES(t), [t]);
   const allSimulations = CATEGORIES.flatMap(cat => cat.simulations);
 
   const [page, setPage] = useState<Page>('intro');
@@ -476,7 +476,7 @@ const AppContent: React.FC = () => {
             default:
                 return (
                     <div className="min-h-screen bg-brand-bg flex">
-                        <div className={`flex-1 flex flex-col transition-all duration-300 w-full md:w-auto ${isSidebarCollapsed ? 'md:mr-20' : 'md:mr-72'}`}>
+                        <div className={`flex-1 flex flex-col transition-all duration-300 w-full md:w-auto ${isSidebarCollapsed ? 'md:mr-20' : 'md:mr-72'} ${(view === View.Dashboard || view === View.Progress) ? 'app-background' : ''}`}>
                             <Header 
                                 userProgress={userProgress} 
                                 onNavigate={handleNavigate}
