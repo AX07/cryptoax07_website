@@ -1,3 +1,4 @@
+
 const en = {
   // General
   startLearning: 'Start Learning',
@@ -45,6 +46,7 @@ const en = {
   footer: {
     joinExperts: "Join seasoned experts with over seven years of experience in the cryptocurrency and blockchain space and learn how take advantage of this technology that is revolutionizing the world.",
     disclaimer: "None of the content can be considered financial advice, it is intended for educational purposes only.",
+    developedBy: "Developed by",
   },
 
   // App Component
@@ -166,7 +168,7 @@ const en = {
     dont4: "Guarantee profits or returns on any investment.",
     testimonialsTitle: "What Our Students Say",
     testimonial1: "“I finally set up my first wallet safely. The app made it simple and the coach answered all my questions!”",
-    testimonial1Name: "Anna R.",
+    testimonial1Name: "Andrew R.",
     testimonial1Role: "Beginner Investor",
     testimonial2: "“The one-on-one calls gave me the confidence to try DeFi on my own. I understand the risks and how to manage them now.”",
     testimonial2Name: "James T.",
@@ -311,6 +313,11 @@ const en = {
     processingError: "Sorry, I had trouble processing that request. Please try rephrasing your question.",
   },
 
+  // New Simulation Intro
+  simulationIntro: {
+    whatYouWillDo: "What You Will Do:",
+  },
+
   // Categories
   categories: {
     wallets: {
@@ -352,6 +359,11 @@ const en = {
     seedPhrase: {
       title: "Seed Phrase Simulation",
       description: "In this simulation, you'll learn about one of the most important concepts in cryptocurrency: the seed phrase. You will generate a unique 12-word phrase, practice backing it up securely, and then verify it. Mastering this process is crucial because your seed phrase is the ultimate backup to your wallet. If you ever lose access to your device, this phrase is the only way to recover your funds.",
+      objectives: [
+        "Generate a random 12-word seed phrase (your secure key).",
+        "Write down and backup your phrase safely (simulated).",
+        "Verify your backup by re-entering the phrase."
+      ],
       step1Title: "Step 1: Write Down Your Seed Phrase",
       step1Desc: "This is the only time you will see your phrase. Write it down in order and store it somewhere safe and offline.",
       backedUpButton: "I've Backed It Up",
@@ -365,6 +377,12 @@ const en = {
     swap: {
       title: "Simulated Swap Tool",
       description: "This simulation introduces you to Decentralized Exchanges (DEXs), where you trade crypto without a central intermediary. You will practice swapping tokens, which is essential for learning about exchange rates, slippage, and gas fees in a risk-free environment.",
+      objectives: [
+        "Interact with a Decentralized Exchange (DEX) interface.",
+        "Select token pairs to swap (e.g., pETH to pUSD).",
+        "Review exchange rates, gas fees, and slippage.",
+        "Execute a token swap transaction."
+      ],
       youPay: "You Pay",
       balance: "Balance",
       youReceive: "You Receive (Estimated)",
@@ -397,6 +415,12 @@ const en = {
     walletConnection: {
       title: "Wallet Connection Simulation",
       description: "Here, you'll practice connecting a wallet to a Decentralized App (DApp). You will walk through the connection and approval steps from a mock wallet. This is a vital security lesson, teaching you what permissions you grant and how to interact with the decentralized web safely.",
+      objectives: [
+        "Initiate a connection request from a DApp.",
+        "Review the permissions the DApp is requesting.",
+        "Approve or reject the wallet connection.",
+        "Understand the security implications of connecting."
+      ],
       dapp: "Simulated DApp",
       connected: "Connected",
       notConnected: "Not Connected",
@@ -474,6 +498,12 @@ const en = {
     btcTx: {
       title: "How Bitcoin Transactions Work (PoW)",
       description: "This simulation visualizes the entire lifecycle of a Bitcoin transaction. You'll learn how a transaction is created, signed with a private key, broadcast to the network, and confirmed by miners through the Proof-of-Work (PoW) consensus mechanism. Understanding this process is fundamental to knowing how Bitcoin works.",
+      objectives: [
+        "Create a transaction with an amount and recipient.",
+        "Sign the transaction with your private key (simulated).",
+        "Broadcast the transaction to the Mempool.",
+        "Watch as miners confirm your transaction via Proof-of-Work."
+      ],
       step1Title: "Step 1: Create Your Transaction",
       yourWallet: "Your Wallet",
       privateKey: "Private Key (Secret)",
@@ -654,6 +684,11 @@ const en = {
     liquidation: {
       title: "Liquidation Risk Calculator",
       description: "When you borrow in DeFi, you must maintain a safe collateral level. If your collateral's value drops too low, the protocol can sell it to repay your loan. This tool helps you understand that risk.",
+      objectives: [
+        "Set collateral and borrowed amounts.",
+        "Observe how leverage and price changes affect your Health Factor.",
+        "Identify the Liquidation Price where your collateral would be sold."
+      ],
       collateralAmount: "Collateral Amount (ETH)",
       collateralPrice: "Collateral Price (ETH Price in USD)",
       borrowedAmount: "Borrowed Amount (pUSD)",
@@ -1007,6 +1042,7 @@ const es = {
   footer: {
     joinExperts: "Únete a expertos con más de siete años de experiencia en el espacio de las criptomonedas y blockchain y aprende cómo aprovechar esta tecnología que está revolucionando el mundo.",
     disclaimer: "Ninguno de los contenidos puede considerarse asesoramiento financiero, está destinado únicamente a fines educativos.",
+    developedBy: "Desarrollado por",
   },
   app: {
     congratulations: "¡Felicidades!",
@@ -1065,6 +1101,9 @@ const es = {
     collapse: "Colapsar",
     expand: "Expandir barra lateral",
   },
+  simulationIntro: {
+    whatYouWillDo: "Lo que harás:",
+  },
   introPage: {
     heroTitle: "Educación Cripto a tu Medida con un Experto a tu Lado",
     heroSubtitle: "Estamos decididos a que superes el miedo a usar cripto y a mostrarte cómo te beneficia. Aprende de forma segura con simulaciones interactivas y asesoramiento personalizado.",
@@ -1116,7 +1155,7 @@ const es = {
     dont4: "Garantizar ganancias o rendimientos en ninguna inversión.",
     testimonialsTitle: "Lo Que Dicen Nuestros Estudiantes",
     testimonial1: "“Finalmente configuré mi primera billetera de forma segura. ¡La app lo hizo simple y el asesor respondió todas mis preguntas!”",
-    testimonial1Name: "Ana R.",
+    testimonial1Name: "Andres R.",
     testimonial1Role: "Inversora Principiante",
     testimonial2: "“Las llamadas uno a uno me dieron la confianza para probar DeFi por mi cuenta. Ahora entiendo los riesgos y cómo gestionarlos.”",
     testimonial2Name: "Jaime T.",
@@ -1263,9 +1302,132 @@ const es = {
     tools: { title: "Herramientas", description: "Descubre herramientas esenciales para navegar el ecosistema cripto." }
   },
   simulations: {
-    ...en.simulations // Fallback for any missing simulation translations
-    // Specific overrides
-    // ...
+    ...en.simulations, // Fallback for any missing simulation translations
+    seedPhrase: {
+      ...en.simulations.seedPhrase,
+      objectives: [
+        "Generar una frase semilla aleatoria de 12 palabras (tu clave segura).",
+        "Escribir y respaldar tu frase de forma segura (simulado).",
+        "Verificar tu respaldo volviendo a ingresar la frase."
+      ],
+      title: "Simulación de Frase Semilla",
+      description: "En esta simulación, aprenderás sobre uno de los conceptos más importantes en criptomonedas: la frase semilla. Generarás una frase única de 12 palabras, practicarás cómo respaldarla de forma segura y luego la verificarás. Dominar este proceso es crucial porque tu frase semilla es el respaldo definitivo de tu billetera. Si alguna vez pierdes el acceso a tu dispositivo, esta frase es la única forma de recuperar tus fondos.",
+      step1Title: "Paso 1: Escribe tu Frase Semilla",
+      step1Desc: "Esta es la única vez que verás tu frase. Escríbela en orden y guárdala en un lugar seguro y fuera de línea.",
+      backedUpButton: "La He Respaldado",
+      step2Title: "Paso 2: Verifica tu Respaldo",
+      step2Desc: "Selecciona las palabras en el orden correcto para confirmar tu respaldo.",
+      verifyButton: "Verificar Frase",
+      correctMessage: "¡Correcto! Bien hecho. Has respaldado tu frase de forma segura.",
+      incorrectMessage: "Orden incorrecto. En un escenario real, tendrías que volver a verificar tu respaldo.",
+      restart: "Reiniciar Simulación"
+    },
+    swap: {
+      ...en.simulations.swap,
+      objectives: [
+        "Interactuar con la interfaz de un Exchange Descentralizado (DEX).",
+        "Seleccionar pares de tokens para intercambiar (ej. pETH a pUSD).",
+        "Revisar tasas de cambio, tarifas de gas y deslizamiento.",
+        "Ejecutar una transacción de intercambio de tokens."
+      ],
+      title: "Herramienta de Intercambio Simulada",
+      description: "Esta simulación te introduce a los Exchanges Descentralizados (DEXs), donde comercias cripto sin un intermediario central. Practicarás el intercambio de tokens, lo cual es esencial para aprender sobre tasas de cambio, deslizamiento y tarifas de gas en un entorno libre de riesgos.",
+      youPay: "Tú Pagas",
+      balance: "Saldo",
+      youReceive: "Tú Recibes (Estimado)",
+      rate: "Tasa",
+      slippage: "Tolerancia al Deslizamiento",
+      gasFee: "Tarifa de Gas Estimada",
+      swapButton: "Intercambiar",
+      insufficientBalance: "Saldo Insuficiente",
+      swapFailed: "Intercambio fallido: Saldo insuficiente.",
+      processing: "Procesando Transacción...",
+      processingDesc: "Tu intercambio se está enviando a la red.",
+      successTitle: "¡Intercambio Exitoso!",
+      successDesc: "Has intercambiado exitosamente {fromAmount} {fromToken} por {toAmount} {toToken}.",
+      markComplete: "Marcar como Completado",
+      anotherSwap: "Realizar otro intercambio"
+    },
+    walletConnection: {
+      ...en.simulations.walletConnection,
+      objectives: [
+        "Iniciar una solicitud de conexión desde una DApp.",
+        "Revisar los permisos que solicita la DApp.",
+        "Aprobar o rechazar la conexión de la billetera.",
+        "Entender las implicaciones de seguridad al conectar."
+      ],
+      title: "Simulación de Conexión de Billetera",
+      description: "Aquí practicarás cómo conectar una billetera a una Aplicación Descentralizada (DApp). Seguirás los pasos de conexión y aprobación desde una billetera simulada. Esta es una lección de seguridad vital, enseñándote qué permisos otorgas y cómo interactuar con la web descentralizada de forma segura.",
+      dapp: "DApp Simulada",
+      connected: "Conectado",
+      notConnected: "No Conectado",
+      step1Desc: "Esta DApp quiere conectarse a tu billetera. Esto le permite ver tu dirección y sugerir transacciones.",
+      connectButton: "Conectar Billetera",
+      step2Desc: "Abriendo extensión de billetera... Por favor revisa la solicitud de conexión.",
+      step3Title: "Solicitud de Conexión",
+      step3Desc: "{dappName} quiere conectarse con tu cuenta:",
+      step3Permissions: "Esto permitirá a {dappName}:<br/>- Ver el saldo y actividad de tu billetera<br/>- Solicitar aprobación para transacciones",
+      reject: "Rechazar",
+      approve: "Aprobar",
+      step4Title: "¡Conexión Exitosa!",
+      step4Desc: "Tu billetera ahora está conectada a {dappName}. Ahora puedes usar las funciones de la DApp.",
+      step4Tip: "En una DApp real, puedes desconectarte desde la extensión de la billetera en cualquier momento."
+    },
+    btcTx: {
+      ...en.simulations.btcTx,
+      objectives: [
+        "Crear una transacción con un monto y destinatario.",
+        "Firmar la transacción con tu clave privada (simulado).",
+        "Transmitir la transacción a la Mempool.",
+        "Observar cómo los mineros confirman tu transacción vía Prueba de Trabajo."
+      ],
+      title: "Cómo Funcionan las Transacciones de Bitcoin (PoW)",
+      description: "Esta simulación visualiza el ciclo de vida completo de una transacción de Bitcoin. Aprenderás cómo se crea una transacción, se firma con una clave privada, se transmite a la red y es confirmada por mineros a través del mecanismo de consenso Prueba de Trabajo (PoW). Entender este proceso es fundamental para saber cómo funciona Bitcoin.",
+      step1Title: "Paso 1: Crea tu Transacción",
+      yourWallet: "Tu Billetera",
+      privateKey: "Clave Privada (Secreta)",
+      publicKey: "Clave Pública",
+      balance: "Saldo",
+      recipientWallet: "Billetera del Destinatario",
+      amountToSend: "Cantidad a enviar:",
+      signButton: "Firmar Transacción",
+      step2Title: "Paso 2: Firma con tu Clave Privada",
+      step2Desc: "Tu clave privada crea una firma digital única, demostrando que eres dueño de los fondos sin revelar la clave en sí.",
+      signed: "¡Transacción Firmada!",
+      signature: "Firma",
+      broadcastButton: "Transmitir a la Red",
+      step3Title: "Paso 3: Transmitir a la Mempool",
+      step3Desc: "Tu transacción firmada se envía a la red y espera en una \"piscina de memoria\" con otras transacciones pendientes.",
+      yourTx: "Tu TX",
+      mempool: "Mempool",
+      watchMiners: "Ver a los Mineros Trabajar",
+      step4Title: "Paso 4: Minería de Prueba de Trabajo",
+      step4Desc: "Los mineros usan computadoras potentes y energía para competir por resolver un rompecabezas complejo. El ganador añade el siguiente bloque a la cadena.",
+      mining: "MINANDO...",
+      tryingNonce: "Probando Nonce",
+      successTitle: "¡Bloque Encontrado y Transacción Confirmada!",
+      successDesc: "¡Un minero encontró la solución! El nuevo bloque que contiene tu transacción se añade a la blockchain, y los fondos están ahora en la billetera del destinatario.",
+      restart: "Reiniciar Simulación"
+    },
+    liquidation: {
+      ...en.simulations.liquidation,
+      objectives: [
+        "Establecer cantidades de garantía y préstamo.",
+        "Observar cómo el apalancamiento y los cambios de precio afectan tu Factor de Salud.",
+        "Identificar el Precio de Liquidación donde tu garantía sería vendida."
+      ],
+      title: "Calculadora de Riesgo de Liquidación",
+      description: "Cuando pides prestado en DeFi, debes mantener un nivel de garantía seguro. Si el valor de tu garantía cae demasiado bajo, el protocolo puede venderla para pagar tu préstamo. Esta herramienta te ayuda a entender ese riesgo.",
+      collateralAmount: "Cantidad de Garantía (ETH)",
+      collateralPrice: "Precio de Garantía (Precio ETH en USD)",
+      borrowedAmount: "Cantidad Prestada (pUSD)",
+      healthFactor: "Factor de Salud",
+      liquidationPrice: "Precio de Liquidación",
+      liquidationPriceDesc: "Si el precio de ETH cae a este nivel, tu garantía será vendida para pagar tu préstamo.",
+      avoidLiquidation: "¿Cómo evitar la liquidación?",
+      avoidLiquidationSteps: "1. Paga parte de tu préstamo.<br />2. Deposita más garantía.<br />Ambas acciones aumentarán tu factor de salud y reducirán tu precio de liquidación.",
+      markComplete: "Marcar Lección como Completada"
+    }
   }
 };
 

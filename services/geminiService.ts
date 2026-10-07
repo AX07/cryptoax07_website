@@ -1,28 +1,33 @@
-import { GoogleGenAI, Chat } from "@google/genai";
+
+import { GoogleGenAI, Content } from "@google/genai";
 import type { Category, AiResponse } from '../types';
 
-let ai: GoogleGenAI | null = null;
-let chat: Chat | null = null;
-
-const getAi = (): GoogleGenAI => {
-  if (!ai) {
-    const apiKey = (process as any)?.env?.API_KEY;
+export const askAi = async (
+  message: string, 
+  history: { role: 'user' | 'model'; content: string | AiResponse }[],
+  simulations: Category[], 
+  t: (key: string) => string
+): Promise<AiResponse> => {
+  try {
+    // Use the environment variable if available, otherwise use the provided fallback key.
+    // Note: In client-side apps, keys are visible. To secure this key, restrict it by HTTP Referrer in the Google Cloud Console.
+    const apiKey = (typeof process !== 'undefined' ? process.env?.API_KEY : undefined) || "AIzaSyB_2cGdWvj5ZXWWwOGsC8EaZIWIFXYl8_E";
+    
     if (!apiKey) {
-        throw new Error("API_KEY is not configured in the environment.");
+        return { type: 'error', code: 'API_KEY_MISSING', text: t('geminiService.unavailable') };
     }
-    ai = new GoogleGenAI({ apiKey });
-  }
-  return ai;
-};
+    
+    const ai = new GoogleGenAI({ apiKey });
+    
+    const simContext = simulations.flatMap(cat => 
+      cat.simulations.map(sim => ({
+        id: sim.id,
+        title: sim.title,
+        description: sim.description
+      }))
+    );
 
-const getChat = (): Chat => {
-    const aiInstance = getAi();
-
-    if (!chat) {
-        chat = aiInstance.chats.create({
-            model: 'gemini-2.5-flash',
-            config: {
-                systemInstruction: `You are CryptoAX, an expert crypto educator from CryptoAX07.com.
+    const systemInstruction = `You are CryptoAX, an expert crypto educator from CryptoAX07.com.
 - Your response MUST be a single, valid JSON object. Do not include any text, markdown, or formatting outside of the JSON structure.
 - You have three response types: 'answer', 'recommendation', or 'generated_example'.
 
@@ -40,46 +45,61 @@ const getChat = (): Chat => {
     -   'text' field: Your friendly, educational explanation.
     -   Format: \`{"type": "answer", "text": "..."}\`
 
+- AVAILABLE SIMULATIONS: ${JSON.stringify(simContext)}
 - NEVER give financial advice. If asked, gently refuse within an 'answer' response.
 - Focus on safety and clarity.
-`,
-            },
-        });
+`;
+
+    const geminiHistory: Content[] = history.map(msg => {
+        let text = "";
+        if (typeof msg.content === 'string') {
+            text = msg.content;
+        } else {
+             // Extract text representation from AiResponse for context
+             if ('text' in msg.content && typeof msg.content.text === 'string') {
+                 text = msg.content.text;
+             }
+        }
+        return {
+            role: msg.role,
+            parts: [{ text }]
+        };
+    });
+
+    const chat = ai.chats.create({
+        model: 'gemini-2.5-flash',
+        history: geminiHistory,
+        config: {
+            systemInstruction,
+        },
+    });
+    
+    const response = await chat.sendMessage({ message });
+    const jsonString = response.text?.trim();
+    
+    if (!jsonString) {
+         return { type: 'answer', text: t('geminiService.processingError') };
     }
-    return chat;
-}
 
+    let cleanJson = jsonString;
+    // Attempt to strip markdown code blocks if present
+    if (cleanJson.startsWith('```')) {
+        cleanJson = cleanJson.replace(/^```json\s*/, '').replace(/^```\s*/, '').replace(/\s*```$/, '');
+    }
 
-export const askAi = async (message: string, simulations: Category[], t: (key: string) => string): Promise<AiResponse> => {
-  try {
-    const chatInstance = getChat();
-    
-    const simContext = simulations.flatMap(cat => 
-      cat.simulations.map(sim => ({
-        id: sim.id,
-        title: sim.title,
-        description: sim.description
-      }))
-    );
-
-    const prompt = `
-      USER_QUESTION: "${message}"
-      ---
-      AVAILABLE_SIMULATIONS_CONTEXT: ${JSON.stringify(simContext)}
-    `;
-    
-    const response = await chatInstance.sendMessage({ message: prompt });
-    const jsonString = response.text.trim();
-    if (!jsonString.startsWith('{') && !jsonString.startsWith('[')) {
-        console.error("Gemini API returned non-JSON response:", jsonString);
+    try {
+        const parsedResponse: AiResponse = JSON.parse(cleanJson);
+        return parsedResponse;
+    } catch (e) {
+        console.error("Failed to parse JSON from Gemini:", cleanJson);
         return { type: 'answer', text: t('geminiService.unexpectedResponse') };
     }
-    const parsedResponse: AiResponse = JSON.parse(jsonString);
-    return parsedResponse;
+
   } catch (error) {
     console.error("Error with Gemini API:", error);
-    if (error instanceof Error && error.message.includes("API_KEY")) {
-        return { type: 'answer', text: t('geminiService.unavailable') };
+    const msg = error instanceof Error ? error.message : String(error);
+    if (msg.includes("API_KEY")) {
+        return { type: 'error', code: 'API_KEY_MISSING', text: t('geminiService.unavailable') };
     }
     return { type: 'answer', text: t('geminiService.processingError') };
   }

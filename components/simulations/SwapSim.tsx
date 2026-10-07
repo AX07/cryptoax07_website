@@ -2,7 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
+import SimulationIntro from '../ui/SimulationIntro';
 import { ArrowPathIcon, CheckCircleIcon } from '../icons/Icons';
+import { useLanguage } from '../../hooks/useLanguage';
 
 const TOKENS = {
   pETH: { name: 'Practice ETH', price: 2000, balance: 10 },
@@ -14,6 +16,8 @@ const TOKENS = {
 type TokenId = keyof typeof TOKENS;
 
 const SwapSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+  const { t } = useLanguage();
+  const [step, setStep] = useState(0); // Start at 0 for Intro
   const [fromToken, setFromToken] = useState<TokenId>('pETH');
   const [toToken, setToToken] = useState<TokenId>('pUSD');
   const [fromAmount, setFromAmount] = useState('');
@@ -63,17 +67,30 @@ const SwapSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
 
   const fromVal = parseFloat(fromAmount) || 0;
 
+  if (step === 0) {
+    return (
+      <Card className="max-w-4xl mx-auto p-6 md:p-8">
+        <SimulationIntro
+          title={t('simulations.swap.title')}
+          description={t('simulations.swap.description')}
+          objectives={t('simulations.swap.objectives')}
+          onStart={() => setStep(1)}
+        />
+      </Card>
+    );
+  }
+
   if (swapState === 'success') {
     return (
        <Card className="max-w-md mx-auto p-6 text-center animate-fade-in">
          <CheckCircleIcon className="h-16 w-16 text-brand-secondary mx-auto mb-4" />
-         <h2 className="text-2xl font-bold text-center mb-2 text-white">Swap Successful!</h2>
+         <h2 className="text-2xl font-bold text-center mb-2 text-white">{t('simulations.swap.successTitle')}</h2>
          <p className="text-brand-text-secondary mb-6">
-            You have successfully swapped {fromAmount} {fromToken} for {toAmount} {toToken}.
+            {t('simulations.swap.successDesc', { fromAmount, fromToken, toAmount, toToken })}
          </p>
          <div className="flex flex-col gap-3">
-            <Button onClick={onComplete} variant="secondary">Mark as Complete</Button>
-            <button onClick={resetSim} className="text-brand-text-secondary hover:text-white text-sm">Perform another swap</button>
+            <Button onClick={onComplete} variant="secondary">{t('simulations.swap.markComplete')}</Button>
+            <button onClick={resetSim} className="text-brand-text-secondary hover:text-white text-sm">{t('simulations.swap.anotherSwap')}</button>
          </div>
        </Card>
     )
@@ -83,21 +100,21 @@ const SwapSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
       return (
           <Card className="max-w-md mx-auto p-6 text-center">
              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mx-auto mb-4"></div>
-             <p className="text-lg text-white font-semibold">Processing Transaction...</p>
-             <p className="text-brand-text-secondary">Your swap is being submitted to the network.</p>
+             <p className="text-lg text-white font-semibold">{t('simulations.swap.processing')}</p>
+             <p className="text-brand-text-secondary">{t('simulations.swap.processingDesc')}</p>
           </Card>
       )
   }
 
   return (
     <Card className="max-w-md mx-auto p-6">
-      <h2 className="text-2xl font-bold text-center mb-4 text-white">Simulated Swap Tool</h2>
-       <p className="text-brand-text-secondary text-center mb-6 max-w-md mx-auto">
-        This simulation introduces you to Decentralized Exchanges (DEXs), where you trade crypto without a central intermediary. You will practice swapping tokens, which is essential for learning about exchange rates, slippage, and gas fees in a risk-free environment.
+      <h2 className="text-2xl font-bold text-center mb-4 text-white">{t('simulations.swap.title')}</h2>
+       <p className="text-brand-text-secondary text-center mb-6 max-w-md mx-auto hidden md:block">
+        {t('simulations.swap.description')}
       </p>
       
       <div className="bg-brand-bg/50 p-4 rounded-lg mb-2">
-        <label className="text-sm text-brand-text-secondary">You Pay</label>
+        <label className="text-sm text-brand-text-secondary">{t('simulations.swap.youPay')}</label>
         <div className="flex justify-between items-center mt-1">
           <input 
             type="number"
@@ -111,7 +128,7 @@ const SwapSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
           </select>
         </div>
         <div className="text-xs text-brand-text-secondary mt-1">
-          Balance: {balances[fromToken].balance.toFixed(2)}
+          {t('simulations.swap.balance')}: {balances[fromToken].balance.toFixed(2)}
         </div>
       </div>
       
@@ -122,7 +139,7 @@ const SwapSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
       </div>
 
       <div className="bg-brand-bg/50 p-4 rounded-lg mb-6">
-        <label className="text-sm text-brand-text-secondary">You Receive (Estimated)</label>
+        <label className="text-sm text-brand-text-secondary">{t('simulations.swap.youReceive')}</label>
         <div className="flex justify-between items-center mt-1">
           <input 
             type="number"
@@ -136,29 +153,29 @@ const SwapSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
           </select>
         </div>
          <div className="text-xs text-brand-text-secondary mt-1">
-          Balance: {balances[toToken].balance.toFixed(2)}
+          {t('simulations.swap.balance')}: {balances[toToken].balance.toFixed(2)}
         </div>
       </div>
 
       {fromAmount && (
         <div className="text-sm text-brand-text-secondary space-y-2 mb-6">
           <div className="flex justify-between">
-            <span>Rate</span>
+            <span>{t('simulations.swap.rate')}</span>
             <span className="text-white font-mono">1 {fromToken} ≈ {(balances[fromToken].price / balances[toToken].price).toFixed(4)} {toToken}</span>
           </div>
           <div className="flex justify-between">
-            <span>Slippage Tolerance</span>
+            <span>{t('simulations.swap.slippage')}</span>
             <span className="text-white font-mono">{slippage}%</span>
           </div>
           <div className="flex justify-between">
-            <span>Estimated Gas Fee</span>
+            <span>{t('simulations.swap.gasFee')}</span>
             <span className="text-white font-mono">${gasFee.toFixed(2)}</span>
           </div>
         </div>
       )}
-        {swapState === 'error' && <p className="text-red-500 text-center mb-4 font-bold">Swap failed: Insufficient balance.</p>}
+        {swapState === 'error' && <p className="text-red-500 text-center mb-4 font-bold">{t('simulations.swap.swapFailed')}</p>}
       <Button onClick={handleSwap} disabled={fromVal <= 0 || fromVal > balances[fromToken].balance} className="w-full">
-        {fromVal > balances[fromToken].balance ? 'Insufficient Balance' : 'Swap'}
+        {fromVal > balances[fromToken].balance ? t('simulations.swap.insufficientBalance') : t('simulations.swap.swapButton')}
       </Button>
     </Card>
   );

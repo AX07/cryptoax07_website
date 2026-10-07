@@ -1,9 +1,10 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { askAi } from '../services/geminiService';
 import { GET_CATEGORIES } from '../constants';
 import type { AiResponse } from '../types';
 import GeneratedExample from './GeneratedExample';
-import { ChatBubbleBottomCenterTextIcon, PaperAirplaneIcon, XMarkIcon } from './icons/Icons';
+import { ChatBubbleBottomCenterTextIcon, PaperAirplaneIcon, XMarkIcon, KeyIcon } from './icons/Icons';
 import Button from './ui/Button';
 import { useLanguage } from '../hooks/useLanguage';
 
@@ -39,13 +40,18 @@ const AiChatbot: React.FC<AiChatbotProps> = ({ onSelectSimulation }) => {
     e.preventDefault();
     if (!userInput.trim() || isLoading) return;
 
+    // Capture current messages as history BEFORE adding the new one
+    const history = [...messages];
+    
+    // Optimistically add user message
     const newMessages: Message[] = [...messages, { role: 'user', content: userInput }];
     setMessages(newMessages);
     setUserInput('');
     setIsLoading(true);
 
-    const response = await askAi(userInput, CATEGORIES, t);
-    setMessages([...newMessages, { role: 'model', content: response }]);
+    const response = await askAi(userInput, history, CATEGORIES, t);
+    
+    setMessages(prev => [...prev, { role: 'model', content: response }]);
     setIsLoading(false);
   };
 
@@ -53,6 +59,19 @@ const AiChatbot: React.FC<AiChatbotProps> = ({ onSelectSimulation }) => {
     setIsOpen(false);
     setIsExpanded(false);
   }
+
+  const openApiKeyDialog = async () => {
+      if ((window as any).aistudio && (window as any).aistudio.openSelectKey) {
+          try {
+            await (window as any).aistudio.openSelectKey();
+            // Optional: You could automatically retry the last message here if you stored it.
+          } catch (e) {
+            console.error("Failed to open key dialog", e);
+          }
+      } else {
+          alert("API Key selection is not available in this environment.");
+      }
+  };
 
   const renderMessageContent = (message: Message) => {
     if (message.role === 'user') {
@@ -85,6 +104,18 @@ const AiChatbot: React.FC<AiChatbotProps> = ({ onSelectSimulation }) => {
             <p>{aiContent.text}</p>
             <GeneratedExample steps={aiContent.steps} />
           </div>
+        );
+      case 'error':
+        return (
+            <div>
+                <p className="mb-2 text-red-300">{aiContent.text}</p>
+                {aiContent.code === 'API_KEY_MISSING' && (
+                    <Button onClick={openApiKeyDialog} variant="primary" className="w-full text-xs py-2 flex items-center justify-center gap-2">
+                        <KeyIcon className="h-4 w-4" />
+                        Configure API Key
+                    </Button>
+                )}
+            </div>
         );
       default:
         const contentAsAny = aiContent as any;

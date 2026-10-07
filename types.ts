@@ -1,3 +1,4 @@
+
 import type React from 'react';
 
 export enum View {
@@ -59,6 +60,10 @@ export type AiResponse = {
   type: 'generated_example';
   text: string;
   steps: GeneratedStep[];
+} | {
+  type: 'error';
+  code: string;
+  text: string;
 };
 
 export interface QuizQuestion {

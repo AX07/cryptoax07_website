@@ -1,6 +1,4 @@
-import React, { useState, useCallback, useEffect, Suspense, lazy, useMemo } from 'react';
-import { Analytics } from '@vercel/analytics/react';
-import { SpeedInsights } from '@vercel/speed-insights/react';
+import React, { useState, useCallback, useEffect, Suspense, lazy } from 'react';
 import { View, Simulation, UserProgress, Category, Page } from './types';
 import Header from './components/Header';
 import AiChatbot from './components/AiChatbot';
@@ -64,7 +62,7 @@ const simulationComponents = {
 
 const AppContent: React.FC = () => {
   const { t, language } = useLanguage();
-  const CATEGORIES = useMemo(() => GET_CATEGORIES(t), [t]);
+  const CATEGORIES = GET_CATEGORIES(t);
   const allSimulations = CATEGORIES.flatMap(cat => cat.simulations);
 
   const [page, setPage] = useState<Page>('intro');
@@ -236,29 +234,25 @@ const AppContent: React.FC = () => {
             setPage(p);
         } else if (p === 'dashboard' || p === 'progress' || p === 'category' || p === 'sim') {
             setPage('app');
-            if (p === 'dashboard') {
-              setView(View.Dashboard);
-            } else if (p === 'progress') {
-              setView(View.Progress);
-            } else if (p === 'category') {
-              if (id) {
-                const category = CATEGORIES.find(c => c.id === id);
-                if (category) {
-                  setSelectedCategory(category);
-                  setView(View.Category);
-                } else {
-                  handleNavigate(View.Dashboard);
+            setTimeout(() => { 
+                if (p === 'dashboard') {
+                    setView(View.Dashboard);
+                } else if (p === 'progress') {
+                    setView(View.Progress);
+                } else if (p === 'category' && id) {
+                    const category = CATEGORIES.find(c => c.id === id);
+                    if (category) {
+                        setSelectedCategory(category);
+                        setView(View.Category);
+                    } else {
+                        handleNavigate(View.Dashboard);
+                    }
+                } else if (p === 'sim' && id) {
+                    handleSelectSimulationById(id);
+                } else if (!id && (p === 'category' || p === 'sim')) {
+                    handleNavigate(View.Dashboard);
                 }
-              } else {
-                handleNavigate(View.Dashboard);
-              }
-            } else if (p === 'sim') {
-              if (id) {
-                handleSelectSimulationById(id);
-              } else {
-                handleNavigate(View.Dashboard);
-              }
-            }
+            }, 50);
         } else if (!p) {
             setPage('intro');
             if (parts.length === 0) {
@@ -521,8 +515,6 @@ const AppContent: React.FC = () => {
 
   return (
     <>
-      <Analytics />
-      <SpeedInsights />
       {showConfetti && <Suspense fallback={null}><Confetti /></Suspense>}
       {renderPage()}
       {isBookingModalOpen && (

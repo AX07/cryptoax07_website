@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
+import SimulationIntro from '../ui/SimulationIntro';
 import Quiz from '../ui/Quiz';
 import type { QuizQuestion } from '../../types';
 import { KeyIcon, UserIcon, ServerIcon, CubeTransparentIcon, BoltIcon, LockClosedIcon, CheckCircleIcon } from '../icons/Icons';
@@ -8,7 +10,7 @@ import { useLanguage } from '../../hooks/useLanguage';
 
 const BitcoinTransactionSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
   const { t } = useLanguage();
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [amount, setAmount] = useState('0.5');
   const [userBalance, setUserBalance] = useState(1.0);
   const [recipientBalance, setRecipientBalance] = useState(0.0);
@@ -64,7 +66,7 @@ const BitcoinTransactionSim: React.FC<{ onComplete: () => void }> = ({ onComplet
   }, [step]);
 
   const restart = () => {
-    setStep(1);
+    setStep(1); // Go back to step 1, skipping intro
     setAmount('0.5');
     setUserBalance(1.0);
     setRecipientBalance(0.0);
@@ -197,11 +199,22 @@ const BitcoinTransactionSim: React.FC<{ onComplete: () => void }> = ({ onComplet
 
   return (
     <Card className="max-w-4xl mx-auto p-6 md:p-8">
-      <h2 className="text-3xl font-bold text-center mb-2 text-white">{t('simulations.btcTx.title')}</h2>
-      <p className="text-brand-text-secondary text-center mb-8 max-w-3xl mx-auto">
-        {t('simulations.btcTx.description')}
-      </p>
-      {renderStep()}
+      {step === 0 ? (
+        <SimulationIntro
+          title={t('simulations.btcTx.title')}
+          description={t('simulations.btcTx.description')}
+          objectives={t('simulations.btcTx.objectives')}
+          onStart={() => setStep(1)}
+        />
+      ) : (
+        <>
+          <h2 className="text-3xl font-bold text-center mb-2 text-white">{t('simulations.btcTx.title')}</h2>
+          <p className="text-brand-text-secondary text-center mb-8 max-w-3xl mx-auto hidden md:block">
+            {t('simulations.btcTx.description')}
+          </p>
+          {renderStep()}
+        </>
+      )}
     </Card>
   );
 };

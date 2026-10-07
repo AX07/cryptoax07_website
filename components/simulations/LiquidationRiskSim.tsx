@@ -1,9 +1,14 @@
+
 import React, { useState, useMemo } from 'react';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
+import SimulationIntro from '../ui/SimulationIntro';
 import { ExclamationTriangleIcon } from '../icons/Icons';
+import { useLanguage } from '../../hooks/useLanguage';
 
 const LiquidationRiskSim: React.FC<{ onComplete: () => void }> = ({ onComplete }) => {
+  const { t } = useLanguage();
+  const [step, setStep] = useState(0);
   const [collateralAmount, setCollateralAmount] = useState(2); // ETH
   const [collateralPrice, setCollateralPrice] = useState(3500); // Price of ETH
   const [borrowedAmount, setBorrowedAmount] = useState(4000); // pUSD
@@ -21,26 +26,39 @@ const LiquidationRiskSim: React.FC<{ onComplete: () => void }> = ({ onComplete }
   }, [borrowedAmount, collateralAmount, liquidationThreshold]);
 
   const getHealthColor = () => {
-    if (healthFactor <= 1.1) return { text: 'text-red-500', bg: 'bg-red-500', label: 'Very High Risk' };
-    if (healthFactor <= 1.5) return { text: 'text-yellow-500', bg: 'bg-yellow-500', label: 'Medium Risk' };
-    return { text: 'text-green-500', bg: 'bg-green-500', label: 'Safe' };
+    if (healthFactor <= 1.1) return { text: 'text-red-500', bg: 'bg-red-500', label: t('simulations.lendingBorrowing.risk.riskLabels.high') };
+    if (healthFactor <= 1.5) return { text: 'text-yellow-500', bg: 'bg-yellow-500', label: t('simulations.lendingBorrowing.risk.riskLabels.medium') };
+    return { text: 'text-green-500', bg: 'bg-green-500', label: t('simulations.lendingBorrowing.risk.riskLabels.safe') };
   };
 
   const healthInfo = getHealthColor();
   const healthPercentage = Math.min((healthFactor - 1) / 1, 1) * 100; // Scale from 1.0 to 2.0+
 
+  if (step === 0) {
+    return (
+      <Card className="max-w-4xl mx-auto p-6 md:p-8">
+        <SimulationIntro
+          title={t('simulations.liquidation.title')}
+          description={t('simulations.liquidation.description')}
+          objectives={t('simulations.liquidation.objectives')}
+          onStart={() => setStep(1)}
+        />
+      </Card>
+    );
+  }
+
   return (
     <Card className="max-w-4xl mx-auto p-6 md:p-8">
-      <h2 className="text-3xl font-bold text-center mb-2 text-white">Liquidation Risk Calculator</h2>
-      <p className="text-brand-text-secondary text-center mb-8 max-w-2xl mx-auto">
-        When you borrow in DeFi, you must maintain a safe collateral level. If your collateral's value drops too low, the protocol can sell it to repay your loan. This tool helps you understand that risk.
+      <h2 className="text-3xl font-bold text-center mb-2 text-white">{t('simulations.liquidation.title')}</h2>
+      <p className="text-brand-text-secondary text-center mb-8 max-w-2xl mx-auto hidden md:block">
+        {t('simulations.liquidation.description')}
       </p>
 
       <div className="grid lg:grid-cols-2 gap-8 items-start">
         {/* Left Panel: Inputs */}
         <div className="space-y-6">
           <Card className="p-4 bg-brand-bg/50">
-            <label className="block font-semibold text-white mb-1">Collateral Amount (ETH)</label>
+            <label className="block font-semibold text-white mb-1">{t('simulations.liquidation.collateralAmount')}</label>
             <input
               type="number"
               value={collateralAmount}
@@ -49,7 +67,7 @@ const LiquidationRiskSim: React.FC<{ onComplete: () => void }> = ({ onComplete }
             />
           </Card>
           <Card className="p-4 bg-brand-bg/50">
-            <label className="block font-semibold text-white mb-1">Collateral Price (ETH Price in USD)</label>
+            <label className="block font-semibold text-white mb-1">{t('simulations.liquidation.collateralPrice')}</label>
             <input
               type="range"
               min="1000"
@@ -62,7 +80,7 @@ const LiquidationRiskSim: React.FC<{ onComplete: () => void }> = ({ onComplete }
             <div className="text-center font-mono text-lg text-brand-primary mt-1">${collateralPrice}</div>
           </Card>
           <Card className="p-4 bg-brand-bg/50">
-            <label className="block font-semibold text-white mb-1">Borrowed Amount (pUSD)</label>
+            <label className="block font-semibold text-white mb-1">{t('simulations.liquidation.borrowedAmount')}</label>
             <input
               type="range"
               min="0"
@@ -79,7 +97,7 @@ const LiquidationRiskSim: React.FC<{ onComplete: () => void }> = ({ onComplete }
         {/* Right Panel: Outputs */}
         <div className="space-y-4">
           <Card className="p-6 text-center bg-brand-surface">
-            <p className="text-sm font-semibold text-brand-text-secondary uppercase">Health Factor</p>
+            <p className="text-sm font-semibold text-brand-text-secondary uppercase">{t('simulations.liquidation.healthFactor')}</p>
             <p className={`text-5xl font-bold my-2 ${healthInfo.text}`}>
               {isFinite(healthFactor) ? healthFactor.toFixed(2) : '∞'}
             </p>
@@ -95,26 +113,24 @@ const LiquidationRiskSim: React.FC<{ onComplete: () => void }> = ({ onComplete }
           <Card className="p-6 text-center bg-brand-surface">
              <div className="flex items-center justify-center gap-2">
                 <ExclamationTriangleIcon className="h-6 w-6 text-red-400"/>
-                <p className="text-sm font-semibold text-brand-text-secondary uppercase">Liquidation Price</p>
+                <p className="text-sm font-semibold text-brand-text-secondary uppercase">{t('simulations.liquidation.liquidationPrice')}</p>
              </div>
             <p className="text-3xl font-bold my-2 text-red-400">
               ${liquidationPrice > 0 ? liquidationPrice.toFixed(2) : 'N/A'}
             </p>
-            <p className="text-xs text-brand-text-secondary">If the price of ETH drops to this level, your collateral will be sold to repay your loan.</p>
+            <p className="text-xs text-brand-text-secondary">{t('simulations.liquidation.liquidationPriceDesc')}</p>
           </Card>
            <p className="text-sm text-brand-text-secondary p-2">
-            <strong>How to avoid liquidation?</strong>
-            <br />1. Repay part of your loan.
-            <br />2. Deposit more collateral.
+            <strong dangerouslySetInnerHTML={{ __html: t('simulations.liquidation.avoidLiquidation') }}></strong>
             <br />
-            Both actions will increase your health factor and lower your liquidation price.
+            <span dangerouslySetInnerHTML={{ __html: t('simulations.liquidation.avoidLiquidationSteps') }}></span>
           </p>
         </div>
       </div>
 
       <div className="text-center mt-8 border-t border-gray-700 pt-6">
         <Button onClick={onComplete} variant="secondary">
-          Mark Lesson as Complete
+          {t('simulations.liquidation.markComplete')}
         </Button>
       </div>
     </Card>

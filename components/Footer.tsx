@@ -69,6 +69,22 @@ const Footer: React.FC<FooterProps> = ({ onStart, onNavigatePage, onOpenBookingM
           </div>
         </div>
       </div>
+
+      {/* Bottom Sub-footer with ax07.dev Attribution */}
+      <div className="container mx-auto px-4 mt-8 pt-6 border-t border-gray-700/40 flex flex-col sm:flex-row items-center justify-between text-xs text-gray-400 gap-3">
+        <p>© {new Date().getFullYear()} CryptoAX07. All rights reserved.</p>
+        <p className="flex items-center gap-1.5 text-gray-300">
+          <span>{t('footer.developedBy')}</span>
+          <a 
+            href="https://ax07.dev" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-brand-primary font-semibold hover:text-sky-300 hover:underline transition-colors tracking-wide"
+          >
+            ax07.dev
+          </a>
+        </p>
+      </div>
     </footer>
   );
 };
