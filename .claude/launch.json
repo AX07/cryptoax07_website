@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "web", "runtimeExecutable": "npx", "runtimeArgs": ["vite", "--port", "3011", "--strictPort"], "port": 3011 }
+  ]
+}
